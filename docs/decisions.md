@@ -10,9 +10,9 @@ Every one of these is cheap to change — the numbers all live in
 
 ---
 
-## D-01 — Both teams throw from the same end (needs your confirmation)
+## D-01 — Both teams throw from the same end
 
-**Status: the biggest call in this pass. Please confirm or correct.**
+**Status: confirmed by the user on 2026-11-26.**
 
 `game-design.md` Section 1 says the two players "stand at opposite ends of a
 long ice rink" and Section 4 says "the zones a player is aiming for are the
