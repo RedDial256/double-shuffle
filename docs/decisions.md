@@ -1,0 +1,213 @@
+# Decisions Log
+
+Running record of the calls made while implementing the game, per
+`docs/implementation-brief.md` Section 7: where the design docs left a question
+open, a placeholder choice was made, written down here, and flagged back rather
+than guessed silently.
+
+Every one of these is cheap to change — the numbers all live in
+`app/src/game/config.ts`.
+
+---
+
+## D-01 — Both teams throw from the same end (needs your confirmation)
+
+**Status: the biggest call in this pass. Please confirm or correct.**
+
+`game-design.md` Section 1 says the two players "stand at opposite ends of a
+long ice rink" and Section 4 says "the zones a player is aiming for are the
+ones nearest their opponent".
+
+That cannot be squared with the scoring rule. Rulebook page 6 (the
+`regras-6-pontos.webp` capture) is a worked example, and it draws **red and
+blue cubes interleaved inside the same bands**:
+
+```
+-------------------
+        3
+[R]
+-------------------
+        2
+[R]
+   [B]       [B]
+[R]   [R]
+      [B] [B]
+```
+
+with the result `Red: 5  Blue: 0`. Red's cube in band 3 scores 3, Red's cube at
+the top of band 2 scores 2, the two Reds behind Blue's leading cube score
+nothing, and Blue scores nothing at all because Red holds the front. That only
+works if both teams' cubes are lying in the **same** set of bands and are
+compared directly against each other.
+
+Two more things point the same way: the overhead reference shot shows a single
+rack holding **both** red and blue cubes at one end, and the Round Killer rule
+(p.9) talks about one "starting line" and one "wood platform".
+
+So the implementation is: **both teams throw from the same (near) end towards
+the same (far) end, alternating throws.** The rink is still symmetric and both
+ends are still marked, exactly as in the reference build — which is what real
+table shuffleboard does, because you swap ends between rounds. The far bands
+are the live ones; the near bands are decorative.
+
+If you meant something different by "opposite ends", this is the one decision
+worth correcting before any more work goes on top of it.
+
+## D-02 — Rink dimensions: 15 x 48 blocks, not 15 x 80
+
+`game-design.md` Section 13 flags "is the rink symmetric end-to-end (implying
+~80x15 blocks total)" as open. 80 blocks was tried and is too long to read on a
+phone: at 720x1280 portrait the whole rink only fills about a third of the
+screen width, and the cubes end up ~16 px across.
+
+Current layout, 48 blocks end to end:
+
+| Section | Blocks |
+|---|---|
+| Wood platform (each end) | 5 |
+| Zone 3 / zone 2 / zone 1 band (each) | 3 |
+| Neutral ice | 20 |
+| **Total length** | **48** |
+| Width | 15 |
+
+That gives 38 blocks of ice to slide down, and leaves a gutter down each side
+of the screen wide enough for the score lights. `platform`, `band` and
+`neutral` in `config.ts` re-lay the whole board (visuals, walls, dispensers and
+scoring) when changed.
+
+## D-03 — 4 points is an overhang test, not a painted band
+
+Rulebook page 7: *"If even a single pixel of a puck is hanging over the back of
+the table without falling, that's a 4 pointer!"* So the 4 is not a fourth
+strip of ice — it is the condition "my leading edge is past the back edge but
+my centre of mass is not". Implemented exactly that way in
+`zoneValue()` in `app/src/game/scoring.ts`; a cube whose centre crosses the line falls off and
+scores nothing.
+
+## D-04 — Qualified points resolve upwards
+
+Page 7: *"A puck is officially in the point range as long as a single pixel is
+touching the ice of that section."* A cube straddling two bands therefore
+qualifies for both, and the implementation gives it the **higher** one, because
+everything else about the game rewards getting further forward. Every scoring
+decision uses the cube's leading edge (rotation included), never its centre.
+
+## D-05 — The windburst penalty replaces the cube's points
+
+Section 5 of the design doc says a backwards push is "a -1 point penalty to the
+shooter for that cube", without saying whether that is instead of or on top of
+whatever the cube would otherwise be worth.
+
+Implemented as **instead of**: a cube the windburst pushed backwards is worth
+exactly -1 to its own team and is excluded from the lead comparison. Applying
+it on top would usually be invisible, since a cube that got shoved backwards is
+almost never the one holding the front.
+
+The flag is set when a blast leaves the cube travelling backwards faster than
+`windBackwardPenaltySpeed` (just under 1 block/s), which stops a glancing sideways nudge
+from counting.
+
+## D-06 — Knockouts do not trigger the Round Killer or the -1
+
+`game-design.md` Section 13 asks whether a knockout shot can also trigger these.
+Both rules are written as consequences of a **windburst** specifically
+("due to a perfectly timed wind burst", p.9), so:
+
+* Only a wind charge can set the -1 flag.
+* Only a cube carrying that flag can trigger the Round Killer.
+* A cube that ends up behind the starting line for any other reason (bounced
+  off another cube, say) simply leaves play for 0, with no penalty.
+
+A knockout that pushes an opponent's cube off the far end still removes it from
+play with 0 points, as Section 6 describes.
+
+## D-07 — Match totals are clamped at zero
+
+Nothing in the rulebook says what happens if a team's penalties outweigh their
+points in the opening round. Round scores can be negative, but the running match
+total floors at 0. Flip `allowNegativeMatchScore` in `config.ts` to change
+this.
+
+## D-08 — The first thrower alternates each round
+
+Open question in Section 13. Red opens round 1, Blue opens round 2, and so on
+(`alternateFirstShooter`). Within a round the teams simply alternate, except
+that a round-killed team is skipped and the other finishes at their own pace,
+as page 9 requires.
+
+## D-09 — Defaults: 4 cubes each, first to 15
+
+4 cubes per team per round comes straight from the reference rack; 15 points
+comes from the rulebook (p.2). With single-digit round scores that lands at
+roughly 4-8 rounds a match, which felt like the right pacing target. Both are
+`cubesPerRound` and `targetScore`.
+
+## D-10 — Wind-charge input: tap anywhere, nearest dispenser fires
+
+Open question in the brief. The dispensers sit in both side walls every 3
+blocks, matching the reference build. While a cube is sliding, the defending
+team taps anywhere and the dispenser closest to the tap fires a charge straight
+across the ice. The charge takes real time to cross, so *when* you tap is the
+skill, and firing one slightly ahead of the cube is what produces a backwards
+push — which is how "a perfectly timed wind burst" ends up meaning something
+mechanically.
+
+No timing window, no cooldown; just the 2-per-throw limit from page 8.
+
+## D-11 — Camera holds the whole rink
+
+The design doc fixes 2D top-down for v1 but not the framing. Chasing the cube
+means aiming at a target you cannot see, which is much worse than small cubes,
+so `Board.tsx` scales the whole board to fit the screen at all times. There's
+no follow mode yet; adding one would mean animating the canvas transform
+towards the live cube if the punch-in turns out to feel better.
+
+## D-12 — Layout is generated from config
+
+Nothing about the board is hand-placed. `Board.tsx` draws the rink, bands,
+walls and dispensers from `config.ts`, and `engine.ts` builds its physics walls
+and scoring lines from the same functions (`yIceFar()`, `farBandBoundaries()`,
+`dispensers()` and so on). It keeps the board, the physics and the scoring
+reading from one set of numbers while the game is being balanced. Once the
+proportions settle and real art arrives, swapping the drawn rectangles for
+images is a contained change inside `Board.tsx`.
+
+## D-13 — Placeholder art only
+
+Per the brief's IP note, nothing is traced or extracted from the reference
+screenshots. Everything on screen is flat coloured rectangles drawn in code.
+
+## D-14 — Switched the stack from Godot to React Native
+
+**Status: done.** The first playable build was written in Godot 4 with
+GDScript. It has since been ported to **React Native with Expo**, and the
+Godot project was removed.
+
+Why: React Native is what the user already knows, so they can read, change and
+debug the game without learning a new engine and language first. The game is a
+2D top-down board with a handful of bodies, which doesn't need a game engine's
+editor or scene tree, and keeping everything in one TypeScript codebase also
+covers the menus, settings and store work that would have needed a React
+Native shell around Godot anyway.
+
+What replaced what:
+
+| Concern | Before (Godot) | Now (React Native) |
+|---|---|---|
+| App shell, build | Godot export presets | Expo (`app/app.json`, EAS for store builds) |
+| Rendering | Godot 2D nodes | `@shopify/react-native-skia` canvas in `Board.tsx` |
+| Per-frame animation | engine loop | `requestAnimationFrame` loop + `react-native-reanimated` shared values |
+| Physics | Godot 2D physics | `planck` (Box2D port) in `engine.ts` |
+| Tunables | autoload config script | `app/src/game/config.ts` |
+| Scoring | scoring script | `app/src/game/scoring.ts` (pure functions) |
+| Turns, rounds, wind charges | game manager + entity scripts | `app/src/game/engine.ts` (framework-free class) |
+| Touch input | aim controller script | `app/src/ui/useAim.ts` |
+| HUD | HUD and score-light scripts | `app/src/ui/Hud.tsx` |
+
+Units changed in the port: distances are now in blocks (1 block = 1 metre in
+the physics world = one cube across) instead of pixels, so the old pixel values
+were divided by 48 in `config.ts`. Every rule decision above (D-01 to D-13)
+carried over unchanged.
+
+Not ported: the in-game rulebook screen. It needs rebuilding as a React Native
+screen.

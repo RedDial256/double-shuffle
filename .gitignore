@@ -1,0 +1,15 @@
+# The Expo app keeps its own ignores in app/.gitignore
+
+# Exported builds
+/build/
+/exports/
+*.apk
+*.aab
+*.ipa
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
