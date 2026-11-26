@@ -16,13 +16,16 @@
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
+    "rnsec": "1.4.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "security": "node scripts/security.mjs",
+    "security:baseline": "node scripts/security.mjs --update"
   },
   "private": true
 }
