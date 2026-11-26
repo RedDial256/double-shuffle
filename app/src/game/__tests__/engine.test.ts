@@ -1,10 +1,16 @@
 import { describe, expect, it } from '@jest/globals';
+
 import { config, dispensers, halfWidth, yIceFar, yIceNear } from '../config';
-import { Cube, EngineEvent, GameEngine, Phase } from '../engine';
+import type { Cube, EngineEvent, Phase } from '../engine';
+import { GameEngine } from '../engine';
 
 const DT = 1 / 60;
 
-function run(e: GameEngine, until: (e: GameEngine) => boolean, maxSeconds = 60) {
+function run(
+  e: GameEngine,
+  until: (e: GameEngine) => boolean,
+  maxSeconds = 60
+) {
   for (let t = 0; t < maxSeconds; t += DT) {
     if (until(e)) return;
     e.update(DT);
@@ -12,7 +18,8 @@ function run(e: GameEngine, until: (e: GameEngine) => boolean, maxSeconds = 60) 
   throw new Error(`timed out in phase ${e.phase}`);
 }
 
-const runToPhase = (e: GameEngine, phase: Phase) => run(e, (x) => x.phase === phase);
+const runToPhase = (e: GameEngine, phase: Phase) =>
+  run(e, (x) => x.phase === phase);
 
 /** Throw and wait until the next throw (or the round break) is ready. */
 function throwAndSettle(e: GameEngine, power: number, dx = 0, dy = -1) {
@@ -147,7 +154,9 @@ describe('turns and rounds', () => {
     while (e.phase === 'aiming') throwAndSettle(e, 1);
     expect(e.phase).toBe('game_over');
     expect(e.winner).toBe(0);
-    expect(events.some((ev) => ev.type === 'game_over' && ev.winner === 0)).toBe(true);
+    expect(
+      events.some((ev) => ev.type === 'game_over' && ev.winner === 0)
+    ).toBe(true);
 
     e.restart();
     expect(e.scores).toEqual([0, 0]);
@@ -207,7 +216,7 @@ describe('wind charges', () => {
     const { e } = newMatch();
     const c = e.liveCube!;
     e.launch(0, -1, 0.3);
-    run(e, (x) => c.y < yIceNear() - 6);
+    run(e, () => c.y < yIceNear() - 6);
     c.body.setLinearVelocity({ x: 0, y: -0.5 } as never);
     blastBackwards(e, c);
     expect(c.knockedBack).toBe(true);
@@ -230,13 +239,17 @@ describe('wind charges', () => {
     const { e, events } = newMatch();
     const c = e.liveCube!;
     e.launch(0, -1, 0.3);
-    run(e, (x) => c.y < yIceNear() - 4);
+    run(e, () => c.y < yIceNear() - 4);
     c.knockedBack = true;
     c.body.setLinearVelocity({ x: 0, y: 12 } as never);
     run(e, (x) => x.phase !== 'sliding');
     expect(c.state).toBe('killed_back');
     expect(e.roundKilled[0]).toBe(true);
-    expect(events.some((ev) => ev.type === 'message' && ev.text.includes('ROUND KILLER'))).toBe(true);
+    expect(
+      events.some(
+        (ev) => ev.type === 'message' && ev.text.includes('ROUND KILLER')
+      )
+    ).toBe(true);
 
     // Blue finishes the round alone.
     run(e, (x) => x.phase === 'aiming');
@@ -253,7 +266,7 @@ describe('wind charges', () => {
     const { e } = newMatch();
     const c = e.liveCube!;
     e.launch(0, -1, 0.3);
-    run(e, (x) => c.y < yIceNear() - 4);
+    run(e, () => c.y < yIceNear() - 4);
     c.body.setLinearVelocity({ x: 0, y: 12 } as never);
     run(e, (x) => x.phase !== 'sliding');
     expect(c.state).toBe('off_the_back');

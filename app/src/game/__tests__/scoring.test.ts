@@ -1,12 +1,18 @@
 import { describe, expect, it } from '@jest/globals';
+
 import { config, yIceFar } from '../config';
-import { ScorableCube, scoreRound, zoneValue } from '../scoring';
+import type { ScorableCube } from '../scoring';
+import { scoreRound, zoneValue } from '../scoring';
 
 const far = yIceFar();
 const band = config.band;
 
 /** A settled cube whose leading edge sits `depth` blocks behind the back edge. */
-const cube = (team: number, depth: number, extra: Partial<ScorableCube> = {}): ScorableCube => ({
+const cube = (
+  team: number,
+  depth: number,
+  extra: Partial<ScorableCube> = {}
+): ScorableCube => ({
   team,
   state: 'settled',
   knockedBack: false,
@@ -34,9 +40,12 @@ describe('zoneValue', () => {
     expect(zoneValue(cube(0, band * 2 - 0.1))).toBe(2);
   });
 
-  it.each(['off_the_back', 'killed_back'] as const)('a cube that is %s is worth nothing', (state) => {
-    expect(zoneValue(cube(0, -0.2, { state }))).toBe(0);
-  });
+  it.each(['off_the_back', 'killed_back'] as const)(
+    'a cube that is %s is worth nothing',
+    (state) => {
+      expect(zoneValue(cube(0, -0.2, { state }))).toBe(0);
+    }
+  );
 });
 
 describe('scoreRound', () => {
@@ -85,7 +94,10 @@ describe('scoreRound', () => {
   });
 
   it('ignores cubes that left the board', () => {
-    const r = scoreRound([cube(1, -0.2, { state: 'off_the_back' }), cube(0, 4)]);
+    const r = scoreRound([
+      cube(1, -0.2, { state: 'off_the_back' }),
+      cube(0, 4),
+    ]);
     expect(r.leader).toBe(0);
     expect(r.points).toEqual([2, 0]);
   });
@@ -99,7 +111,9 @@ describe('scoreRound', () => {
   });
 
   it('does not penalise a knocked-back cube that left the board', () => {
-    const r = scoreRound([cube(0, 30, { knockedBack: true, state: 'killed_back' })]);
+    const r = scoreRound([
+      cube(0, 30, { knockedBack: true, state: 'killed_back' }),
+    ]);
     expect(r.penalties).toEqual([0, 0]);
   });
 });
