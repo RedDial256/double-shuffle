@@ -13,8 +13,6 @@ rather than striking it out, and put the reasoning for decisions in
 
 ## Working with the user
 
-* The user writes in Portuguese. Reply in Portuguese, but keep everything in
-  the repo in English.
 * Record feedback the user gives that will matter in future sessions in this
   file, in the same change or in a small follow-up PR.
 
