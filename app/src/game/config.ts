@@ -1,6 +1,5 @@
 /**
  * Single source of truth for every tunable number in Double Shuffle.
- * Port of scripts/autoload/game_config.gd.
  *
  * All distances are in BLOCKS (1 block = 1 metre in the physics world = one
  * sulphur cube across). Speeds are blocks/second. The rink runs down +Y and
@@ -13,7 +12,10 @@
  *   y = yBoardEnd ........ outer edge of the shooter's own platform
  */
 
-/** Godot pixels per block, used only to keep the original numbers readable. */
+/**
+ * Pixels per block. Some speeds below were first tuned in pixels, and `px()`
+ * keeps those numbers readable by converting them to blocks.
+ */
 const PX = 48;
 const px = (v: number) => v / PX;
 

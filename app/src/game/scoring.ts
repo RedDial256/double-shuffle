@@ -1,7 +1,6 @@
 /**
  * Pure functions that turn a board full of settled cubes into a round score.
- * Port of scripts/game/scoring.gd — see that file / docs/decisions.md D-03..D-05
- * for the rules being implemented.
+ * See docs/decisions.md D-03..D-05 for the rules being implemented.
  */
 import { config, yIceFar } from './config';
 

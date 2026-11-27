@@ -13,7 +13,7 @@ interface View {
 type Mode = 'none' | 'placing' | 'aiming';
 
 /**
- * Touch input for the rink (port of aim_controller.gd):
+ * Touch input for the rink:
  *  - drag on the shooter's platform  -> slide the racked cube along the line
  *  - drag elsewhere while aiming     -> pull back and release to throw
  *  - tap while a cube is sliding     -> defender fires the nearest dispenser
