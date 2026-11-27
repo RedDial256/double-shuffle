@@ -3,14 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { config } from '../game/config';
 import type { GameEngine } from '../game/engine';
-import {
-  colors,
-  fontSize,
-  fontWeight,
-  opacity,
-  radii,
-  spacing,
-} from '../theme';
+import { colors, opacity, radii, spacing, textVariants } from '../theme';
 
 function Lights({ team, score }: { team: number; score: number }) {
   return (
@@ -144,8 +137,7 @@ const styles = StyleSheet.create({
   },
   scoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   teamName: {
-    fontWeight: fontWeight.extraBold,
-    fontSize: fontSize.sm,
+    ...textVariants.label,
     width: TEAM_NAME_WIDTH,
   },
   lights: { flexDirection: 'row', gap: spacing['2xs'] },
@@ -161,8 +153,7 @@ const styles = StyleSheet.create({
   },
   banner: {
     color: colors.text.primary,
-    fontWeight: fontWeight.bold,
-    fontSize: fontSize.sm,
+    ...textVariants.label,
     marginTop: spacing['3xs'],
   },
   toast: {
@@ -175,8 +166,7 @@ const styles = StyleSheet.create({
   },
   toastText: {
     color: colors.text.primary,
-    fontWeight: fontWeight.extraBold,
-    fontSize: fontSize.lg,
+    ...textVariants.heading,
     textAlign: 'center',
   },
   overlay: {
@@ -186,8 +176,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.sm,
   },
-  win: { fontSize: fontSize.display, fontWeight: fontWeight.black },
-  sub: { color: colors.text.primary, fontSize: fontSize.xl },
+  win: textVariants.display,
+  sub: { ...textVariants.score, color: colors.text.primary },
   button: {
     backgroundColor: colors.accent,
     paddingHorizontal: spacing.xl,
@@ -196,8 +186,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.text.onAccent,
-    fontWeight: fontWeight.extraBold,
-    fontSize: fontSize.md,
+    ...textVariants.button,
   },
 });
 

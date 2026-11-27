@@ -269,5 +269,10 @@ weights, radii, opacity), documented in `docs/design-system.md`.
 * Off-scale values snapped to the nearest step, which changes a few pixels:
   the score-light gap 3 → 4, the toast padding 14 → 16, and the banner font
   13 → 14.
+* Text has eight fixed variants (`display`, `title`, `heading`, `score`,
+  `body`, `button`, `label`, `caption`) instead of free size and weight
+  pairs. They cover every text in the HUD, the Rules screen and the round
+  summary; the HUD's turn banner moved from weight 700 to 800 and the final
+  score on the game-over screen became the bold `score` style.
 * Tokens are plain constants, not a theme context: there is one theme, and a
   context can wrap them later if a second one is ever needed.
