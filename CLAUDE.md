@@ -54,6 +54,9 @@ Keep the label set small. Use only these, plus GitHub's defaults:
 ## Conventions
 
 * Everything in English: code, comments, UI text, commit messages, docs.
+* Variables and functions have names that explain their purpose. No
+  single-letter names (`e`, `v`, `s`, `i`…): write `event`, `view`, `state`,
+  `index`. ESLint's `id-length` rule warns about them; don't add new ones.
 * Commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:` …).
 * Commit messages never mention conversations, sessions or AI authorship: no
   `Co-Authored-By` trailers for an AI, no session links.
