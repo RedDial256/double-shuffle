@@ -1,0 +1,2 @@
+# Git runs hooks from the repository root; the tooling lives in app/.
+app/node_modules/.bin/commitlint --config app/commitlint.config.mjs --edit "$1"

@@ -37,13 +37,13 @@ monetisation.
 
 The React Native port covers the Original rules (D-01 to D-16), with unit
 tests for scoring and the engine. The framework-free engine lives in
-`app/src/game`, and the Skia board and HUD in `app/src/ui`. ESLint, Prettier
-and the rnsec security audit are set up.
+`app/src/game`, and the Skia board and HUD in `app/src/ui`. ESLint, Prettier,
+commitlint, release-please and the rnsec security audit are set up.
 
 Open work is tracked as GitHub issues, one milestone per section below.
 
 **Missing:** the in-game rulebook, a proper end-of-round summary (it is only a
-banner line today), Expo Router and release automation.
+banner line today) and Expo Router.
 
 **Technical debt seen in the code:**
 
@@ -68,7 +68,7 @@ banner line today), Expo Router and release automation.
 | 6 | Analytics tool | To investigate | M5 |
 | 7 | Bundle ID, store name, icon | To investigate | M5 |
 | 8 | Deploys | Decided: automatic internal EAS builds, with room for manual ones. Play internal testing and TestFlight only from M5 | M2 |
-| 9 | Versioning | Decided: automated SemVer, 0.x → beta → rc → 1.0.0. Proposed tool: release-please | M0 |
+| 9 | Versioning | Decided: automated SemVer with release-please, 0.x → beta → rc → 1.0.0 (D-17) | — |
 
 ## Milestones
 
@@ -86,8 +86,8 @@ Art comes after balance on purpose: the rink proportions can still change
 
 ### M0 — Foundation
 
-* CI on GitHub Actions: `tsc --noEmit`, lint, tests.
-* Conventional Commits (commitlint) and release-please (see Versioning).
+* CI on GitHub Actions: `tsc --noEmit` and tests (ESLint, Prettier,
+  commitlint and release-please already run on every PR and push to `main`).
 
 **Done when:** `main` is green in CI, docs match the code, and 0.1.0 has been
 released.
@@ -224,7 +224,8 @@ low-priority queue slows playtests down.
 
 ## Versioning
 
-SemVer, with pre-releases before 1.0.0:
+SemVer, with pre-releases before 1.0.0. How to cut releases and switch
+phases: `releasing.md`.
 
 | Phase | Versions | When |
 |---|---|---|
@@ -239,7 +240,7 @@ sort before `beta-2`).
 **Automation:**
 
 * **Conventional Commits** (`feat:`, `fix:`, `feat!:`), checked by commitlint
-  in a commit hook and in CI.
+  in a `commit-msg` hook and, on the PR title, in CI.
 * **release-please** as a GitHub Action keeps a release PR open with the next
   version and the CHANGELOG. Merging it creates the tag and the GitHub
   Release.
@@ -288,7 +289,7 @@ rotate, both our own and fan-made.
 
 ## Next steps
 
-1. Finish M0: CI for typecheck, lint and tests, commitlint, and release-please.
+1. Finish M0: typecheck and tests in CI, and release 0.1.0.
 2. Port the rulebook and the end-of-round summary.
 3. Turn `config` into a `GameMode` passed to the engine, to prepare the
    presets.

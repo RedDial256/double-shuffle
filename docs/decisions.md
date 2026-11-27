@@ -234,3 +234,18 @@ knocked-back cube that stopped on the platform just behind the line stayed in
 play and only cost -1. The check is now "every part of the cube is behind the
 starting line" (its leading edge, rotation included, has crossed it), the
 mirror image of the 4-point overhang test at the far end.
+
+## D-17 — Releases: release-please on `app/`, plain `vX.Y.Z` tags
+
+release-please treats `app/` as the one package, because that is where
+`package.json` lives, and `package.json` is the only place the version is
+written (`app.config.ts` reads it). The tag leaves out the component name
+(`v0.1.0`, not `app-v0.1.0`), since the repository ships one app.
+
+The side effect is that only commits touching `app/` count towards a release.
+That matches what a release is for: a new build of the app.
+
+The first release is set with `initial-version: 0.1.0` and an empty manifest
+rather than a `release-as` in the config, which would have to be removed by
+hand after the release. The iOS version is the numeric part of the version,
+because App Store Connect rejects pre-release labels.
