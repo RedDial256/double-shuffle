@@ -209,8 +209,8 @@ the physics world = one cube across) instead of pixels, so the old pixel values
 were divided by 48 in `config.ts`. Every rule decision above (D-01 to D-13)
 carried over unchanged.
 
-Not ported: the in-game rulebook screen. It needs rebuilding as a React Native
-screen.
+The in-game rulebook was not ported at the time. It has since been rebuilt as a
+React Native screen (D-17).
 
 ## D-15 — Only the thrown cube can earn the windburst penalty
 
@@ -234,3 +234,21 @@ knocked-back cube that stopped on the platform just behind the line stayed in
 play and only cost -1. The check is now "every part of the cube is behind the
 starting line" (its leading edge, rotation included, has crossed it), the
 mirror image of the 4-point overhang test at the far end.
+
+## D-17 — The Rules screen is a modal that pauses the game
+
+The rulebook comes back as a full-screen modal opened by a Rules button in the
+bottom-right corner of the game, rather than a separate route: Expo Router and
+the Home/Game/Rules screens arrive in M3, and the text can move into a route
+then without changes.
+
+Opening the rules pauses the engine (`GameEngine.setPaused`). Physics, wind
+charges and the between-throw and round-break timers all run on the engine's
+own clock, so a sliding cube or a pending round break waits until the players
+close the rules. M3's Pause modal can reuse the same switch.
+
+The text lives in `app/src/ui/rulebook.ts` as data and reads its numbers
+(target score, cubes per round, wind charges per throw) from `config`, so it
+stays true when those defaults change or a game mode overrides them. It keeps
+the original rulebook's "Eyes Out Ray Finkle!" aside as an Easter egg. Styling
+is plain until the book-style UI in M4.
