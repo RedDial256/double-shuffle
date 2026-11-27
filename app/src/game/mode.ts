@@ -2,7 +2,7 @@
  * Per-match rules. A `GameMode` is handed to `GameEngine.startMatch()` and
  * holds everything that can differ between presets, the Custom mode and the
  * rotating modes after v1. Board geometry, colours, team names, timings and
- * the rest of the physics stay global in `config.ts` (docs/decisions.md D-17).
+ * the rest of the physics stay global in `config.ts` (docs/decisions.md D-18).
  */
 import { px } from './config';
 
