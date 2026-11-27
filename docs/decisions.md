@@ -211,3 +211,26 @@ carried over unchanged.
 
 Not ported: the in-game rulebook screen. It needs rebuilding as a React Native
 screen.
+
+## D-15 — Only the thrown cube can earn the windburst penalty
+
+The rulebook's -1 is "a penalty to the shooter for that cube", and the Round
+Killer talks about "the cube" the windburst sends back, so both refer to the
+cube being thrown. The port flagged *every* cube a blast pushed backwards,
+which meant a defender who caught their own settled cube in the blast lost a
+point, and a shooter could be penalised for cubes thrown on earlier turns.
+
+Now only the cube currently being thrown can be marked knocked back. A blast
+still moves every cube in its radius, and those cubes can still be pushed off
+either end for 0 points; they just don't carry the -1 or trigger the Round
+Killer.
+
+## D-16 — "All the way back onto the platform" means the whole cube
+
+The Round Killer (p.9) fires when a windburst sends the cube "all the way back
+onto the wood platform behind the shooter's own starting line". The port
+checked whether the cube's centre was more than a block past the line, so a
+knocked-back cube that stopped on the platform just behind the line stayed in
+play and only cost -1. The check is now "every part of the cube is behind the
+starting line" (its leading edge, rotation included, has crossed it), the
+mirror image of the 4-point overhang test at the far end.

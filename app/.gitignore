@@ -40,3 +40,6 @@ yarn-error.*
 /ios
 /android
 dist/
+
+# CanvasKit copied in by `npm run web` (setup-skia-web)
+/public/canvaskit.wasm

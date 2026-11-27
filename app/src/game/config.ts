@@ -72,6 +72,7 @@ export const config = {
     wall: '#e0b23f',
     startLine: '#35c9c4',
     dispenser: '#3b2a20',
+    windCharge: '#2e3a55',
   },
 };
 
