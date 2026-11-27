@@ -31,6 +31,7 @@
     "jest": "^30.5.2",
     "jest-expo": "~58.0.16",
     "prettier": "^3.10.1",
+    "rnsec": "1.4.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.74.0"
   },
@@ -45,7 +46,9 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "sim": "npx tsx scripts/sim.ts"
+    "sim": "npx tsx scripts/sim.ts",
+    "security": "node scripts/security.mjs",
+    "security:baseline": "node scripts/security.mjs --update"
   },
   "private": true,
   "jest": {
