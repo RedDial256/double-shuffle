@@ -37,7 +37,11 @@ export default function App() {
           <RulesButton onPress={openRules} />
           <Hud engine={engine} />
         </View>
-        <RulesScreen visible={rulesOpen} onClose={closeRules} />
+        <RulesScreen
+          visible={rulesOpen}
+          onClose={closeRules}
+          mode={engine.mode}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );

@@ -1,8 +1,10 @@
 import { config } from '../game/config';
+import type { GameMode } from '../game/mode';
+import { defaultMode } from '../game/mode';
 
 /**
- * The in-game rulebook, as data. It reads its numbers from `config` so the
- * text stays true when the defaults change, and it has no React dependency so
+ * The in-game rulebook, as data. It reads its numbers from the match's
+ * `GameMode` so the text stays true for every mode, and it has no React dependency so
  * it can be tested headlessly.
  */
 export interface RulebookSection {
@@ -11,11 +13,13 @@ export interface RulebookSection {
   paragraphs: string[];
 }
 
-export function rulebook(): RulebookSection[] {
+export function rulebook(
+  mode: Readonly<GameMode> = defaultMode
+): RulebookSection[] {
   const [red, blue] = config.teamNames;
-  const target = config.targetScore;
-  const cubes = config.cubesPerRound;
-  const charges = config.windChargesPerThrow;
+  const target = mode.targetScore;
+  const cubes = mode.cubesPerRound;
+  const charges = mode.windChargesPerThrow;
   const chargeWord = charges === 1 ? 'wind charge' : 'wind charges';
 
   return [

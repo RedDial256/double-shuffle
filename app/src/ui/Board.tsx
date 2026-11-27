@@ -25,17 +25,17 @@ import {
   yIceNear,
 } from '../game/config';
 import type { GameEngine } from '../game/engine';
+import { defaultMode } from '../game/mode';
 import { colors, opacity as opacityLevels } from '../theme';
 
 import { useAim } from './useAim';
 
-const CUBE_SLOTS = config.cubesPerRound * 2;
+// Fixed to the default mode until the slots are sized from the match (#14).
+const CUBE_SLOTS = defaultMode.cubesPerRound * 2;
 const CHARGE_SLOTS = 4;
 /** Per cube: x, y, angle, visible. Per charge: x, y, radius, alpha. */
 const CUBE_STRIDE = 4;
 const CHARGE_STRIDE = 4;
-
-const BLAST_RADIUS = config.windBlastRadius;
 
 function shade(hex: string, amount: number): string {
   const packedColor = parseInt(hex.slice(1), 16);
@@ -99,7 +99,7 @@ export function Board({ engine }: Props) {
           out.push(
             charge.blastX,
             charge.blastY,
-            BLAST_RADIUS * (1 - flashLeft * 0.55),
+            engine.mode.windBlastRadius * (1 - flashLeft * 0.55),
             flashLeft
           );
         } else out.push(charge.x, charge.y, 0.3, 1);

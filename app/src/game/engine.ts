@@ -17,6 +17,8 @@ import {
   yIceFar,
   yIceNear,
 } from './config';
+import type { GameMode } from './mode';
+import { defaultMode } from './mode';
 import type { CubeState, RoundResult } from './scoring';
 import { scoreRound } from './scoring';
 
@@ -63,6 +65,8 @@ export type EngineEvent =
 type Listener = (event: EngineEvent) => void;
 
 export class GameEngine {
+  /** Rules of the current match, set by `startMatch()`. */
+  mode: Readonly<GameMode> = defaultMode;
   phase: Phase = 'aiming';
   scores: [number, number] = [0, 0];
   roundIndex = 0;
@@ -131,7 +135,9 @@ export class GameEngine {
   // Match / round flow
   // -------------------------------------------------------------------------
 
-  startMatch() {
+  /** Start a new match. Without a `mode`, the previous match's rules are kept. */
+  startMatch(mode: Readonly<GameMode> = this.mode) {
+    this.mode = Object.freeze({ ...mode });
     this.scores = [0, 0];
     this.roundIndex = 0;
     this.firstShooter = 0;
@@ -153,7 +159,7 @@ export class GameEngine {
 
   private startRound() {
     this.clearCubes();
-    this.shotsLeft = [config.cubesPerRound, config.cubesPerRound];
+    this.shotsLeft = [this.mode.cubesPerRound, this.mode.cubesPerRound];
     this.roundKilled = [false, false];
     this.lastResult = null;
     this.beginTurn(this.firstShooter);
@@ -162,7 +168,7 @@ export class GameEngine {
   private beginTurn(team: number) {
     this.currentTeam = team;
     this.phase = 'aiming';
-    this.windChargesLeft = config.windChargesPerThrow;
+    this.windChargesLeft = this.mode.windChargesPerThrow;
     this.slideTime = 0;
 
     const body = this.world.createBody({
@@ -216,7 +222,7 @@ export class GameEngine {
 
     for (const team of [0, 1]) {
       this.scores[team] += result.points[team];
-      if (!config.allowNegativeMatchScore) {
+      if (!this.mode.allowNegativeMatchScore) {
         this.scores[team] = Math.max(0, this.scores[team]);
       }
     }
@@ -232,7 +238,9 @@ export class GameEngine {
     }
 
     this.roundIndex += 1;
-    if (config.alternateFirstShooter) this.firstShooter = 1 - this.firstShooter;
+    if (this.mode.alternateFirstShooter) {
+      this.firstShooter = 1 - this.firstShooter;
+    }
     this.after(config.roundBreakDelay, () => {
       if (this.phase === 'round_break') this.startRound();
     });
@@ -241,7 +249,7 @@ export class GameEngine {
 
   private findWinner(): number {
     const reached = [0, 1].filter(
-      (team) => this.scores[team] >= config.targetScore
+      (team) => this.scores[team] >= this.mode.targetScore
     );
     if (reached.length === 0) return -1;
     if (reached.length === 1) return reached[0];
@@ -362,7 +370,7 @@ export class GameEngine {
     charge.flash = BLAST_FLASH;
     charge.blastX = charge.x;
     charge.blastY = charge.y;
-    const radius = config.windBlastRadius;
+    const radius = this.mode.windBlastRadius;
 
     for (const cube of this.cubes) {
       if (!this.isOnBoard(cube)) continue;
@@ -375,7 +383,7 @@ export class GameEngine {
       // the charge's own heading instead of nowhere.
       const ax = dist > 0.01 ? ox / dist : charge.dx;
       const ay = dist > 0.01 ? oy / dist : charge.dy;
-      const impulse = config.windBlastImpulse * (1 - dist / radius);
+      const impulse = this.mode.windBlastImpulse * (1 - dist / radius);
 
       this.disturb(cube);
       cube.body.applyLinearImpulse(

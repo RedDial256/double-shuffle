@@ -93,8 +93,6 @@ released.
 
 ### M1 — Complete loop
 
-* A test for both teams crossing the target score in the same round (the
-  other rules cases are covered).
 * Size the board's cube slots from the match, not a constant.
 
 **Done when:** a full match plays on a device, at least as well as the Godot
@@ -122,14 +120,9 @@ throw or wind charge was unfair.
 
 * Expo Router: Home, Game, Rules, Settings, and a Pause modal.
 * Pause the engine when the app goes to the background (`AppState`).
-* **Game modes as data.** `config` is a global constant today. It becomes a
-  `GameMode` object handed to the engine at the start of each match (target
-  score, cubes per round, wind charges per throw, and whichever physics
-  numbers make sense). That serves the presets now and the rotating modes
-  after v1 without rewriting the engine.
-* **Presets:** Quick (fewer cubes, lower target), Classic (4 cubes, 15 points,
-  the rulebook rules), and maybe Chaotic (more wind charges, a stronger
-  blast).
+* **Presets** as `GameMode` objects (D-18): Quick (fewer cubes, lower target),
+  Classic (4 cubes, 15 points, the rulebook rules, already `classicMode`), and
+  maybe Chaotic (more wind charges, a stronger blast).
 * **Custom mode** with a few options, each with safe limits: target score,
   cubes per round, wind charges per throw, wind strength.
 * Save the last mode, the Custom settings and the sound and haptics
@@ -287,7 +280,5 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI, and release 0.1.0.
-2. Turn `config` into a `GameMode` passed to the engine, to prepare the
-   presets.
-3. First fps measurement and first playtest on a real device.
-4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+2. First fps measurement and first playtest on a real device.
+3. Investigate the analytics tool and the bundle ID (decisions 6 and 7).

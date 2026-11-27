@@ -3,6 +3,7 @@ import { describe, expect, it } from '@jest/globals';
 import { config, yIceFar } from '../config';
 import type { Phase } from '../engine';
 import { GameEngine } from '../engine';
+import { classicMode } from '../mode';
 import { describeCubes, formatSigned, summariseRound } from '../roundSummary';
 import type { ScorableCube } from '../scoring';
 import { scoreRound } from '../scoring';
@@ -104,7 +105,7 @@ describe('round break', () => {
   function playRound(engine: GameEngine) {
     for (
       let throwIndex = 0;
-      throwIndex < config.cubesPerRound * 2;
+      throwIndex < classicMode.cubesPerRound * 2;
       throwIndex++
     ) {
       runToPhase(engine, 'aiming');

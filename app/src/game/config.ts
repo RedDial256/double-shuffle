@@ -1,5 +1,7 @@
 /**
- * Single source of truth for every tunable number in Double Shuffle.
+ * Global tunables for Double Shuffle: board geometry, colours, timings and the
+ * physics that every mode shares. Per-match rules (target score, cubes per
+ * round, wind charges, wind strength) live in a `GameMode` (`mode.ts`).
  *
  * All distances are in BLOCKS (1 block = 1 metre in the physics world = one
  * sulphur cube across). Speeds are blocks/second. The rink runs down +Y and
@@ -17,7 +19,7 @@
  * keeps those numbers readable by converting them to blocks.
  */
 const PX = 48;
-const px = (pixels: number) => pixels / PX;
+export const px = (pixels: number) => pixels / PX;
 
 export const config = {
   // Board layout, in blocks
@@ -26,13 +28,6 @@ export const config = {
   band: 3,
   neutral: 20,
   divider: 0.4,
-
-  // Match rules
-  cubesPerRound: 4,
-  targetScore: 15,
-  windChargesPerThrow: 2,
-  alternateFirstShooter: true,
-  allowNegativeMatchScore: false,
 
   // Throw physics (blocks/s)
   launchSpeedMin: px(430),
@@ -53,8 +48,6 @@ export const config = {
   dispenserSpacing: 3,
   windTravelSpeed: px(1150),
   windMaxTravel: 9,
-  windBlastRadius: 3,
-  windBlastImpulse: px(620),
   windBackwardPenaltySpeed: px(40),
   /** Charge detonates when it is this close to a cube's centre. */
   windTriggerDistance: 0.75,

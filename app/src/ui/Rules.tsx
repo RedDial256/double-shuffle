@@ -10,6 +10,7 @@ import {
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import type { GameMode } from '../game/mode';
 import { colors, radii, spacing, textVariants } from '../theme';
 
 import { rulebook } from './rulebook';
@@ -21,11 +22,14 @@ import { rulebook } from './rulebook';
 export function RulesScreen({
   visible,
   onClose,
+  mode,
 }: {
   visible: boolean;
   onClose: () => void;
+  /** Rules of the current match; the text quotes its numbers. */
+  mode: Readonly<GameMode>;
 }) {
-  const sections = useMemo(() => rulebook(), []);
+  const sections = useMemo(() => rulebook(mode), [mode]);
 
   return (
     <Modal

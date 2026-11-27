@@ -8,10 +8,18 @@ import { colors, opacity, radii, spacing, textVariants } from '../theme';
 
 import { RoundSummary } from './RoundSummary';
 
-function Lights({ team, score }: { team: number; score: number }) {
+function Lights({
+  team,
+  score,
+  target,
+}: {
+  team: number;
+  score: number;
+  target: number;
+}) {
   return (
     <View style={styles.lights}>
-      {Array.from({ length: config.targetScore }, (_, pointIndex) => (
+      {Array.from({ length: target }, (_, pointIndex) => (
         <View
           key={pointIndex}
           style={[
@@ -28,15 +36,17 @@ function Lights({ team, score }: { team: number; score: number }) {
 function Rack({
   team,
   left,
+  total,
   killed,
 }: {
   team: number;
   left: number;
+  total: number;
   killed: boolean;
 }) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
-      {Array.from({ length: config.cubesPerRound }, (_, cubeIndex) => (
+      {Array.from({ length: total }, (_, cubeIndex) => (
         <View
           key={cubeIndex}
           style={[styles.rackCube, cubeIndex < left && teamFillStyles[team]]}
@@ -96,10 +106,15 @@ export function Hud({ engine }: { engine: GameEngine }) {
             <Text style={[styles.teamName, teamTextStyles[teamIndex]]}>
               {config.teamNames[teamIndex]} {engine.scores[teamIndex]}
             </Text>
-            <Lights team={teamIndex} score={engine.scores[teamIndex]} />
+            <Lights
+              team={teamIndex}
+              score={engine.scores[teamIndex]}
+              target={engine.mode.targetScore}
+            />
             <Rack
               team={teamIndex}
               left={engine.shotsLeft[teamIndex]}
+              total={engine.mode.cubesPerRound}
               killed={engine.roundKilled[teamIndex]}
             />
           </View>

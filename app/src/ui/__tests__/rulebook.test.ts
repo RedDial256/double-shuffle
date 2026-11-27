@@ -1,10 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { config } from '../../game/config';
+import { classicMode } from '../../game/mode';
 import { rulebook } from '../rulebook';
 
-const text = () =>
-  rulebook()
+const text = (mode = classicMode) =>
+  rulebook(mode)
     .flatMap((section) => [section.title, ...section.paragraphs])
     .join('\n');
 
@@ -34,22 +34,26 @@ describe('rulebook', () => {
     }
   });
 
-  it('quotes the numbers from config', () => {
+  it('quotes the numbers from the mode', () => {
     const rules = text();
-    expect(rules).toContain(`${config.targetScore} points`);
-    expect(rules).toContain(`${config.cubesPerRound} cubes per round`);
-    expect(rules).toContain(`up to ${config.windChargesPerThrow} wind charge`);
+    expect(rules).toContain(`${classicMode.targetScore} points`);
+    expect(rules).toContain(`${classicMode.cubesPerRound} cubes per round`);
+    expect(rules).toContain(
+      `up to ${classicMode.windChargesPerThrow} wind charge`
+    );
     expect(rules).toContain('-1 point');
     expect(rules).toContain('worth 4');
   });
 
-  it('follows config changes', () => {
-    const saved = config.targetScore;
-    config.targetScore = 21;
-    try {
-      expect(text()).toContain('21 points');
-    } finally {
-      config.targetScore = saved;
-    }
+  it('follows the mode it is given', () => {
+    const rules = text({
+      ...classicMode,
+      targetScore: 21,
+      cubesPerRound: 3,
+      windChargesPerThrow: 1,
+    });
+    expect(rules).toContain('21 points');
+    expect(rules).toContain('3 cubes per round');
+    expect(rules).toContain('up to 1 wind charge');
   });
 });

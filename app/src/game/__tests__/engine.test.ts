@@ -1,8 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { config, dispensers, halfWidth, yIceFar, yIceNear } from '../config';
+import { dispensers, halfWidth, yIceFar, yIceNear } from '../config';
 import type { Cube, EngineEvent, Phase } from '../engine';
 import { GameEngine } from '../engine';
+import type { GameMode } from '../mode';
+import { classicMode, defaultMode } from '../mode';
 
 const DT = 1 / 60;
 
@@ -35,11 +37,11 @@ function teleport(cube: Cube, game: number, worldY: number) {
   cube.forwardEdgeY = worldY - 0.5;
 }
 
-function newMatch() {
+function newMatch(mode: GameMode = classicMode) {
   const engine = new GameEngine();
   const events: EngineEvent[] = [];
   engine.subscribe((ev) => events.push(ev));
-  engine.startMatch();
+  engine.startMatch(mode);
   return { engine, events };
 }
 
@@ -49,8 +51,8 @@ describe('throwing', () => {
     expect(engine.phase).toBe('aiming');
     expect(engine.currentTeam).toBe(0);
     expect(engine.shotsLeft).toEqual([
-      config.cubesPerRound,
-      config.cubesPerRound,
+      classicMode.cubesPerRound,
+      classicMode.cubesPerRound,
     ]);
     expect(engine.liveCube?.state).toBe('racked');
     expect(engine.liveCube?.y).toBeCloseTo(yIceNear() - 0.5);
@@ -111,7 +113,7 @@ describe('turns and rounds', () => {
     const order: number[] = [];
     for (
       let throwIndex = 0;
-      throwIndex < config.cubesPerRound * 2;
+      throwIndex < classicMode.cubesPerRound * 2;
       throwIndex++
     ) {
       order.push(engine.currentTeam);
@@ -127,7 +129,7 @@ describe('turns and rounds', () => {
     const { engine } = newMatch();
     for (
       let throwIndex = 0;
-      throwIndex < config.cubesPerRound * 2;
+      throwIndex < classicMode.cubesPerRound * 2;
       throwIndex++
     ) {
       throwAndSettle(engine, 1);
@@ -157,7 +159,7 @@ describe('turns and rounds', () => {
 
   it('declares the first team to the target score the winner', () => {
     const { engine, events } = newMatch();
-    engine.scores = [config.targetScore - 1, 0];
+    engine.scores = [classicMode.targetScore - 1, 0];
     // Red leaves one cube in band 3; every other throw falls off the end.
     const red = engine.liveCube!;
     engine.launch(0, -1, 0.5);
@@ -174,6 +176,55 @@ describe('turns and rounds', () => {
     engine.restart();
     expect(engine.scores).toEqual([0, 0]);
     expect(engine.phase).toBe('aiming');
+  });
+  describe('both teams past the target in the same round', () => {
+    const target = classicMode.targetScore;
+
+    /** Play out a blank end: every throw falls off the back for 0 points. */
+    function blankEnd(engine: GameEngine) {
+      while (engine.phase === 'aiming') throwAndSettle(engine, 1);
+      expect(engine.lastResult?.points).toEqual([0, 0]);
+    }
+
+    // Only the team holding the front scores, so in the Classic rules one
+    // team can't overtake the other in a single round. These tests start the
+    // round with totals already at the line to reach findWinner's two-team
+    // branch, which a mode where both teams score would hit in play.
+    it('gives the match to the higher total', () => {
+      const { engine, events } = newMatch();
+      engine.scores = [target, target + 2];
+      blankEnd(engine);
+      expect(engine.phase).toBe('game_over');
+      expect(engine.winner).toBe(1);
+      expect(events.filter((ev) => ev.type === 'game_over')).toEqual([
+        { type: 'game_over', winner: 1 },
+      ]);
+    });
+
+    it('still picks the higher total when the leader crosses too', () => {
+      const { engine } = newMatch();
+      engine.scores = [target + 3, target - 1];
+      // Blue crosses the target with one cube in the 3-point band; Red's total
+      // stays higher.
+      throwAndSettle(engine, 1); // Red: off the back
+      const blue = engine.liveCube!;
+      engine.launch(0, -1, 0.5);
+      run(engine, (game) => game.phase !== 'sliding');
+      teleport(blue, -4, yIceFar() + 1.5);
+      run(engine, (game) => game.phase !== 'resolving');
+      while (engine.phase === 'aiming') throwAndSettle(engine, 1);
+      expect(engine.lastResult?.points).toEqual([0, 3]);
+      expect(engine.scores).toEqual([target + 3, target + 2]);
+      expect(engine.winner).toBe(0);
+    });
+
+    it('gives a tie on the total to Red', () => {
+      const { engine } = newMatch();
+      engine.scores = [target + 1, target + 1];
+      blankEnd(engine);
+      expect(engine.phase).toBe('game_over');
+      expect(engine.winner).toBe(0);
+    });
   });
 });
 
@@ -204,7 +255,7 @@ describe('wind charges', () => {
     engine.launch(0, -1, 0.5);
     engine.fireWindChargeNear(-7, 10);
     run(engine, (game) => game.phase === 'aiming');
-    expect(engine.windChargesLeft).toBe(config.windChargesPerThrow);
+    expect(engine.windChargesLeft).toBe(classicMode.windChargesPerThrow);
   });
 
   /** Blast the thrown cube from just in front of it, sending it backwards. */
@@ -299,5 +350,77 @@ describe('knockouts', () => {
     engine.launch(0, -1, 1);
     run(engine, (game) => game.phase !== 'sliding');
     expect(red.state).toBe('off_the_back');
+  });
+});
+
+describe('game modes', () => {
+  const quick: GameMode = {
+    ...classicMode,
+    id: 'test-quick',
+    name: 'Test quick',
+    targetScore: 3,
+    cubesPerRound: 2,
+    windChargesPerThrow: 1,
+  };
+
+  it('plays the default mode when no mode is given', () => {
+    const engine = new GameEngine();
+    engine.startMatch();
+    expect(engine.mode).toEqual(defaultMode);
+    expect(defaultMode).toBe(classicMode);
+  });
+
+  it('keeps the rulebook rules in the Classic mode', () => {
+    expect(classicMode).toMatchObject({
+      targetScore: 15,
+      cubesPerRound: 4,
+      windChargesPerThrow: 2,
+      alternateFirstShooter: true,
+      allowNegativeMatchScore: false,
+    });
+  });
+
+  it('uses the cubes per round and wind charges of the mode it was started with', () => {
+    // A high target so the first round cannot end the match.
+    const { engine } = newMatch({ ...quick, targetScore: 99 });
+    expect(engine.shotsLeft).toEqual([2, 2]);
+    engine.launch(0, -1, 0.5);
+    expect(engine.windChargesLeft).toBe(1);
+    expect(engine.fireWindChargeNear(-7, 10)).toBe(true);
+    expect(engine.fireWindChargeNear(7, 10)).toBe(false);
+    run(engine, (game) => game.phase !== 'sliding');
+    run(engine, (game) => game.phase !== 'resolving');
+    while (engine.phase === 'aiming') throwAndSettle(engine, 1);
+    expect(engine.phase).toBe('round_break');
+    expect(engine.cubes).toHaveLength(4);
+  });
+
+  it("wins at the mode's target score", () => {
+    const { engine } = newMatch(quick);
+    engine.scores = [quick.targetScore - 1, 0];
+    const red = engine.liveCube!;
+    engine.launch(0, -1, 0.5);
+    run(engine, (game) => game.phase !== 'sliding');
+    teleport(red, -4, yIceFar() + 1.5); // band 3: 1 point
+    run(engine, (game) => game.phase !== 'resolving');
+    while (engine.phase === 'aiming') throwAndSettle(engine, 1);
+    expect(engine.phase).toBe('game_over');
+    expect(engine.winner).toBe(0);
+  });
+
+  it('keeps the mode on restart and switches it on a new startMatch', () => {
+    const { engine } = newMatch(quick);
+    engine.restart();
+    expect(engine.mode.cubesPerRound).toBe(2);
+    engine.startMatch(classicMode);
+    expect(engine.mode.cubesPerRound).toBe(4);
+    expect(engine.shotsLeft).toEqual([4, 4]);
+  });
+
+  it('copies the mode, so changing the object mid-match has no effect', () => {
+    const custom: GameMode = { ...quick };
+    const { engine } = newMatch(custom);
+    custom.targetScore = 99;
+    expect(engine.mode.targetScore).toBe(3);
   });
 });
