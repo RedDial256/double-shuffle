@@ -42,3 +42,6 @@ rather than striking it out, and put the reasoning for decisions in
 * Commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:` …).
 * Commit messages never mention conversations, sessions or AI authorship: no
   `Co-Authored-By` trailers for an AI, no session links.
+* Pull request descriptions follow the same rule: no "Requested by" or
+  project-thread line, no "Generated with Claude Code" footer, no session
+  links. Keep them to what changed and how it was tested.
