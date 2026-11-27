@@ -24,59 +24,65 @@ const cube = (
 
 describe('scoreRound per-cube values', () => {
   it('lists the value of each scoring cube next to it', () => {
-    const r = scoreRound([
+    const result = scoreRound([
       cube(0, 1), // 3
       cube(0, band * 2 + 0.5), // 1
       cube(1, band * 2 + 1), // Blue is behind every Red cube
       cube(0, -0.2), // 4, overhang
     ]);
-    expect(r.leader).toBe(0);
-    expect(r.scoringValues).toEqual([3, 1, 4]);
-    expect(r.scoringValues.reduce((a, b) => a + b, 0)).toBe(r.points[0]);
+    expect(result.leader).toBe(0);
+    expect(result.scoringValues).toEqual([3, 1, 4]);
+    expect(result.scoringValues.reduce((sum, value) => sum + value, 0)).toBe(
+      result.points[0]
+    );
   });
 });
 
 describe('summariseRound', () => {
   it('reports the rulebook page 6 example as Red holding with 3 + 2', () => {
-    const r = scoreRound([
+    const result = scoreRound([
       cube(0, 1),
       cube(0, band + 1),
       cube(1, band * 2 + 1),
     ]);
-    const s = summariseRound(r, 2, [7, 4]);
-    expect(s.round).toBe(2);
-    expect(s.headline).toBe('Red holds the front');
-    expect(s.teams[0]).toMatchObject({
+    const summary = summariseRound(result, 2, [7, 4]);
+    expect(summary.round).toBe(2);
+    expect(summary.headline).toBe('Red holds the front');
+    expect(summary.teams[0]).toMatchObject({
       scored: 5,
       cubeValues: [3, 2],
       net: 5,
       total: 7,
     });
-    expect(s.teams[1]).toMatchObject({
+    expect(summary.teams[1]).toMatchObject({
       scored: 0,
       cubeValues: [],
       net: 0,
       total: 4,
     });
-    expect(describeCubes(s.teams[0])).toBe('3 + 2 = 5');
-    expect(describeCubes(s.teams[1])).toBe('no cubes scored');
+    expect(describeCubes(summary.teams[0])).toBe('3 + 2 = 5');
+    expect(describeCubes(summary.teams[1])).toBe('no cubes scored');
   });
 
   it('calls a round with no leader a blank end', () => {
-    const s = summariseRound(scoreRound([]), 1, [0, 0]);
-    expect(s.leader).toBe(-1);
-    expect(s.headline).toMatch(/blank end/i);
+    const summary = summariseRound(scoreRound([]), 1, [0, 0]);
+    expect(summary.leader).toBe(-1);
+    expect(summary.headline).toMatch(/blank end/i);
   });
 
   it('shows windburst penalties separately from the points scored', () => {
-    const r = scoreRound([
+    const result = scoreRound([
       cube(0, 1),
       cube(1, band + 1, { knockedBack: true }),
     ]);
-    const s = summariseRound(r, 1, [3, 0]);
-    expect(s.teams[1]).toMatchObject({ scored: 0, penalties: 1, net: -1 });
-    expect(s.teams[0]).toMatchObject({ scored: 3, penalties: 0, net: 3 });
-    expect(describeCubes(s.teams[0])).toBe('3 from 1 cube');
+    const summary = summariseRound(result, 1, [3, 0]);
+    expect(summary.teams[1]).toMatchObject({
+      scored: 0,
+      penalties: 1,
+      net: -1,
+    });
+    expect(summary.teams[0]).toMatchObject({ scored: 3, penalties: 0, net: 3 });
+    expect(describeCubes(summary.teams[0])).toBe('3 from 1 cube');
   });
 
   it('formats signed round totals', () => {
@@ -88,54 +94,66 @@ describe('summariseRound', () => {
 
 describe('round break', () => {
   const DT = 1 / 60;
-  function runToPhase(e: GameEngine, phase: Phase, maxSeconds = 120) {
-    for (let t = 0; t < maxSeconds; t += DT) {
-      if (e.phase === phase) return;
-      e.update(DT);
+  function runToPhase(engine: GameEngine, phase: Phase, maxSeconds = 120) {
+    for (let elapsed = 0; elapsed < maxSeconds; elapsed += DT) {
+      if (engine.phase === phase) return;
+      engine.update(DT);
     }
-    throw new Error(`timed out in phase ${e.phase}`);
+    throw new Error(`timed out in phase ${engine.phase}`);
   }
-  function playRound(e: GameEngine) {
-    for (let i = 0; i < config.cubesPerRound * 2; i++) {
-      runToPhase(e, 'aiming');
-      e.launch(0, -1, 1); // full power: off the back, nothing scores
-      runToPhase(e, 'resolving');
+  function playRound(engine: GameEngine) {
+    for (
+      let throwIndex = 0;
+      throwIndex < config.cubesPerRound * 2;
+      throwIndex++
+    ) {
+      runToPhase(engine, 'aiming');
+      engine.launch(0, -1, 1); // full power: off the back, nothing scores
+      runToPhase(engine, 'resolving');
     }
-    runToPhase(e, 'round_break');
+    runToPhase(engine, 'round_break');
   }
 
   it('keeps the summary up for roundBreakDelay, then starts the next round', () => {
-    const e = new GameEngine();
-    e.startMatch();
-    playRound(e);
-    expect(e.lastResultRound).toBe(1);
-    expect(e.lastResult).not.toBeNull();
+    const engine = new GameEngine();
+    engine.startMatch();
+    playRound(engine);
+    expect(engine.lastResultRound).toBe(1);
+    expect(engine.lastResult).not.toBeNull();
 
-    for (let t = 0; t < config.roundBreakDelay - 0.5; t += DT) e.update(DT);
-    expect(e.phase).toBe('round_break');
-    for (let t = 0; t < 1; t += DT) e.update(DT);
-    expect(e.phase).toBe('aiming');
-    expect(e.roundIndex).toBe(1);
+    for (
+      let elapsed = 0;
+      elapsed < config.roundBreakDelay - 0.5;
+      elapsed += DT
+    ) {
+      engine.update(DT);
+    }
+    expect(engine.phase).toBe('round_break');
+    for (let elapsed = 0; elapsed < 1; elapsed += DT) engine.update(DT);
+    expect(engine.phase).toBe('aiming');
+    expect(engine.roundIndex).toBe(1);
   });
 
   it('starts the next round early on nextRound()', () => {
-    const e = new GameEngine();
-    e.startMatch();
-    playRound(e);
-    e.nextRound();
-    expect(e.phase).toBe('aiming');
-    expect(e.cubes).toHaveLength(1);
+    const engine = new GameEngine();
+    engine.startMatch();
+    playRound(engine);
+    engine.nextRound();
+    expect(engine.phase).toBe('aiming');
+    expect(engine.cubes).toHaveLength(1);
     // The old timer must not restart the round again later.
-    const id = e.liveCube!.id;
-    for (let t = 0; t < config.roundBreakDelay + 1; t += DT) e.update(DT);
-    expect(e.liveCube?.id).toBe(id);
+    const id = engine.liveCube!.id;
+    for (let elapsed = 0; elapsed < config.roundBreakDelay + 1; elapsed += DT) {
+      engine.update(DT);
+    }
+    expect(engine.liveCube?.id).toBe(id);
   });
 
   it('ignores nextRound() outside the round break', () => {
-    const e = new GameEngine();
-    e.startMatch();
-    const id = e.liveCube!.id;
-    e.nextRound();
-    expect(e.liveCube!.id).toBe(id);
+    const engine = new GameEngine();
+    engine.startMatch();
+    const id = engine.liveCube!.id;
+    engine.nextRound();
+    expect(engine.liveCube!.id).toBe(id);
   });
 });

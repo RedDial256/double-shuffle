@@ -35,11 +35,14 @@ monetisation.
 
 ## Where we are
 
-The React Native port covers almost all of the Original rules (D-01 to D-10).
-The framework-free engine lives in `app/src/game`, and the Skia board and HUD
-in `app/src/ui`.
+The React Native port covers the Original rules (D-01 to D-16), with unit
+tests for scoring and the engine. The framework-free engine lives in
+`app/src/game`, and the Skia board and HUD in `app/src/ui`. ESLint, Prettier,
+commitlint, release-please and the rnsec security audit are set up.
 
-**Missing:** the in-game rulebook, tests, CI and Expo Router.
+Open work is tracked as GitHub issues, one milestone per section below.
+
+**Missing:** the in-game rulebook and Expo Router.
 
 **Technical debt seen in the code:**
 
@@ -48,9 +51,8 @@ in `app/src/ui`.
   measuring on a mid-range Android phone.
 * Input uses the Responder system. `react-native-gesture-handler` is
   installed but unused.
-* `CUBE_SLOTS` and `CHARGE_SLOTS` are fixed in `Board.tsx`, so changing
-  `cubesPerRound` at runtime breaks rendering.
-* The HUD toast's `setTimeout` is never cleared.
+* `CUBE_SLOTS` is fixed in `Board.tsx`, so changing `cubesPerRound` at
+  runtime breaks rendering.
 * The physics numbers have never been playtested.
 
 ## Decisions
@@ -83,23 +85,18 @@ Art comes after balance on purpose: the rink proportions can still change
 
 ### M0 — Foundation
 
-* Repository on GitHub.
-* Tests for `app/src/game`, plus a runner for `scripts/sim.ts`.
-* CI on GitHub Actions: `tsc --noEmit` and tests (ESLint and Prettier
-  already run on every PR and push to `main`).
+* CI on GitHub Actions: `tsc --noEmit` and tests (ESLint, Prettier,
+  commitlint and release-please already run on every PR and push to `main`).
 
 **Done when:** `main` is green in CI, docs match the code, and 0.1.0 has been
 released.
 
 ### M1 — Complete loop
 
-* Finish the game loop port.
 * Port the rulebook and the Rules button.
-* Rules tests: the page 6 example (Red 5, Blue 0), the 4-point overhang, a cube
-  straddling two bands (D-04), the windburst penalty (D-05), the Round Killer,
-  knockouts without a penalty (D-06), match totals floored at zero (D-07), both
-  teams crossing 15 in the same round.
-* Fix the slot and toast issues listed above.
+* A test for both teams crossing the target score in the same round (the
+  other rules cases are covered).
+* Size the board's cube slots from the match, not a constant.
 
 **Done when:** a full match plays on a device, at least as well as the Godot
 version did, with the rules tested.
@@ -148,7 +145,8 @@ again without touching code.
 
 * Original voxel art drawn from scratch: cubes, ice, walls, dispensers, wood
   platform.
-* Book-style UI for Rules and menus.
+* Book-style UI for Rules and menus, built on the design tokens in
+  `app/src/theme` (see `design-system.md`).
 * Sound with `expo-audio` (throw, slide, impact, blast, Round Killer, win) and
   haptics with `expo-haptics`.
 * Juice: blast particles, lights filling up, a big Round Killer moment.
@@ -289,11 +287,9 @@ rotate, both our own and fan-made.
 
 ## Next steps
 
-1. Finish M0 (typecheck and tests in CI, docs) and release 0.1.0.
-2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
-3. Add rules tests to `app/src/game`, starting with the page 6 example.
-4. Port the rulebook.
-5. Turn `config` into a `GameMode` passed to the engine, to prepare the
+1. Finish M0: typecheck and tests in CI, and release 0.1.0.
+2. Port the rulebook.
+3. Turn `config` into a `GameMode` passed to the engine, to prepare the
    presets.
-6. First fps measurement and first playtest on a real device.
-7. Create one GitHub milestone per M0–M5 and their issues.
+4. First fps measurement and first playtest on a real device.
+5. Investigate the analytics tool and the bundle ID (decisions 6 and 7).

@@ -16,8 +16,8 @@ export interface ScorableCube {
   forwardEdgeY: number;
 }
 
-export const isOnBoard = (c: ScorableCube) =>
-  c.state === 'racked' || c.state === 'live' || c.state === 'settled';
+export const isOnBoard = (cube: ScorableCube) =>
+  cube.state === 'racked' || cube.state === 'live' || cube.state === 'settled';
 
 /** Points a cube is worth on its own, ignoring who leads. 0 = no band. */
 export function zoneValue(cube: ScorableCube): number {
@@ -104,10 +104,10 @@ function summarise(
   penalties: [number, number],
   leader: number
 ): string {
-  const parts = [0, 1].map((t) => {
-    const sign = points[t] >= 0 ? '+' : '';
-    let line = `${config.teamNames[t]} ${sign}${points[t]}`;
-    if (penalties[t] > 0) line += ` (${penalties[t]} windburst)`;
+  const parts = [0, 1].map((team) => {
+    const sign = points[team] >= 0 ? '+' : '';
+    let line = `${config.teamNames[team]} ${sign}${points[team]}`;
+    if (penalties[team] > 0) line += ` (${penalties[team]} windburst)`;
     return line;
   });
   const head =

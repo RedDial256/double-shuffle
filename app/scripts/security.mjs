@@ -60,15 +60,15 @@ const scan = () => {
     throw new Error(`rnsec wrote no report (exit ${result.status}).`);
   }
   const { findings } = JSON.parse(readFileSync(json, 'utf8'));
-  return findings.map((f) => {
-    const file = relative(ROOT, f.filePath).replaceAll('\\', '/');
+  return findings.map((rawFinding) => {
+    const file = relative(ROOT, rawFinding.filePath).replaceAll('\\', '/');
     // The line is left out of the key: it moves with unrelated edits.
     return {
-      key: keyOf(f.ruleId, file, f.description),
-      ruleId: f.ruleId,
-      severity: f.severity,
+      key: keyOf(rawFinding.ruleId, file, rawFinding.description),
+      ruleId: rawFinding.ruleId,
+      severity: rawFinding.severity,
       file,
-      description: f.description,
+      description: rawFinding.description,
     };
   });
 };
@@ -95,8 +95,8 @@ const audit = () => {
     );
     // Keep the baseline entries so they are not reported as resolved.
     return baseline
-      .filter((f) => f.ruleId === NPM_RULE)
-      .map((f) => ({ ...f, unchecked: true }));
+      .filter((finding) => finding.ruleId === NPM_RULE)
+      .map((finding) => ({ ...finding, unchecked: true }));
   }
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   const direct = { ...pkg.dependencies, ...pkg.devDependencies };
@@ -132,19 +132,19 @@ const rnsecVersion = () =>
 
 const report = () => {
   const ci = !!process.env.GITHUB_ACTIONS;
-  const line = (f) =>
-    `${f.severity} ${f.ruleId} in ${f.file}: ${f.description}`;
+  const line = (finding) =>
+    `${finding.severity} ${finding.ruleId} in ${finding.file}: ${finding.description}`;
   const annotate = (level, text) =>
     console.log(ci ? `::${level} title=rnsec::${text}` : `${level}: ${text}`);
 
-  newHigh.forEach((f) => annotate('error', `New: ${line(f)}`));
+  newHigh.forEach((finding) => annotate('error', `New: ${line(finding)}`));
   added
-    .filter((f) => f.severity !== 'HIGH')
-    .forEach((f) => annotate('warning', `New: ${line(f)}`));
-  resolved.forEach((f) =>
-    annotate('warning', `Resolved, remove from the baseline: ${line(f)}`)
+    .filter((finding) => finding.severity !== 'HIGH')
+    .forEach((finding) => annotate('warning', `New: ${line(finding)}`));
+  resolved.forEach((finding) =>
+    annotate('warning', `Resolved, remove from the baseline: ${line(finding)}`)
   );
-  warnings.forEach((w) => annotate('warning', w));
+  warnings.forEach((warning) => annotate('warning', warning));
 
   const summary = [
     '## Security audit (rnsec)',
@@ -159,7 +159,7 @@ const report = () => {
     ...section('New', added),
     ...section('Resolved (run `npm run security:baseline`)', resolved),
     ...(warnings.length
-      ? ['', '### Warnings', '', ...warnings.map((w) => `- ${w}`)]
+      ? ['', '### Warnings', '', ...warnings.map((warning) => `- ${warning}`)]
       : []),
     '',
   ].join('\n');
@@ -178,7 +178,8 @@ const section = (title, findings) => {
     '| Severity | Rule | File | Description |',
     '| --- | --- | --- | --- |',
     ...findings.map(
-      (f) => `| ${f.severity} | ${f.ruleId} | ${f.file} | ${f.description} |`
+      (finding) =>
+        `| ${finding.severity} | ${finding.ruleId} | ${finding.file} | ${finding.description} |`
     ),
   ];
 };
@@ -200,8 +201,8 @@ const current = [...scan(), ...audit()];
 
 if (values.update) {
   const findings = current
-    .map(({ unchecked: _, ...f }) => f)
-    .sort((a, b) => a.key.localeCompare(b.key));
+    .map(({ unchecked: _, ...finding }) => finding)
+    .sort((left, right) => left.key.localeCompare(right.key));
   mkdirSync(dirname(BASELINE), { recursive: true });
   writeFileSync(
     BASELINE,
@@ -210,15 +211,15 @@ if (values.update) {
   console.log(
     `Baseline updated: ${findings.length} finding(s) in ${relative(ROOT, BASELINE)}`
   );
-  warnings.forEach((w) => console.log(`warning: ${w}`));
+  warnings.forEach((warning) => console.log(`warning: ${warning}`));
   process.exit(0);
 }
 
-const known = new Set(baseline.map((f) => f.key));
-const found = new Set(current.map((f) => f.key));
-const added = current.filter((f) => !known.has(f.key));
-const resolved = baseline.filter((f) => !found.has(f.key));
-const newHigh = added.filter((f) => f.severity === 'HIGH');
+const known = new Set(baseline.map((finding) => finding.key));
+const found = new Set(current.map((finding) => finding.key));
+const added = current.filter((finding) => !known.has(finding.key));
+const resolved = baseline.filter((finding) => !found.has(finding.key));
+const newHigh = added.filter((finding) => finding.severity === 'HIGH');
 
 report();
 process.exit(newHigh.length ? 1 : 0);

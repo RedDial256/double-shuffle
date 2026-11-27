@@ -36,12 +36,12 @@ export function summariseRound(
   const teams = [0, 1].map((team): TeamSummary => {
     const cubeValues =
       team === result.leader
-        ? [...result.scoringValues].sort((a, b) => b - a)
+        ? [...result.scoringValues].sort((left, right) => right - left)
         : [];
     return {
       team,
       name: config.teamNames[team],
-      scored: cubeValues.reduce((sum, v) => sum + v, 0),
+      scored: cubeValues.reduce((sum, value) => sum + value, 0),
       cubeValues,
       penalties: result.penalties[team],
       net: result.points[team],
@@ -58,12 +58,14 @@ export function summariseRound(
 }
 
 /** "3 + 2 = 5", "4", or "no cubes scored". */
-export function describeCubes(t: TeamSummary): string {
-  if (t.cubeValues.length === 0) return 'no cubes scored';
-  if (t.cubeValues.length === 1) return `${t.scored} from 1 cube`;
-  return `${t.cubeValues.join(' + ')} = ${t.scored}`;
+export function describeCubes(teamSummary: TeamSummary): string {
+  if (teamSummary.cubeValues.length === 0) return 'no cubes scored';
+  if (teamSummary.cubeValues.length === 1) {
+    return `${teamSummary.scored} from 1 cube`;
+  }
+  return `${teamSummary.cubeValues.join(' + ')} = ${teamSummary.scored}`;
 }
 
-export function formatSigned(n: number): string {
-  return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0';
+export function formatSigned(points: number): string {
+  return points > 0 ? `+${points}` : points < 0 ? `−${-points}` : '0';
 }
