@@ -41,11 +41,11 @@ This is a handoff document for whoever (human or agent) implements the game next
       app.json         # Expo config
       scripts/sim.ts   # headless match simulation
       src/
-        game/          # framework-free logic: config.ts, scoring.ts, engine.ts
+        game/          # framework-free logic: config.ts, mode.ts, scoring.ts, engine.ts
         ui/            # React/Skia layer: Board.tsx, useAim.ts, Hud.tsx
   ```
 - Keep `src/game/` free of React and React Native imports. The UI layer calls the engine's public methods, calls `update(dt)` every frame, and reads its state. That's what lets `sim.ts` and unit tests run the game without a device.
-- Every tunable number goes in `app/src/game/config.ts`, never inline in the engine or UI.
+- Every tunable number goes in `app/src/game/config.ts`, or in the `GameMode` (`app/src/game/mode.ts`) when it is a per-match rule, never inline in the engine or UI.
 - Run `npx tsc --noEmit` (and `npx expo lint`) from `app/` before calling a change done.
 - The reference images already sitting in the project root (`top view.png`, `front view.png`, the `regras-*.webp` / `page-*.jpg` rulebook captures) are **research references only** — screenshots someone else took of a Minecraft build. They're for measurements and style reference, not game assets. Leave them where they are; don't bundle them into the app.
 

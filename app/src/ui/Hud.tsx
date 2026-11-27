@@ -3,10 +3,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { config } from '../game/config';
 import { GameEngine } from '../game/engine';
 
-function Lights({ team, score }: { team: number; score: number }) {
+function Lights({ team, score, target }: { team: number; score: number; target: number }) {
   return (
     <View style={styles.lights}>
-      {Array.from({ length: config.targetScore }, (_, i) => (
+      {Array.from({ length: target }, (_, i) => (
         <View
           key={i}
           style={[
@@ -20,10 +20,20 @@ function Lights({ team, score }: { team: number; score: number }) {
 }
 
 /** Cubes the team still has to throw this round, like the rack beside the rink. */
-function Rack({ team, left, killed }: { team: number; left: number; killed: boolean }) {
+function Rack({
+  team,
+  left,
+  total,
+  killed,
+}: {
+  team: number;
+  left: number;
+  total: number;
+  killed: boolean;
+}) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
-      {Array.from({ length: config.cubesPerRound }, (_, i) => (
+      {Array.from({ length: total }, (_, i) => (
         <View
           key={i}
           style={[
@@ -75,8 +85,13 @@ export function Hud({ engine }: { engine: GameEngine }) {
             <Text style={[styles.teamName, { color: config.teamColors[t] }]}>
               {config.teamNames[t]} {engine.scores[t]}
             </Text>
-            <Lights team={t} score={engine.scores[t]} />
-            <Rack team={t} left={engine.shotsLeft[t]} killed={engine.roundKilled[t]} />
+            <Lights team={t} score={engine.scores[t]} target={engine.mode.targetScore} />
+            <Rack
+              team={t}
+              left={engine.shotsLeft[t]}
+              total={engine.mode.cubesPerRound}
+              killed={engine.roundKilled[t]}
+            />
           </View>
         ))}
         <Text style={styles.banner}>{banner}</Text>

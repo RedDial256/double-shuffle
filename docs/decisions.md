@@ -125,7 +125,7 @@ play with 0 points, as Section 6 describes.
 
 Nothing in the rulebook says what happens if a team's penalties outweigh their
 points in the opening round. Round scores can be negative, but the running match
-total floors at 0. Flip `allowNegativeMatchScore` in `config.ts` to change
+total floors at 0. Flip `allowNegativeMatchScore` in the `GameMode` (`mode.ts`) to change
 this.
 
 ## D-08 — The first thrower alternates each round
@@ -234,3 +234,22 @@ knocked-back cube that stopped on the platform just behind the line stayed in
 play and only cost -1. The check is now "every part of the cube is behind the
 starting line" (its leading edge, rotation included, has crossed it), the
 mirror image of the 4-point overhang test at the far end.
+
+## D-17 — Per-match rules live in a GameMode
+
+Presets, the Custom mode and the rotating modes after v1 all need rules that
+change from match to match, so the match rules moved out of the global
+`config` into a `GameMode` (`app/src/game/mode.ts`) that `startMatch(mode)`
+copies into the engine. `restart()` keeps the current mode.
+
+A `GameMode` holds the target score, cubes per round, wind charges per throw,
+whether the first thrower alternates, whether match totals can go negative,
+and the wind strength (blast radius and impulse), which the roadmap's Chaotic
+preset and the Custom mode's "wind strength" option need. Everything else stays
+global: board geometry (it would re-lay the rink and the art), colours, team
+names, timings, throw speeds, damping and the aim controls. Those are tuned once
+by playtesting (M2) rather than varied per mode; any of them can move into
+`GameMode` later if a mode needs it.
+
+`classicMode` is the rulebook rules and the default, so a match started
+without a mode plays exactly as before.

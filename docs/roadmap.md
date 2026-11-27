@@ -1,6 +1,6 @@
 # Double Shuffle — Roadmap to v1
 
-_Last updated: 2026-11-26_
+_Last updated: 2026-11-27_
 
 This is the living plan for getting Double Shuffle to a solid v1. It sits next
 to `game-design.md` (the rules), `implementation-brief.md` (scope and
@@ -131,13 +131,9 @@ throw or wind charge was unfair.
 
 * Expo Router: Home, Game, Rules, Settings, and a Pause modal.
 * Pause the engine when the app goes to the background (`AppState`).
-* **Game modes as data.** `config` is a global constant today. It becomes a
-  `GameMode` object handed to the engine at the start of each match (target
-  score, cubes per round, wind charges per throw, and whichever physics
-  numbers make sense). That serves the presets now and the rotating modes
-  after v1 without rewriting the engine.
-* **Presets:** Quick (fewer cubes, lower target), Classic (4 cubes, 15 points,
-  the rulebook rules), and maybe Chaotic (more wind charges, a stronger
+* **Presets** as `GameMode` objects (D-17): Quick (fewer cubes, lower target),
+  Classic (4 cubes, 15 points, the rulebook rules, already `classicMode`), and
+  maybe Chaotic (more wind charges, a stronger
   blast).
 * **Custom mode** with a few options, each with safe limits: target score,
   cubes per round, wind charges per throw, wind strength.
@@ -298,7 +294,5 @@ rotate, both our own and fan-made.
 2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
 3. Add rules tests to `app/src/game`, starting with the page 6 example.
 4. Port the rulebook and the end-of-round summary.
-5. Turn `config` into a `GameMode` passed to the engine, to prepare the
-   presets.
-6. First fps measurement and first playtest on a real device.
-7. Create one GitHub milestone per M0–M5 and their issues.
+5. First fps measurement and first playtest on a real device.
+6. Create one GitHub milestone per M0–M5 and their issues.

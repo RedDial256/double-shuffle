@@ -86,7 +86,8 @@ app/                   the Expo app
     sim.ts             headless match simulation
   src/
     game/              framework-free game logic, no React imports
-      config.ts        every tunable number, board geometry included
+      config.ts        board geometry, colours, timings and shared physics
+      mode.ts          GameMode: per-match rules, and the Classic mode
       scoring.ts       pure scoring functions
       engine.ts        physics world, turns, rounds, wind charges, win condition
     ui/
@@ -103,8 +104,9 @@ methods, calls `update(dt)` every frame, and reads its state.
 
 Almost everything worth changing is in `app/src/game/config.ts`, and the board
 re-lays itself from those numbers: rink proportions, per-surface friction,
-throw power, wind-charge strength and reach, cubes per round, target score,
-colours. Distances are in blocks (one block is one cube across, and one metre
+throw power, wind-charge reach, colours. The per-match rules (target score,
+cubes per round, wind charges per throw, wind strength) are a `GameMode` in
+`app/src/game/mode.ts`, passed to `engine.startMatch()`. Distances are in blocks (one block is one cube across, and one metre
 in the physics world), and speeds are in blocks per second.
 
 Two that matter most for feel:
