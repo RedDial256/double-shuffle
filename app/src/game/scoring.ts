@@ -16,8 +16,8 @@ export interface ScorableCube {
   forwardEdgeY: number;
 }
 
-export const isOnBoard = (c: ScorableCube) =>
-  c.state === 'racked' || c.state === 'live' || c.state === 'settled';
+export const isOnBoard = (cube: ScorableCube) =>
+  cube.state === 'racked' || cube.state === 'live' || cube.state === 'settled';
 
 /** Points a cube is worth on its own, ignoring who leads. 0 = no band. */
 export function zoneValue(cube: ScorableCube): number {
@@ -40,7 +40,10 @@ export interface RoundResult {
   /** Team holding the furthest cube, or -1. */
   leader: number;
   penalties: [number, number];
+  /** Cubes that scored for the leader. */
   scoring: ScorableCube[];
+  /** Points each cube in `scoring` earned, in the same order. */
+  scoringValues: number[];
   summary: string;
 }
 
@@ -48,6 +51,7 @@ export function scoreRound(cubes: ScorableCube[]): RoundResult {
   const points: [number, number] = [0, 0];
   const penalties: [number, number] = [0, 0];
   const scoring: ScorableCube[] = [];
+  const scoringValues: number[] = [];
   const contenders: ScorableCube[] = [];
 
   for (const cube of cubes) {
@@ -77,6 +81,7 @@ export function scoreRound(cubes: ScorableCube[]): RoundResult {
       if (value > 0) {
         points[leader] += value;
         scoring.push(cube);
+        scoringValues.push(value);
       }
     }
   }
@@ -89,6 +94,7 @@ export function scoreRound(cubes: ScorableCube[]): RoundResult {
     leader,
     penalties,
     scoring,
+    scoringValues,
     summary: summarise(points, penalties, leader),
   };
 }
@@ -98,10 +104,10 @@ function summarise(
   penalties: [number, number],
   leader: number
 ): string {
-  const parts = [0, 1].map((t) => {
-    const sign = points[t] >= 0 ? '+' : '';
-    let line = `${config.teamNames[t]} ${sign}${points[t]}`;
-    if (penalties[t] > 0) line += ` (${penalties[t]} windburst)`;
+  const parts = [0, 1].map((team) => {
+    const sign = points[team] >= 0 ? '+' : '';
+    let line = `${config.teamNames[team]} ${sign}${points[team]}`;
+    if (penalties[team] > 0) line += ` (${penalties[team]} windburst)`;
     return line;
   });
   const head =

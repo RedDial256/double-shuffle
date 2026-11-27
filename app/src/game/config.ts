@@ -19,7 +19,7 @@
  * keeps those numbers readable by converting them to blocks.
  */
 const PX = 48;
-export const px = (v: number) => v / PX;
+export const px = (pixels: number) => pixels / PX;
 
 export const config = {
   // Board layout, in blocks
@@ -55,20 +55,10 @@ export const config = {
   // Timings (seconds)
   maxSlideSeconds: 25,
   resolveDelay: 0.9,
-  roundBreakDelay: 3.2,
+  /** How long the end-of-round summary stays up before the next round. */
+  roundBreakDelay: 9,
 
-  teamColors: ['#d8452f', '#3a7ad9'],
   teamNames: ['Red', 'Blue'],
-  colors: {
-    ice: '#bed7f2',
-    iceBand: ['#aecbee', '#9ebfe9', '#8fb4e5'],
-    divider: '#9c9c97',
-    platform: '#8a5a2b',
-    wall: '#e0b23f',
-    startLine: '#35c9c4',
-    dispenser: '#3b2a20',
-    windCharge: '#2e3a55',
-  },
 };
 
 export const iceLength = () => config.band * 6 + config.neutral;
@@ -79,23 +69,23 @@ export const halfWidth = () => config.rinkWidth / 2;
 
 /** Band boundaries at the scoring (far) end, nearest the edge first. */
 export const farBandBoundaries = () =>
-  [1, 2, 3].map((i) => yIceFar() + config.band * i);
+  [1, 2, 3].map((bandIndex) => yIceFar() + config.band * bandIndex);
 
 /** Same for the decorative bands at the shooter's end. */
 export const nearBandBoundaries = () =>
-  [1, 2, 3].map((i) => yIceNear() - config.band * i);
+  [1, 2, 3].map((bandIndex) => yIceNear() - config.band * bandIndex);
 
-export function isOnDivider(y: number): boolean {
+export function isOnDivider(worldY: number): boolean {
   const half = config.divider / 2;
   return [...farBandBoundaries(), ...nearBandBoundaries()].some(
-    (b) => Math.abs(y - b) <= half
+    (boundaryY) => Math.abs(worldY - boundaryY) <= half
   );
 }
 
 /** Linear damping for whatever surface is under `y`. */
-export function dampAt(y: number): number {
-  if (y < yIceFar() || y > yIceNear()) return config.dampPlatform;
-  if (isOnDivider(y)) return config.dampDivider;
+export function dampAt(worldY: number): number {
+  if (worldY < yIceFar() || worldY > yIceNear()) return config.dampPlatform;
+  if (isOnDivider(worldY)) return config.dampDivider;
   return config.dampIce;
 }
 
@@ -111,12 +101,12 @@ export function dispensers(): Dispenser[] {
   const out: Dispenser[] = [];
   const hw = halfWidth();
   for (
-    let y = yIceFar() + config.dispenserSpacing;
-    y < yIceNear() - 0.02;
-    y += config.dispenserSpacing
+    let dispenserY = yIceFar() + config.dispenserSpacing;
+    dispenserY < yIceNear() - 0.02;
+    dispenserY += config.dispenserSpacing
   ) {
-    out.push({ x: -hw, y, nx: 1, ny: 0 });
-    out.push({ x: hw, y, nx: -1, ny: 0 });
+    out.push({ x: -hw, y: dispenserY, nx: 1, ny: 0 });
+    out.push({ x: hw, y: dispenserY, nx: -1, ny: 0 });
   }
   return out;
 }

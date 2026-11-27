@@ -36,20 +36,20 @@ export function useAim(
   const state = useRef({ mode: 'none' as Mode, sx: 0, sy: 0, nx: 0, ny: 0 });
 
   return useMemo(() => {
-    const toWorld = (e: GestureResponderEvent) => {
-      const v = viewRef.current;
-      const { locationX, locationY } = e.nativeEvent;
+    const toWorld = (event: GestureResponderEvent) => {
+      const viewTransform = viewRef.current;
+      const { locationX, locationY } = event.nativeEvent;
       return {
-        x: (locationX - v.ox) / v.scale,
-        y: (locationY - v.oy) / v.scale,
+        x: (locationX - viewTransform.ox) / viewTransform.scale,
+        y: (locationY - viewTransform.oy) / viewTransform.scale,
       };
     };
 
     /** Direction and power implied by the current drag (world units). */
     const currentShot = () => {
-      const s = state.current;
-      const px = s.sx - s.nx;
-      const py = s.sy - s.ny;
+      const drag = state.current;
+      const px = drag.sx - drag.nx;
+      const py = drag.sy - drag.ny;
       const length = Math.hypot(px, py);
       const screenLength = length * viewRef.current.scale;
       const power = Math.max(
@@ -91,41 +91,41 @@ export function useAim(
 
     return {
       onStartShouldSetResponder: () => true,
-      onResponderGrant: (e: GestureResponderEvent) => {
-        const w = toWorld(e);
+      onResponderGrant: (event: GestureResponderEvent) => {
+        const worldPoint = toWorld(event);
         // Defending: any tap while the ice is live spends a wind charge.
         if (engine.phase === 'sliding') {
-          engine.fireWindChargeNear(w.x, w.y);
+          engine.fireWindChargeNear(worldPoint.x, worldPoint.y);
           return;
         }
         if (!engine.canAim()) return;
-        const s = state.current;
-        s.sx = s.nx = w.x;
-        s.sy = s.ny = w.y;
+        const drag = state.current;
+        drag.sx = drag.nx = worldPoint.x;
+        drag.sy = drag.ny = worldPoint.y;
         // Below the starting line is the shooter's own platform: that is for
         // lining the cube up, not for aiming.
-        s.mode = w.y > yIceNear() ? 'placing' : 'aiming';
-        if (s.mode === 'placing') engine.placeCubeAtX(w.x);
+        drag.mode = worldPoint.y > yIceNear() ? 'placing' : 'aiming';
+        if (drag.mode === 'placing') engine.placeCubeAtX(worldPoint.x);
       },
-      onResponderMove: (e: GestureResponderEvent) => {
-        const s = state.current;
-        if (s.mode === 'none') return;
-        const w = toWorld(e);
-        s.nx = w.x;
-        s.ny = w.y;
-        if (s.mode === 'placing') engine.placeCubeAtX(w.x);
+      onResponderMove: (event: GestureResponderEvent) => {
+        const drag = state.current;
+        if (drag.mode === 'none') return;
+        const worldPoint = toWorld(event);
+        drag.nx = worldPoint.x;
+        drag.ny = worldPoint.y;
+        if (drag.mode === 'placing') engine.placeCubeAtX(worldPoint.x);
         else drawAim();
       },
-      onResponderRelease: (e: GestureResponderEvent) => {
-        const s = state.current;
-        if (s.mode === 'aiming') {
-          const w = toWorld(e);
-          s.nx = w.x;
-          s.ny = w.y;
+      onResponderRelease: (event: GestureResponderEvent) => {
+        const drag = state.current;
+        if (drag.mode === 'aiming') {
+          const worldPoint = toWorld(event);
+          drag.nx = worldPoint.x;
+          drag.ny = worldPoint.y;
           const shot = currentShot();
           if (shot.power > 0.02) engine.launch(shot.dx, shot.dy, shot.power);
         }
-        s.mode = 'none';
+        drag.mode = 'none';
         hide();
       },
       onResponderTerminate: () => {

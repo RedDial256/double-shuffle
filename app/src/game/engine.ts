@@ -62,7 +62,7 @@ export type EngineEvent =
   | { type: 'round_ended'; result: RoundResult; round: number }
   | { type: 'game_over'; winner: number };
 
-type Listener = (e: EngineEvent) => void;
+type Listener = (event: EngineEvent) => void;
 
 export class GameEngine {
   /** Rules of the current match, set by `startMatch()`. */
@@ -79,6 +79,8 @@ export class GameEngine {
   charges: WindCharge[] = [];
   liveCube: Cube | null = null;
   lastResult: RoundResult | null = null;
+  /** 1-based number of the round `lastResult` belongs to. */
+  lastResultRound = 0;
   winner = -1;
 
   private world: World;
@@ -98,8 +100,8 @@ export class GameEngine {
     return () => this.listeners.delete(fn);
   }
 
-  private emit(e: EngineEvent) {
-    this.listeners.forEach((l) => l(e));
+  private emit(event: EngineEvent) {
+    this.listeners.forEach((listener) => listener(event));
   }
 
   private buildWorld(): World {
@@ -140,6 +142,13 @@ export class GameEngine {
 
   restart() {
     this.startMatch();
+  }
+
+  /** Skip the rest of the round summary and start the next round now. */
+  nextRound() {
+    if (this.phase !== 'round_break') return;
+    this.timers = [];
+    this.startRound();
   }
 
   private startRound() {
@@ -203,11 +212,12 @@ export class GameEngine {
     this.phase = 'round_break';
     const result = scoreRound(this.cubes);
     this.lastResult = result;
+    this.lastResultRound = this.roundIndex + 1;
 
-    for (const t of [0, 1]) {
-      this.scores[t] += result.points[t];
+    for (const team of [0, 1]) {
+      this.scores[team] += result.points[team];
       if (!this.mode.allowNegativeMatchScore) {
-        this.scores[t] = Math.max(0, this.scores[t]);
+        this.scores[team] = Math.max(0, this.scores[team]);
       }
     }
     this.emit({ type: 'round_ended', result, round: this.roundIndex });
@@ -233,7 +243,7 @@ export class GameEngine {
 
   private findWinner(): number {
     const reached = [0, 1].filter(
-      (t) => this.scores[t] >= this.mode.targetScore
+      (team) => this.scores[team] >= this.mode.targetScore
     );
     if (reached.length === 0) return -1;
     if (reached.length === 1) return reached[0];
@@ -242,7 +252,7 @@ export class GameEngine {
   }
 
   private clearCubes() {
-    for (const c of this.cubes) this.world.destroyBody(c.body);
+    for (const cube of this.cubes) this.world.destroyBody(cube.body);
     this.cubes = [];
     this.charges = [];
     this.liveCube = null;
@@ -257,10 +267,10 @@ export class GameEngine {
   }
 
   /** Slide the racked cube along the starting line. */
-  placeCubeAtX(x: number) {
+  placeCubeAtX(targetX: number) {
     if (!this.canAim() || !this.liveCube) return;
     const limit = halfWidth() - 0.6;
-    const px = Math.max(-limit, Math.min(limit, x));
+    const px = Math.max(-limit, Math.min(limit, targetX));
     this.liveCube.body.setPosition(Vec2(px, yIceNear() - HALF));
     this.sync(this.liveCube);
   }
@@ -273,10 +283,10 @@ export class GameEngine {
     this.slideTime = 0;
     cube.state = 'live';
     cube.slowFor = 0;
-    const p = Math.max(0, Math.min(1, power));
+    const clampedPower = Math.max(0, Math.min(1, power));
     const speed =
       config.launchSpeedMin +
-      (config.launchSpeedMax - config.launchSpeedMin) * p;
+      (config.launchSpeedMax - config.launchSpeedMin) * clampedPower;
     cube.body.setAwake(true);
     cube.body.setLinearVelocity(Vec2(dx * speed, dy * speed));
     this.emit({ type: 'state' });
@@ -299,11 +309,11 @@ export class GameEngine {
     if (!this.canFireWindCharge()) return false;
     let best = null as ReturnType<typeof dispensers>[number] | null;
     let bestD = Infinity;
-    for (const d of dispensers()) {
-      const dist = Math.hypot(d.x - wx, d.y - wy);
+    for (const dispenser of dispensers()) {
+      const dist = Math.hypot(dispenser.x - wx, dispenser.y - wy);
       if (dist < bestD) {
         bestD = dist;
-        best = d;
+        best = dispenser;
       }
     }
     if (!best) return false;
@@ -324,49 +334,54 @@ export class GameEngine {
   }
 
   private stepCharges(dt: number) {
-    for (const c of this.charges) {
-      if (c.exploded) {
-        c.flash -= dt;
+    for (const charge of this.charges) {
+      if (charge.exploded) {
+        charge.flash -= dt;
         continue;
       }
       const step = config.windTravelSpeed * dt;
-      c.x += c.dx * step;
-      c.y += c.dy * step;
-      c.travelled += step;
+      charge.x += charge.dx * step;
+      charge.y += charge.dy * step;
+      charge.travelled += step;
 
       const hit = this.cubes.some(
         (cube) =>
           this.isOnBoard(cube) &&
-          Math.hypot(cube.x - c.x, cube.y - c.y) < config.windTriggerDistance
+          Math.hypot(cube.x - charge.x, cube.y - charge.y) <
+            config.windTriggerDistance
       );
-      if (hit || c.travelled >= config.windMaxTravel) this.detonate(c);
+      if (hit || charge.travelled >= config.windMaxTravel) {
+        this.detonate(charge);
+      }
     }
-    this.charges = this.charges.filter((c) => !c.exploded || c.flash > 0);
+    this.charges = this.charges.filter(
+      (charge) => !charge.exploded || charge.flash > 0
+    );
   }
 
-  private detonate(c: WindCharge) {
-    c.exploded = true;
-    c.flash = BLAST_FLASH;
-    c.blastX = c.x;
-    c.blastY = c.y;
+  private detonate(charge: WindCharge) {
+    charge.exploded = true;
+    charge.flash = BLAST_FLASH;
+    charge.blastX = charge.x;
+    charge.blastY = charge.y;
     const radius = this.mode.windBlastRadius;
 
     for (const cube of this.cubes) {
       if (!this.isOnBoard(cube)) continue;
-      const ox = cube.x - c.x;
-      const oy = cube.y - c.y;
+      const ox = cube.x - charge.x;
+      const oy = cube.y - charge.y;
       const dist = Math.hypot(ox, oy);
       if (dist > radius) continue;
 
       // Directly away from ground zero; a cube dead on top gets pushed along
       // the charge's own heading instead of nowhere.
-      const ax = dist > 0.01 ? ox / dist : c.dx;
-      const ay = dist > 0.01 ? oy / dist : c.dy;
-      const k = this.mode.windBlastImpulse * (1 - dist / radius);
+      const ax = dist > 0.01 ? ox / dist : charge.dx;
+      const ay = dist > 0.01 ? oy / dist : charge.dy;
+      const impulse = this.mode.windBlastImpulse * (1 - dist / radius);
 
       this.disturb(cube);
       cube.body.applyLinearImpulse(
-        Vec2(ax * k, ay * k),
+        Vec2(ax * impulse, ay * impulse),
         cube.body.getWorldCenter(),
         true
       );
@@ -389,80 +404,85 @@ export class GameEngine {
   // Cube state
   // -------------------------------------------------------------------------
 
-  isOnBoard(c: Cube) {
-    return c.state === 'racked' || c.state === 'live' || c.state === 'settled';
+  isOnBoard(cube: Cube) {
+    return (
+      cube.state === 'racked' ||
+      cube.state === 'live' ||
+      cube.state === 'settled'
+    );
   }
 
-  private disturb(c: Cube) {
-    if (c.state === 'settled') {
-      c.state = 'live';
-      c.slowFor = 0;
-      c.body.setAwake(true);
+  private disturb(cube: Cube) {
+    if (cube.state === 'settled') {
+      cube.state = 'live';
+      cube.slowFor = 0;
+      cube.body.setAwake(true);
     }
   }
 
-  private sync(c: Cube) {
-    const p = c.body.getPosition();
-    c.x = p.x;
-    c.y = p.y;
-    c.angle = c.body.getAngle();
+  private sync(cube: Cube) {
+    const position = cube.body.getPosition();
+    cube.x = position.x;
+    cube.y = position.y;
+    cube.angle = cube.body.getAngle();
     const extent =
-      HALF * (Math.abs(Math.cos(c.angle)) + Math.abs(Math.sin(c.angle)));
-    c.forwardEdgeY = c.y - extent;
+      HALF * (Math.abs(Math.cos(cube.angle)) + Math.abs(Math.sin(cube.angle)));
+    cube.forwardEdgeY = cube.y - extent;
   }
 
-  private stepCube(c: Cube, dt: number) {
-    if (c.state === 'racked' || !this.isOnBoard(c)) return;
-    const v = c.body.getLinearVelocity();
-    const speed = Math.hypot(v.x, v.y);
+  private stepCube(cube: Cube, dt: number) {
+    if (cube.state === 'racked' || !this.isOnBoard(cube)) return;
+    const velocity = cube.body.getLinearVelocity();
+    const speed = Math.hypot(velocity.x, velocity.y);
 
     // A cube at rest can still be barged by a later throw (takeout shot).
-    if (c.state === 'settled') {
+    if (cube.state === 'settled') {
       if (speed > config.stopSpeed) {
-        c.state = 'live';
-        c.slowFor = 0;
+        cube.state = 'live';
+        cube.slowFor = 0;
       } else {
         return;
       }
     }
 
-    c.body.setLinearDamping(dampAt(c.y));
+    cube.body.setLinearDamping(dampAt(cube.y));
 
     // Centre of mass past the far edge of the ice: it tips over and drops.
-    if (c.y < yIceFar()) {
-      this.leaveBoard(c, 'off_the_back', 'off_the_back');
+    if (cube.y < yIceFar()) {
+      this.leaveBoard(cube, 'off_the_back', 'off_the_back');
       return;
     }
 
     // All the way back onto the shooter's own platform: every part of the
     // cube is behind the starting line (docs/decisions.md D-16).
-    if (c.forwardEdgeY > yIceNear()) {
-      if (c.knockedBack) this.leaveBoard(c, 'killed_back', 'round_killer');
-      else this.leaveBoard(c, 'off_the_back', 'off_the_back'); // D-06: no penalty
+    if (cube.forwardEdgeY > yIceNear()) {
+      if (cube.knockedBack) {
+        this.leaveBoard(cube, 'killed_back', 'round_killer');
+      } else this.leaveBoard(cube, 'off_the_back', 'off_the_back'); // D-06: no penalty
       return;
     }
 
     if (speed < config.stopSpeed) {
-      c.slowFor += dt;
-      if (c.slowFor >= config.stopTime) this.settle(c);
+      cube.slowFor += dt;
+      if (cube.slowFor >= config.stopTime) this.settle(cube);
     } else {
-      c.slowFor = 0;
+      cube.slowFor = 0;
     }
   }
 
-  private settle(c: Cube) {
-    c.state = 'settled';
-    c.body.setLinearVelocity(Vec2(0, 0));
-    c.body.setAngularVelocity(0);
+  private settle(cube: Cube) {
+    cube.state = 'settled';
+    cube.body.setLinearVelocity(Vec2(0, 0));
+    cube.body.setAngularVelocity(0);
   }
 
-  private leaveBoard(c: Cube, state: CubeState, reason: string) {
-    c.state = state;
-    c.body.setLinearVelocity(Vec2(0, 0));
-    c.body.setActive(false);
+  private leaveBoard(cube: Cube, state: CubeState, reason: string) {
+    cube.state = state;
+    cube.body.setLinearVelocity(Vec2(0, 0));
+    cube.body.setActive(false);
 
     if (reason === 'round_killer') {
-      const team = c.team;
+      const team = cube.team;
       this.roundKilled[team] = true;
       this.shotsLeft[team] = 0;
       this.emit({
@@ -493,29 +513,31 @@ export class GameEngine {
   private step(dt: number) {
     this.clock += dt;
     this.world.step(dt, 8, 3);
-    for (const c of this.cubes) {
-      if (this.isOnBoard(c)) this.sync(c);
+    for (const cube of this.cubes) {
+      if (this.isOnBoard(cube)) this.sync(cube);
     }
-    for (const c of this.cubes) this.stepCube(c, dt);
+    for (const cube of this.cubes) this.stepCube(cube, dt);
     this.stepCharges(dt);
 
     if (this.phase === 'sliding') {
       this.slideTime += dt;
       if (this.slideTime > config.maxSlideSeconds) {
-        for (const c of this.cubes) if (c.state === 'live') this.settle(c);
+        for (const cube of this.cubes) {
+          if (cube.state === 'live') this.settle(cube);
+        }
       }
       if (this.boardIsStill()) this.resolveThrow();
     }
 
     if (this.timers.length) {
-      const due = this.timers.filter((t) => t.at <= this.clock);
-      this.timers = this.timers.filter((t) => t.at > this.clock);
-      due.forEach((t) => t.fn());
+      const due = this.timers.filter((timer) => timer.at <= this.clock);
+      this.timers = this.timers.filter((timer) => timer.at > this.clock);
+      due.forEach((timer) => timer.fn());
     }
   }
 
   private boardIsStill() {
-    return !this.cubes.some((c) => c.state === 'live');
+    return !this.cubes.some((cube) => cube.state === 'live');
   }
 
   private resolveThrow() {

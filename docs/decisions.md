@@ -268,3 +268,30 @@ by playtesting (M2) rather than varied per mode; any of them can move into
 
 `classicMode` is the rulebook rules and the default, so a match started
 without a mode plays exactly as before.
+
+## D-20 — Design tokens in `app/src/theme`
+
+Styles had colours, spacing and font sizes written inline, and ESLint's
+`react-native/no-color-literals` warned about them. The app now has a small
+set of design tokens in `app/src/theme` (spacing, colours, font sizes and
+weights, radii, opacity), documented in `docs/design-system.md`.
+
+* Spacing uses the usual React Native scale (2, 4, 8, 12, 16, 20, 24, 28, 32,
+  40, 48, 56, 64) with t-shirt names (`3xs` … `md` 16 … `7xl`), the same
+  naming as font sizes. Keys equal to the values (`spacing[12]`) were tried
+  first and dropped: a token named after its value can never change value,
+  which defeats the point of a token. There is no zero token; `0` is written
+  as a literal.
+* Colours have two layers: a raw `palette` named by hue, and semantic `colors`
+  named by role that components use. The board and team colours moved out of
+  the game `config.ts`, which now holds only rules and physics.
+* Off-scale values snapped to the nearest step, which changes a few pixels:
+  the score-light gap 3 → 4, the toast padding 14 → 16, and the banner font
+  13 → 14.
+* Text has eight fixed variants (`display`, `title`, `heading`, `score`,
+  `body`, `button`, `label`, `caption`) instead of free size and weight
+  pairs. They cover every text in the HUD, the Rules screen and the round
+  summary; the HUD's turn banner moved from weight 700 to 800 and the final
+  score on the game-over screen became the bold `score` style.
+* Tokens are plain constants, not a theme context: there is one theme, and a
+  context can wrap them later if a second one is ever needed.
