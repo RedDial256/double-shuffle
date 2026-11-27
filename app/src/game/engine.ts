@@ -82,6 +82,12 @@ export class GameEngine {
   /** 1-based number of the round `lastResult` belongs to. */
   lastResultRound = 0;
   winner = -1;
+  /**
+   * While paused, `update` does nothing. Physics, wind charges and the
+   * between-throw timers all run on the engine's own clock, so they freeze
+   * exactly where they were.
+   */
+  paused = false;
 
   private world: World;
   private nextId = 0;
@@ -501,8 +507,13 @@ export class GameEngine {
     this.timers.push({ at: this.clock + seconds, fn });
   }
 
+  setPaused(paused: boolean) {
+    this.paused = paused;
+  }
+
   /** Advance by `dt` real seconds, in fixed physics steps. */
   update(dt: number) {
+    if (this.paused) return;
     this.acc += Math.min(dt, 0.1);
     while (this.acc >= FIXED_DT) {
       this.acc -= FIXED_DT;
