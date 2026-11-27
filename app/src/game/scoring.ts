@@ -5,11 +5,7 @@
 import { config, yIceFar } from './config';
 
 export type CubeState =
-  | 'racked'
-  | 'live'
-  | 'settled'
-  | 'off_the_back'
-  | 'killed_back';
+  'racked' | 'live' | 'settled' | 'off_the_back' | 'killed_back';
 
 /** The slice of a cube that scoring needs. */
 export interface ScorableCube {
@@ -100,7 +96,7 @@ export function scoreRound(cubes: ScorableCube[]): RoundResult {
 function summarise(
   points: [number, number],
   penalties: [number, number],
-  leader: number,
+  leader: number
 ): string {
   const parts = [0, 1].map((t) => {
     const sign = points[t] >= 0 ? '+' : '';
@@ -108,6 +104,7 @@ function summarise(
     if (penalties[t] > 0) line += ` (${penalties[t]} windburst)`;
     return line;
   });
-  const head = leader === -1 ? 'Blank end' : `${config.teamNames[leader]} holds`;
+  const head =
+    leader === -1 ? 'Blank end' : `${config.teamNames[leader]} holds`;
   return `${head} — ${parts.join(', ')}`;
 }

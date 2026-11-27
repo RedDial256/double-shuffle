@@ -5,7 +5,9 @@
  * Framework-free on purpose: the React/Skia layer only calls the public
  * methods, calls `update(dt)` every frame and reads the public state.
  */
-import { Box, Body, Vec2, World } from 'planck';
+import type { Body } from 'planck';
+import { Box, Vec2, World } from 'planck';
+
 import {
   config,
   dampAt,
@@ -15,9 +17,11 @@ import {
   yIceFar,
   yIceNear,
 } from './config';
-import { CubeState, RoundResult, scoreRound } from './scoring';
+import type { CubeState, RoundResult } from './scoring';
+import { scoreRound } from './scoring';
 
-export type Phase = 'aiming' | 'sliding' | 'resolving' | 'round_break' | 'game_over';
+export type Phase =
+  'aiming' | 'sliding' | 'resolving' | 'round_break' | 'game_over';
 
 export interface Cube {
   id: number;
@@ -202,7 +206,9 @@ export class GameEngine {
 
     for (const t of [0, 1]) {
       this.scores[t] += result.points[t];
-      if (!config.allowNegativeMatchScore) this.scores[t] = Math.max(0, this.scores[t]);
+      if (!config.allowNegativeMatchScore) {
+        this.scores[t] = Math.max(0, this.scores[t]);
+      }
     }
     this.emit({ type: 'round_ended', result, round: this.roundIndex });
 
@@ -264,7 +270,9 @@ export class GameEngine {
     cube.state = 'live';
     cube.slowFor = 0;
     const p = Math.max(0, Math.min(1, power));
-    const speed = config.launchSpeedMin + (config.launchSpeedMax - config.launchSpeedMin) * p;
+    const speed =
+      config.launchSpeedMin +
+      (config.launchSpeedMax - config.launchSpeedMin) * p;
     cube.body.setAwake(true);
     cube.body.setLinearVelocity(Vec2(dx * speed, dy * speed));
     this.emit({ type: 'state' });
@@ -325,7 +333,7 @@ export class GameEngine {
       const hit = this.cubes.some(
         (cube) =>
           this.isOnBoard(cube) &&
-          Math.hypot(cube.x - c.x, cube.y - c.y) < config.windTriggerDistance,
+          Math.hypot(cube.x - c.x, cube.y - c.y) < config.windTriggerDistance
       );
       if (hit || c.travelled >= config.windMaxTravel) this.detonate(c);
     }
@@ -353,7 +361,11 @@ export class GameEngine {
       const k = config.windBlastImpulse * (1 - dist / radius);
 
       this.disturb(cube);
-      cube.body.applyLinearImpulse(Vec2(ax * k, ay * k), cube.body.getWorldCenter(), true);
+      cube.body.applyLinearImpulse(
+        Vec2(ax * k, ay * k),
+        cube.body.getWorldCenter(),
+        true
+      );
 
       // +Y is backwards (towards the shooter's own platform): a push that
       // leaves the thrown cube heading that way costs the throw a point.
@@ -390,7 +402,8 @@ export class GameEngine {
     c.x = p.x;
     c.y = p.y;
     c.angle = c.body.getAngle();
-    const extent = HALF * (Math.abs(Math.cos(c.angle)) + Math.abs(Math.sin(c.angle)));
+    const extent =
+      HALF * (Math.abs(Math.cos(c.angle)) + Math.abs(Math.sin(c.angle)));
     c.forwardEdgeY = c.y - extent;
   }
 
@@ -508,7 +521,10 @@ export class GameEngine {
 
   private resolveThrow() {
     this.phase = 'resolving';
-    this.shotsLeft[this.currentTeam] = Math.max(0, this.shotsLeft[this.currentTeam] - 1);
+    this.shotsLeft[this.currentTeam] = Math.max(
+      0,
+      this.shotsLeft[this.currentTeam] - 1
+    );
     this.liveCube = null;
     this.emit({ type: 'state' });
     this.after(config.resolveDelay, () => {
