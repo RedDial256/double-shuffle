@@ -6,24 +6,24 @@ Conventional Commits on `main`. The phases are in `roadmap.md` (Versioning).
 
 ## How it works
 
-- `.github/workflows/release-please.yml` runs on every push to `main`. It
+* `.github/workflows/release-please.yml` runs on every push to `main`. It
   keeps one release PR open, titled `chore(main): release X.Y.Z`, with the
   next version and the new `app/CHANGELOG.md` entries.
-- Merging the release PR tags `vX.Y.Z` and creates the GitHub Release.
-- `feat:` bumps the minor, `fix:` and `perf:` bump the patch. `docs:`,
+* Merging the release PR tags `vX.Y.Z` and creates the GitHub Release.
+* `feat:` bumps the minor, `fix:` and `perf:` bump the patch. `docs:`,
   `chore:`, `ci:`, `build:`, `test:`, `refactor:` and `style:` don't trigger a
   release on their own.
-- While the version is 0.x, `bump-minor-pre-major` makes a breaking change
+* While the version is 0.x, `bump-minor-pre-major` makes a breaking change
   (`feat!:` or a `BREAKING CHANGE:` footer) bump the minor, not jump to 1.0.0.
-- Only commits that touch `app/` count, because the release-please package is
+* Only commits that touch `app/` count, because the release-please package is
   `app/`. Docs-only changes never produce a release.
 
 Files:
 
-- `release-please-config.json`: release settings.
-- `.release-please-manifest.json`: the last released version. release-please
+* `release-please-config.json`: release settings.
+* `.release-please-manifest.json`: the last released version. release-please
   updates it; don't edit it by hand.
-- `app/package.json`: **the only source of the app version.** The release PR
+* `app/package.json`: **the only source of the app version.** The release PR
   bumps it (and `package-lock.json`). `app/app.config.ts` reads it into the
   Expo config. iOS gets only `MAJOR.MINOR.PATCH`, because the App Store
   rejects pre-release labels, so `1.0.0-beta.2` ships as `1.0.0` there. The

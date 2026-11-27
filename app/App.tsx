@@ -32,8 +32,10 @@ export default function App() {
         <StatusBar style="light" />
         <View style={styles.fill}>
           <Board engine={engine} />
-          <Hud engine={engine} />
+          {/* Under the HUD, so the round summary and game-over overlays sit
+              on top of it. */}
           <RulesButton onPress={openRules} />
+          <Hud engine={engine} />
         </View>
         <RulesScreen visible={rulesOpen} onClose={closeRules} />
       </SafeAreaView>

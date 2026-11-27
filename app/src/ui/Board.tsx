@@ -25,7 +25,7 @@ import {
   yIceNear,
 } from '../game/config';
 import type { GameEngine } from '../game/engine';
-import { colors } from '../theme';
+import { colors, opacity as opacityLevels } from '../theme';
 
 import { useAim } from './useAim';
 
@@ -120,6 +120,11 @@ export function Board({ engine }: Props) {
     });
 
   const dispenserList = useMemo(() => dispensers(), []);
+  // During the round summary, ring the cubes that scored and dim the rest.
+  const showResult =
+    (engine.phase === 'round_break' || engine.phase === 'game_over') &&
+    engine.lastResult;
+  const scoring = new Set(showResult ? engine.lastResult?.scoring : []);
   const hw = halfWidth();
   const yFar = yIceFar();
   const yNear = yIceNear();
@@ -226,6 +231,13 @@ export function Board({ engine }: Props) {
               index={slotIndex}
               team={engine.cubes[slotIndex]?.team ?? 0}
               knocked={engine.cubes[slotIndex]?.knockedBack ?? false}
+              highlight={
+                !showResult
+                  ? 'none'
+                  : scoring.has(engine.cubes[slotIndex]!)
+                    ? 'scored'
+                    : 'dimmed'
+              }
             />
           ))}
 
@@ -251,11 +263,13 @@ function CubeSprite({
   index,
   team,
   knocked,
+  highlight,
 }: {
   frame: SharedValue<number[]>;
   index: number;
   team: number;
   knocked: boolean;
+  highlight: 'none' | 'scored' | 'dimmed';
 }) {
   const base = colors.team[team];
   const transform = useDerivedValue(() => {
@@ -272,24 +286,46 @@ function CubeSprite({
   );
   return (
     <Group transform={transform} opacity={opacity}>
-      <Rect x={-0.5} y={-0.5} width={1} height={1} color={shade(base, -0.25)} />
-      <Rect x={-0.38} y={-0.38} width={0.76} height={0.76} color={base} />
-      <Rect
-        x={-0.18}
-        y={-0.18}
-        width={0.36}
-        height={0.36}
-        color={shade(base, 0.35)}
-      />
-      {knocked && (
+      {highlight === 'scored' && (
         <Rect
-          x={-0.1}
-          y={-0.1}
-          width={0.2}
-          height={0.2}
-          color={colors.board.knockedMarker}
+          x={-0.72}
+          y={-0.72}
+          width={1.44}
+          height={1.44}
+          color={colors.board.scoredRing}
+          style="stroke"
+          strokeWidth={0.14}
         />
       )}
+      <Group
+        opacity={
+          highlight === 'dimmed' ? opacityLevels.dimmed : opacityLevels.full
+        }>
+        <Rect
+          x={-0.5}
+          y={-0.5}
+          width={1}
+          height={1}
+          color={shade(base, -0.25)}
+        />
+        <Rect x={-0.38} y={-0.38} width={0.76} height={0.76} color={base} />
+        <Rect
+          x={-0.18}
+          y={-0.18}
+          width={0.36}
+          height={0.36}
+          color={shade(base, 0.35)}
+        />
+        {knocked && (
+          <Rect
+            x={-0.1}
+            y={-0.1}
+            width={0.2}
+            height={0.2}
+            color={colors.board.knockedMarker}
+          />
+        )}
+      </Group>
     </Group>
   );
 }

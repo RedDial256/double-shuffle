@@ -5,12 +5,11 @@ This is a handoff document for whoever (human or agent) implements the game next
 ## 1. Read First
 
 - `docs/game-design.md` — the full ruleset for the Original version: concept, board layout & measurements, turn structure, scoring zones, wind-charge defense, knockouts, win condition, visual direction, camera decision. Treat it as the spec.
-- Its **Section 11 ("Scope & Deferred Features")** lists what's explicitly _not_ part of this build: RNG bumpers, the 3rd-person "puck cam", and the second ruleset variant. Don't implement these — a hook/stub is fine if it costs nothing, but don't spend time building for features that don't exist yet.
+- Its **Section 11 ("Scope & Deferred Features")** lists what's explicitly *not* part of this build: RNG bumpers, the 3rd-person "puck cam", and the second ruleset variant. Don't implement these — a hook/stub is fine if it costs nothing, but don't spend time building for features that don't exist yet.
 
 ## 2. Scope for This Implementation Pass
 
 **In scope:**
-
 - The Original ruleset in full (turn structure, 3 scoring zones + edge/4-point overhang, the "qualified points" contact rule, wind-charge defense with 360° radial impulse physics, knockout shots, the Round Killer rule, first-to-15 win condition).
 - 2D top-down camera/view.
 - Two local players, pass-and-play on one device. Nothing in the design doc implies online multiplayer — don't build for it unless the user asks.
@@ -52,11 +51,11 @@ This is a handoff document for whoever (human or agent) implements the game next
 
 ## 5. Art & Assets — IP Note
 
-The reference screenshots come from an actual Minecraft server build, and Minecraft's textures and assets belong to Mojang/Microsoft. **Do not extract, trace, or reuse real Minecraft textures in the game.** The brief is a blocky/voxel-_inspired_ original art style — flat-shaded cubes, chunky pixel textures, similar visual language — built from scratch. No game art exists yet. Plain colored-rectangle placeholders are a fine first pass while the physics prototype comes together; real art is a later pass.
+The reference screenshots come from an actual Minecraft server build, and Minecraft's textures and assets belong to Mojang/Microsoft. **Do not extract, trace, or reuse real Minecraft textures in the game.** The brief is a blocky/voxel-*inspired* original art style — flat-shaded cubes, chunky pixel textures, similar visual language — built from scratch. No game art exists yet. Plain colored-rectangle placeholders are a fine first pass while the physics prototype comes together; real art is a later pass.
 
 ## 6. Suggested Build Order
 
-Physics-and-feel first, since the core fun of this game _is_ the shuffleboard mechanic — get that right before anything else matters:
+Physics-and-feel first, since the core fun of this game *is* the shuffleboard mechanic — get that right before anything else matters:
 
 1. **Rink + physics prototype**: static 2D board sized per the `game-design.md` Section 3 measurements (15-wide rink, per-zone stone-vs-ice friction), one cube, a spear-throw input (e.g., drag/flick or power+angle), sliding physics, out-of-bounds detection.
 2. **Scoring zones**: the qualified-points contact rule and the 4-point overhang rule (game-design.md Section 5); a debug score readout.
@@ -70,7 +69,7 @@ Physics-and-feel first, since the core fun of this game _is_ the shuffleboard me
 Carried over from `game-design.md` Section 13 — not blocking enough to stall design, but implementation will hit them concretely. Where the user isn't available to answer right away, make a reasonable placeholder choice, note it clearly (code comment or a running decisions log), and flag it back rather than guessing silently and moving on:
 
 - Whether the rink is symmetric end-to-end (implying ~80×15 blocks total) — affects overall board size.
-- Exact rounds-per-match / cubes-per-round default for pacing (both are meant to be tunable, but the prototype needs _some_ starting default).
+- Exact rounds-per-match / cubes-per-round default for pacing (both are meant to be tunable, but the prototype needs *some* starting default).
 - Exact wind-charge dispenser activation input (simple tap/button per dispenser vs. some timing window).
 - Whether a knockout shot can also trigger the Round Killer or the -1 penalty.
 - Who shoots first each round — fixed, or alternating.

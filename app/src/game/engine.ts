@@ -75,6 +75,8 @@ export class GameEngine {
   charges: WindCharge[] = [];
   liveCube: Cube | null = null;
   lastResult: RoundResult | null = null;
+  /** 1-based number of the round `lastResult` belongs to. */
+  lastResultRound = 0;
   winner = -1;
   /**
    * While paused, `update` does nothing. Physics, wind charges and the
@@ -142,6 +144,13 @@ export class GameEngine {
     this.startMatch();
   }
 
+  /** Skip the rest of the round summary and start the next round now. */
+  nextRound() {
+    if (this.phase !== 'round_break') return;
+    this.timers = [];
+    this.startRound();
+  }
+
   private startRound() {
     this.clearCubes();
     this.shotsLeft = [config.cubesPerRound, config.cubesPerRound];
@@ -203,6 +212,7 @@ export class GameEngine {
     this.phase = 'round_break';
     const result = scoreRound(this.cubes);
     this.lastResult = result;
+    this.lastResultRound = this.roundIndex + 1;
 
     for (const team of [0, 1]) {
       this.scores[team] += result.points[team];
