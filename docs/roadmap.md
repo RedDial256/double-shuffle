@@ -42,7 +42,7 @@ commitlint, release-please and the rnsec security audit are set up.
 
 Open work is tracked as GitHub issues, one milestone per section below.
 
-**Missing:** the in-game rulebook and Expo Router.
+**Missing:** Expo Router.
 
 **Technical debt seen in the code:**
 
@@ -93,7 +93,6 @@ released.
 
 ### M1 — Complete loop
 
-* Port the rulebook and the Rules button.
 * A test for both teams crossing the target score in the same round (the
   other rules cases are covered).
 * Size the board's cube slots from the match, not a constant.
@@ -288,8 +287,7 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI, and release 0.1.0.
-2. Port the rulebook.
-3. Turn `config` into a `GameMode` passed to the engine, to prepare the
+2. Turn `config` into a `GameMode` passed to the engine, to prepare the
    presets.
-4. First fps measurement and first playtest on a real device.
-5. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+3. First fps measurement and first playtest on a real device.
+4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).

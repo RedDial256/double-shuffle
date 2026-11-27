@@ -209,8 +209,8 @@ the physics world = one cube across) instead of pixels, so the old pixel values
 were divided by 48 in `config.ts`. Every rule decision above (D-01 to D-13)
 carried over unchanged.
 
-Not ported: the in-game rulebook screen. It needs rebuilding as a React Native
-screen.
+The in-game rulebook was not ported at the time. It has since been rebuilt as a
+React Native screen (D-21).
 
 ## D-15 — Only the thrown cube can earn the windburst penalty
 
@@ -276,3 +276,21 @@ weights, radii, opacity), documented in `docs/design-system.md`.
   score on the game-over screen became the bold `score` style.
 * Tokens are plain constants, not a theme context: there is one theme, and a
   context can wrap them later if a second one is ever needed.
+
+## D-21 — The Rules screen is a modal that pauses the game
+
+The rulebook comes back as a full-screen modal opened by a Rules button in the
+bottom-right corner of the game, rather than a separate route: Expo Router and
+the Home/Game/Rules screens arrive in M3, and the text can move into a route
+then without changes.
+
+Opening the rules pauses the engine (`GameEngine.setPaused`). Physics, wind
+charges and the between-throw and round-break timers all run on the engine's
+own clock, so a sliding cube or a pending round break waits until the players
+close the rules. M3's Pause modal can reuse the same switch.
+
+The text lives in `app/src/ui/rulebook.ts` as data and reads its numbers
+(target score, cubes per round, wind charges per throw) from `config`, so it
+stays true when those defaults change or a game mode overrides them. It keeps
+the original rulebook's "Eyes Out Ray Finkle!" aside as an Easter egg. Styles
+use the design tokens (D-20); the book-style look comes in M4.
