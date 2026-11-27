@@ -15,11 +15,15 @@ export const colors = {
     /** Dot on a cube that a wind charge has knocked back. */
     knockedMarker: palette.charcoal,
     platform: palette.brown400,
+    /** Ring around a cube that scored, during the round summary. */
+    scoredRing: palette.gold200,
     startLine: palette.teal400,
     wall: palette.gold400,
     windCharge: palette.navy700,
   },
   border: {
+    /** Edge of a card that marks a key moment, such as the round summary. */
+    highlight: palette.gold200,
     subtle: palette.slate500,
   },
   /** Fill of an unlit score light. */
@@ -28,12 +32,18 @@ export const colors = {
   scrim: palette.blackAlpha73,
   /** Background of a toast message. */
   scrimStrong: palette.blackAlpha80,
+  /** Background of a card over the board, such as the round summary. */
+  surface: palette.slate950Alpha93,
   /** Team colours, indexed by team (0 = red, 1 = blue). */
   team: [palette.red500, palette.blue500],
   text: {
     /** Text on an `accent` fill. */
     onAccent: palette.black,
     primary: palette.white,
+    /** Less important text: round number, totals. */
+    secondary: palette.slate300,
+    /** Something that cost points, such as a windburst penalty. */
+    penalty: palette.coral300,
   },
   transparent: palette.transparent,
 } as const;

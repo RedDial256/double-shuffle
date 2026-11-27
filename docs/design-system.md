@@ -10,13 +10,13 @@ is deliberately small: add a token when a screen needs one, not ahead of time.
 | Category | File | Tokens |
 | --- | --- | --- |
 | Spacing | `spacing.ts` | `3xs` 2, `2xs` 4, `xs` 8, `sm` 12, `md` 16, `lg` 20, `xl` 24, `2xl` 28, `3xl` 32, `4xl` 40, `5xl` 48, `6xl` 56, `7xl` 64 |
-| Colours | `colors.ts` | semantic names: `background`, `accent`, `text.primary`, `text.onAccent`, `border.subtle`, `indicatorOff`, `scrim`, `scrimStrong`, `team[0..1]`, `board.*`, `transparent` |
+| Colours | `colors.ts` | semantic names: `background`, `accent`, `surface`, `text.primary`, `text.secondary`, `text.penalty`, `text.onAccent`, `border.subtle`, `border.highlight`, `indicatorOff`, `scrim`, `scrimStrong`, `team[0..1]`, `board.*`, `transparent` |
 | Raw colours | `palette.ts` | hue names (`teal400`, `slate950` …), only for building semantic tokens |
 | Text styles | `typography.ts` | `textVariants`: `display`, `title`, `heading`, `score`, `body`, `button`, `label`, `caption` (see below) |
 | Font size | `typography.ts` | `xs` 12, `sm` 14, `md` 16, `lg` 18, `xl` 20, `2xl` 24, `display` 36 |
 | Font weight | `typography.ts` | `regular` 400, `bold` 700, `extraBold` 800, `black` 900 |
 | Radii | `radii.ts` | `none` 0, `sm` 2, `md` 8, `full` 9999 |
-| Opacity | `opacity.ts` | `disabled` 0.3, `full` 1 |
+| Opacity | `opacity.ts` | `disabled` 0.3, `dimmed` 0.4, `full` 1 |
 
 Tokens are named by their step on a scale (`spacing.md`, `spacing['2xl']`),
 never by their value, so a scale can be retuned without renaming every use,

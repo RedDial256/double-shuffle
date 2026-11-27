@@ -3,7 +3,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { config } from '../game/config';
 import type { GameEngine } from '../game/engine';
+import { summariseRound } from '../game/roundSummary';
 import { colors, opacity, radii, spacing, textVariants } from '../theme';
+
+import { RoundSummary } from './RoundSummary';
 
 function Lights({ team, score }: { team: number; score: number }) {
   return (
@@ -74,11 +77,16 @@ export function Hud({ engine }: { engine: GameEngine }) {
   if (engine.phase === 'aiming') banner = `${config.teamNames[team]} to throw`;
   else if (engine.phase === 'sliding') {
     banner = `${config.teamNames[defender]}: tap to fire (${engine.windChargesLeft} left)`;
-  } else if (engine.phase === 'round_break' || engine.phase === 'game_over') {
-    banner = `Round ${engine.roundIndex + (engine.phase === 'game_over' ? 1 : 0)}: ${
-      engine.lastResult?.summary ?? ''
-    }`;
+  } else if (engine.phase === 'round_break') {
+    banner = 'Round over';
   }
+
+  const showSummary =
+    engine.phase === 'round_break' || engine.phase === 'game_over';
+  const summary =
+    showSummary && engine.lastResult
+      ? summariseRound(engine.lastResult, engine.lastResultRound, engine.scores)
+      : null;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
@@ -105,8 +113,15 @@ export function Hud({ engine }: { engine: GameEngine }) {
         </View>
       )}
 
+      {summary && engine.phase === 'round_break' && (
+        <View style={styles.summary} pointerEvents="box-none">
+          <RoundSummary summary={summary} onNext={() => engine.nextRound()} />
+        </View>
+      )}
+
       {engine.phase === 'game_over' && (
         <View style={styles.overlay}>
+          {summary && <RoundSummary summary={summary} />}
           <Text style={[styles.win, teamTextStyles[engine.winner]]}>
             {config.teamNames[engine.winner]} wins!
           </Text>
@@ -168,6 +183,12 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     ...textVariants.heading,
     textAlign: 'center',
+  },
+  summary: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: spacing.xl,
   },
   overlay: {
     ...StyleSheet.absoluteFill,
