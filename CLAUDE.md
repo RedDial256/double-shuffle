@@ -53,13 +53,13 @@ Keep the label set small. Use only these, plus GitHub's defaults:
 
 ## Conventions
 
-* Styles use the design tokens in `app/src/theme` (spacing, colours, font
-  sizes and weights, radii, opacity), never hardcoded values. Spacing comes
-  from the scale 2, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64. Name
-  tokens by role or scale step (`spacing.md`, `colors.accent`), never by their
-  value, and don't add a token for zero. Text uses one of the eight
-  `textVariants` rather than its own size and weight. Grow the token set when a screen
-  needs a new value, and keep `docs/design-system.md` in step.
+* Styles use the design tokens in `app/src/theme` (spacing, colours, font sizes
+  and weights, radii, opacity), never hardcoded values. Spacing comes from the
+  scale 2, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64. Name tokens by role or
+  scale step (`spacing.md`, `colors.accent`), never by their value, and don't
+  add a token for zero. Text uses one of the eight `textVariants` rather than
+  its own size and weight. Grow the token set when a screen needs a new value,
+  and keep `docs/design-system.md` in step.
 * Everything in English: code, comments, UI text, commit messages, docs.
 * Variables and functions have names that explain their purpose. No
   single-letter names (`e`, `v`, `s`, `i`…): write `event`, `view`, `state`,
