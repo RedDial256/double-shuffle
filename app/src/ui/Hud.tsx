@@ -1,7 +1,8 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { config } from '../game/config';
-import { GameEngine } from '../game/engine';
+import type { GameEngine } from '../game/engine';
 import { summariseRound } from '../game/roundSummary';
 
 import { RoundSummary } from './RoundSummary';
@@ -14,7 +15,9 @@ function Lights({ team, score }: { team: number; score: number }) {
           key={i}
           style={[
             styles.light,
-            { backgroundColor: i < score ? config.teamColors[team] : '#2a2f3a' },
+            {
+              backgroundColor: i < score ? config.teamColors[team] : '#2a2f3a',
+            },
           ]}
         />
       ))}
@@ -23,7 +26,15 @@ function Lights({ team, score }: { team: number; score: number }) {
 }
 
 /** Cubes the team still has to throw this round, like the rack beside the rink. */
-function Rack({ team, left, killed }: { team: number; left: number; killed: boolean }) {
+function Rack({
+  team,
+  left,
+  killed,
+}: {
+  team: number;
+  left: number;
+  killed: boolean;
+}) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
       {Array.from({ length: config.cubesPerRound }, (_, i) => (
@@ -31,7 +42,10 @@ function Rack({ team, left, killed }: { team: number; left: number; killed: bool
           key={i}
           style={[
             styles.rackCube,
-            { backgroundColor: i < left ? config.teamColors[team] : 'transparent' },
+            {
+              backgroundColor:
+                i < left ? config.teamColors[team] : 'transparent',
+            },
           ]}
         />
       ))}
@@ -42,7 +56,9 @@ function Rack({ team, left, killed }: { team: number; left: number; killed: bool
 export function Hud({ engine }: { engine: GameEngine }) {
   const [, bump] = useReducer((n: number) => n + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     const unsubscribe = engine.subscribe((e) => {
@@ -63,11 +79,14 @@ export function Hud({ engine }: { engine: GameEngine }) {
   const defender = engine.defendingTeam;
   let banner = '';
   if (engine.phase === 'aiming') banner = `${config.teamNames[team]} to throw`;
-  else if (engine.phase === 'sliding')
+  else if (engine.phase === 'sliding') {
     banner = `${config.teamNames[defender]}: tap to fire (${engine.windChargesLeft} left)`;
-  else if (engine.phase === 'round_break') banner = 'Round over';
+  } else if (engine.phase === 'round_break') {
+    banner = 'Round over';
+  }
 
-  const showSummary = engine.phase === 'round_break' || engine.phase === 'game_over';
+  const showSummary =
+    engine.phase === 'round_break' || engine.phase === 'game_over';
   const summary =
     showSummary && engine.lastResult
       ? summariseRound(engine.lastResult, engine.lastResultRound, engine.scores)
@@ -82,7 +101,11 @@ export function Hud({ engine }: { engine: GameEngine }) {
               {config.teamNames[t]} {engine.scores[t]}
             </Text>
             <Lights team={t} score={engine.scores[t]} />
-            <Rack team={t} left={engine.shotsLeft[t]} killed={engine.roundKilled[t]} />
+            <Rack
+              team={t}
+              left={engine.shotsLeft[t]}
+              killed={engine.roundKilled[t]}
+            />
           </View>
         ))}
         <Text style={styles.banner}>{banner}</Text>
@@ -103,7 +126,8 @@ export function Hud({ engine }: { engine: GameEngine }) {
       {engine.phase === 'game_over' && (
         <View style={styles.overlay}>
           {summary && <RoundSummary summary={summary} />}
-          <Text style={[styles.win, { color: config.teamColors[engine.winner] }]}>
+          <Text
+            style={[styles.win, { color: config.teamColors[engine.winner] }]}>
             {config.teamNames[engine.winner]} wins!
           </Text>
           <Text style={styles.sub}>
@@ -136,7 +160,12 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
   },
-  toastText: { color: '#fff', fontWeight: '800', fontSize: 18, textAlign: 'center' },
+  toastText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 18,
+    textAlign: 'center',
+  },
   summary: { position: 'absolute', left: 0, right: 0, bottom: 24 },
   overlay: {
     ...StyleSheet.absoluteFill,
@@ -147,6 +176,11 @@ const styles = StyleSheet.create({
   },
   win: { fontSize: 36, fontWeight: '900' },
   sub: { color: '#fff', fontSize: 20 },
-  button: { backgroundColor: '#35c9c4', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
+  button: {
+    backgroundColor: '#35c9c4',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
   buttonText: { fontWeight: '800', fontSize: 16 },
 });

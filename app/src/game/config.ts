@@ -96,7 +96,7 @@ export const nearBandBoundaries = () =>
 export function isOnDivider(y: number): boolean {
   const half = config.divider / 2;
   return [...farBandBoundaries(), ...nearBandBoundaries()].some(
-    (b) => Math.abs(y - b) <= half,
+    (b) => Math.abs(y - b) <= half
   );
 }
 
