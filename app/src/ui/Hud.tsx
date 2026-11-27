@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { config } from '../game/config';
@@ -7,13 +7,14 @@ import type { GameEngine } from '../game/engine';
 function Lights({ team, score }: { team: number; score: number }) {
   return (
     <View style={styles.lights}>
-      {Array.from({ length: config.targetScore }, (_, i) => (
+      {Array.from({ length: config.targetScore }, (_, pointIndex) => (
         <View
-          key={i}
+          key={pointIndex}
           style={[
             styles.light,
             {
-              backgroundColor: i < score ? config.teamColors[team] : '#2a2f3a',
+              backgroundColor:
+                pointIndex < score ? config.teamColors[team] : '#2a2f3a',
             },
           ]}
         />
@@ -34,14 +35,14 @@ function Rack({
 }) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
-      {Array.from({ length: config.cubesPerRound }, (_, i) => (
+      {Array.from({ length: config.cubesPerRound }, (_, cubeIndex) => (
         <View
-          key={i}
+          key={cubeIndex}
           style={[
             styles.rackCube,
             {
               backgroundColor:
-                i < left ? config.teamColors[team] : 'transparent',
+                cubeIndex < left ? config.teamColors[team] : 'transparent',
             },
           ]}
         />
@@ -51,19 +52,22 @@ function Rack({
 }
 
 export function Hud({ engine }: { engine: GameEngine }) {
-  const [, bump] = useReducer((n: number) => n + 1, 0);
+  const [, bump] = useReducer((count: number) => count + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
 
   useEffect(() => {
-    const unsubscribe = engine.subscribe((e) => {
-      if (e.type === 'state' || e.type === 'round_ended') bump();
-      if (e.type === 'message') {
-        setToast(e.text);
+    const unsubscribe = engine.subscribe((event) => {
+      if (event.type === 'state' || event.type === 'round_ended') bump();
+      if (event.type === 'message') {
+        setToast(event.text);
         clearTimeout(toastTimer.current);
-        toastTimer.current = setTimeout(() => setToast(null), e.seconds * 1000);
+        toastTimer.current = setTimeout(
+          () => setToast(null),
+          event.seconds * 1000
+        );
       }
     });
     return () => {
@@ -87,16 +91,20 @@ export function Hud({ engine }: { engine: GameEngine }) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <View style={styles.top} pointerEvents="none">
-        {[0, 1].map((t) => (
-          <View key={t} style={styles.scoreRow}>
-            <Text style={[styles.teamName, { color: config.teamColors[t] }]}>
-              {config.teamNames[t]} {engine.scores[t]}
+        {[0, 1].map((teamIndex) => (
+          <View key={teamIndex} style={styles.scoreRow}>
+            <Text
+              style={[
+                styles.teamName,
+                { color: config.teamColors[teamIndex] },
+              ]}>
+              {config.teamNames[teamIndex]} {engine.scores[teamIndex]}
             </Text>
-            <Lights team={t} score={engine.scores[t]} />
+            <Lights team={teamIndex} score={engine.scores[teamIndex]} />
             <Rack
-              team={t}
-              left={engine.shotsLeft[t]}
-              killed={engine.roundKilled[t]}
+              team={teamIndex}
+              left={engine.shotsLeft[teamIndex]}
+              killed={engine.roundKilled[teamIndex]}
             />
           </View>
         ))}
