@@ -21,6 +21,10 @@ rather than striking it out, and put the reasoning for decisions in
 * Do code work on a branch, in a git worktree. Never edit the main checkout
   directly.
 * Changes reach `main` through pull requests.
+* Branch names are `claude/<issue>-<short-description>` in kebab-case, for
+  example `claude/21-add-new-feature` or `claude/33-fix-game-loop-bug`. When
+  there is no issue for the work, leave the number out:
+  `claude/fix-game-loop-bug`.
 * Every PR runs the rnsec security audit.
 * GitHub Actions orchestrates CI (typecheck, lint, tests) and the EAS deploys
   described in `docs/roadmap.md`.
