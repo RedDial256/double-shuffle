@@ -6,37 +6,49 @@ const DT = 1 / 60;
 
 describe('pausing', () => {
   it('freezes a sliding cube and resumes from the same spot', () => {
-    const e = new GameEngine();
-    e.startMatch();
-    const cube = e.liveCube!;
-    e.launch(0, -1, 0.8);
-    for (let i = 0; i < 10; i++) e.update(DT);
-    const y = cube.y;
+    const engine = new GameEngine();
+    engine.startMatch();
+    const cube = engine.liveCube!;
+    engine.launch(0, -1, 0.8);
+    for (let step = 0; step < 10; step++) engine.update(DT);
+    const startY = cube.y;
 
-    e.setPaused(true);
-    for (let i = 0; i < 600; i++) e.update(DT);
-    expect(cube.y).toBe(y);
-    expect(e.phase).toBe('sliding');
+    engine.setPaused(true);
+    for (let step = 0; step < 600; step++) engine.update(DT);
+    expect(cube.y).toBe(startY);
+    expect(engine.phase).toBe('sliding');
 
-    e.setPaused(false);
-    for (let i = 0; i < 10; i++) e.update(DT);
-    expect(cube.y).toBeLessThan(y);
+    engine.setPaused(false);
+    for (let step = 0; step < 10; step++) engine.update(DT);
+    expect(cube.y).toBeLessThan(startY);
   });
 
   it('holds the between-throw timer while paused', () => {
-    const e = new GameEngine();
-    e.startMatch();
-    e.launch(0, -1, 0.5);
-    for (let t = 0; t < 60 && e.phase === 'sliding'; t += DT) e.update(DT);
-    expect(e.phase).toBe('resolving');
+    const engine = new GameEngine();
+    engine.startMatch();
+    engine.launch(0, -1, 0.5);
+    for (
+      let elapsed = 0;
+      elapsed < 60 && engine.phase === 'sliding';
+      elapsed += DT
+    ) {
+      engine.update(DT);
+    }
+    expect(engine.phase).toBe('resolving');
 
-    e.setPaused(true);
-    for (let i = 0; i < 600; i++) e.update(DT);
-    expect(e.phase).toBe('resolving');
+    engine.setPaused(true);
+    for (let step = 0; step < 600; step++) engine.update(DT);
+    expect(engine.phase).toBe('resolving');
 
-    e.setPaused(false);
-    for (let t = 0; t < 5 && e.phase === 'resolving'; t += DT) e.update(DT);
-    expect(e.phase).toBe('aiming');
-    expect(e.currentTeam).toBe(1);
+    engine.setPaused(false);
+    for (
+      let elapsed = 0;
+      elapsed < 5 && engine.phase === 'resolving';
+      elapsed += DT
+    ) {
+      engine.update(DT);
+    }
+    expect(engine.phase).toBe('aiming');
+    expect(engine.currentTeam).toBe(1);
   });
 });

@@ -62,13 +62,13 @@ screen width, and the cubes end up ~16 px across.
 
 Current layout, 48 blocks end to end:
 
-| Section | Blocks |
-|---|---|
-| Wood platform (each end) | 5 |
-| Zone 3 / zone 2 / zone 1 band (each) | 3 |
-| Neutral ice | 20 |
-| **Total length** | **48** |
-| Width | 15 |
+| Section                              | Blocks |
+| ------------------------------------ | ------ |
+| Wood platform (each end)             | 5      |
+| Zone 3 / zone 2 / zone 1 band (each) | 3      |
+| Neutral ice                          | 20     |
+| **Total length**                     | **48** |
+| Width                                | 15     |
 
 That gives 38 blocks of ice to slide down, and leaves a gutter down each side
 of the screen wide enough for the score lights. `platform`, `band` and
@@ -77,8 +77,8 @@ scoring) when changed.
 
 ## D-03 — 4 points is an overhang test, not a painted band
 
-Rulebook page 7: *"If even a single pixel of a puck is hanging over the back of
-the table without falling, that's a 4 pointer!"* So the 4 is not a fourth
+Rulebook page 7: _"If even a single pixel of a puck is hanging over the back of
+the table without falling, that's a 4 pointer!"_ So the 4 is not a fourth
 strip of ice — it is the condition "my leading edge is past the back edge but
 my centre of mass is not". Implemented exactly that way in
 `zoneValue()` in `app/src/game/scoring.ts`; a cube whose centre crosses the line falls off and
@@ -86,8 +86,8 @@ scores nothing.
 
 ## D-04 — Qualified points resolve upwards
 
-Page 7: *"A puck is officially in the point range as long as a single pixel is
-touching the ice of that section."* A cube straddling two bands therefore
+Page 7: _"A puck is officially in the point range as long as a single pixel is
+touching the ice of that section."_ A cube straddling two bands therefore
 qualifies for both, and the implementation gives it the **higher** one, because
 everything else about the game rewards getting further forward. Every scoring
 decision uses the cube's leading edge (rotation included), never its centre.
@@ -113,9 +113,9 @@ from counting.
 Both rules are written as consequences of a **windburst** specifically
 ("due to a perfectly timed wind burst", p.9), so:
 
-* Only a wind charge can set the -1 flag.
-* Only a cube carrying that flag can trigger the Round Killer.
-* A cube that ends up behind the starting line for any other reason (bounced
+- Only a wind charge can set the -1 flag.
+- Only a cube carrying that flag can trigger the Round Killer.
+- A cube that ends up behind the starting line for any other reason (bounced
   off another cube, say) simply leaves play for 0, with no penalty.
 
 A knockout that pushes an opponent's cube off the far end still removes it from
@@ -147,7 +147,7 @@ roughly 4-8 rounds a match, which felt like the right pacing target. Both are
 Open question in the brief. The dispensers sit in both side walls every 3
 blocks, matching the reference build. While a cube is sliding, the defending
 team taps anywhere and the dispenser closest to the tap fires a charge straight
-across the ice. The charge takes real time to cross, so *when* you tap is the
+across the ice. The charge takes real time to cross, so _when_ you tap is the
 skill, and firing one slightly ahead of the cube is what produces a backwards
 push — which is how "a perfectly timed wind burst" ends up meaning something
 mechanically.
@@ -192,17 +192,17 @@ Native shell around Godot anyway.
 
 What replaced what:
 
-| Concern | Before (Godot) | Now (React Native) |
-|---|---|---|
-| App shell, build | Godot export presets | Expo (`app/app.json`, EAS for store builds) |
-| Rendering | Godot 2D nodes | `@shopify/react-native-skia` canvas in `Board.tsx` |
-| Per-frame animation | engine loop | `requestAnimationFrame` loop + `react-native-reanimated` shared values |
-| Physics | Godot 2D physics | `planck` (Box2D port) in `engine.ts` |
-| Tunables | autoload config script | `app/src/game/config.ts` |
-| Scoring | scoring script | `app/src/game/scoring.ts` (pure functions) |
-| Turns, rounds, wind charges | game manager + entity scripts | `app/src/game/engine.ts` (framework-free class) |
-| Touch input | aim controller script | `app/src/ui/useAim.ts` |
-| HUD | HUD and score-light scripts | `app/src/ui/Hud.tsx` |
+| Concern                     | Before (Godot)                | Now (React Native)                                                     |
+| --------------------------- | ----------------------------- | ---------------------------------------------------------------------- |
+| App shell, build            | Godot export presets          | Expo (`app/app.json`, EAS for store builds)                            |
+| Rendering                   | Godot 2D nodes                | `@shopify/react-native-skia` canvas in `Board.tsx`                     |
+| Per-frame animation         | engine loop                   | `requestAnimationFrame` loop + `react-native-reanimated` shared values |
+| Physics                     | Godot 2D physics              | `planck` (Box2D port) in `engine.ts`                                   |
+| Tunables                    | autoload config script        | `app/src/game/config.ts`                                               |
+| Scoring                     | scoring script                | `app/src/game/scoring.ts` (pure functions)                             |
+| Turns, rounds, wind charges | game manager + entity scripts | `app/src/game/engine.ts` (framework-free class)                        |
+| Touch input                 | aim controller script         | `app/src/ui/useAim.ts`                                                 |
+| HUD                         | HUD and score-light scripts   | `app/src/ui/Hud.tsx`                                                   |
 
 Units changed in the port: distances are now in blocks (1 block = 1 metre in
 the physics world = one cube across) instead of pixels, so the old pixel values
@@ -210,13 +210,13 @@ were divided by 48 in `config.ts`. Every rule decision above (D-01 to D-13)
 carried over unchanged.
 
 The in-game rulebook was not ported at the time. It has since been rebuilt as a
-React Native screen (D-18).
+React Native screen (D-21).
 
 ## D-15 — Only the thrown cube can earn the windburst penalty
 
 The rulebook's -1 is "a penalty to the shooter for that cube", and the Round
 Killer talks about "the cube" the windburst sends back, so both refer to the
-cube being thrown. The port flagged *every* cube a blast pushed backwards,
+cube being thrown. The port flagged _every_ cube a blast pushed backwards,
 which meant a defender who caught their own settled cube in the blast lost a
 point, and a shooter could be penalised for cubes thrown on earlier turns.
 
@@ -250,7 +250,34 @@ rather than a `release-as` in the config, which would have to be removed by
 hand after the release. The iOS version is the numeric part of the version,
 because App Store Connect rejects pre-release labels.
 
-## D-18 — The Rules screen is a modal that pauses the game
+## D-20 — Design tokens in `app/src/theme`
+
+Styles had colours, spacing and font sizes written inline, and ESLint's
+`react-native/no-color-literals` warned about them. The app now has a small
+set of design tokens in `app/src/theme` (spacing, colours, font sizes and
+weights, radii, opacity), documented in `docs/design-system.md`.
+
+- Spacing uses the usual React Native scale (2, 4, 8, 12, 16, 20, 24, 28, 32,
+  40, 48, 56, 64) with t-shirt names (`3xs` … `md` 16 … `7xl`), the same
+  naming as font sizes. Keys equal to the values (`spacing[12]`) were tried
+  first and dropped: a token named after its value can never change value,
+  which defeats the point of a token. There is no zero token; `0` is written
+  as a literal.
+- Colours have two layers: a raw `palette` named by hue, and semantic `colors`
+  named by role that components use. The board and team colours moved out of
+  the game `config.ts`, which now holds only rules and physics.
+- Off-scale values snapped to the nearest step, which changes a few pixels:
+  the score-light gap 3 → 4, the toast padding 14 → 16, and the banner font
+  13 → 14.
+- Text has eight fixed variants (`display`, `title`, `heading`, `score`,
+  `body`, `button`, `label`, `caption`) instead of free size and weight
+  pairs. They cover every text in the HUD, the Rules screen and the round
+  summary; the HUD's turn banner moved from weight 700 to 800 and the final
+  score on the game-over screen became the bold `score` style.
+- Tokens are plain constants, not a theme context: there is one theme, and a
+  context can wrap them later if a second one is ever needed.
+
+## D-21 — The Rules screen is a modal that pauses the game
 
 The rulebook comes back as a full-screen modal opened by a Rules button in the
 bottom-right corner of the game, rather than a separate route: Expo Router and
@@ -265,5 +292,5 @@ close the rules. M3's Pause modal can reuse the same switch.
 The text lives in `app/src/ui/rulebook.ts` as data and reads its numbers
 (target score, cubes per round, wind charges per throw) from `config`, so it
 stays true when those defaults change or a game mode overrides them. It keeps
-the original rulebook's "Eyes Out Ray Finkle!" aside as an Easter egg. Styling
-is plain until the book-style UI in M4.
+the original rulebook's "Eyes Out Ray Finkle!" aside as an Easter egg. Styles
+use the design tokens (D-20); the book-style look comes in M4.

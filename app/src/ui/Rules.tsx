@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   Modal,
   Pressable,
@@ -7,12 +7,16 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { colors, radii, spacing, textVariants } from '../theme';
+
 import { rulebook } from './rulebook';
 
 /**
- * The Rules screen: a full-screen sheet over the game. Plain styling for now;
- * the book-style look comes in M4.
+ * The Rules screen: a full-screen sheet over the game, styled with the design
+ * tokens. The book-style look comes in M4.
  */
 export function RulesScreen({
   visible,
@@ -44,14 +48,14 @@ export function RulesScreen({
           </Pressable>
         </View>
         <ScrollView contentContainerStyle={styles.body}>
-          {sections.map((s) => (
-            <View key={s.id} style={styles.section}>
+          {sections.map((section) => (
+            <View key={section.id} style={styles.section}>
               <Text style={styles.heading} accessibilityRole="header">
-                {s.title}
+                {section.title}
               </Text>
-              {s.paragraphs.map((p, i) => (
-                <Text key={i} style={styles.paragraph}>
-                  {p}
+              {section.paragraphs.map((paragraph, index) => (
+                <Text key={index} style={styles.paragraph}>
+                  {paragraph}
                 </Text>
               ))}
             </View>
@@ -77,38 +81,38 @@ export function RulesButton({ onPress }: { onPress: () => void }) {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#14171f' },
+  root: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#2a2f3a',
+    borderBottomColor: colors.border.subtle,
   },
-  title: { color: '#fff', fontSize: 24, fontWeight: '900' },
+  title: { ...textVariants.title, color: colors.text.primary },
   close: {
-    backgroundColor: '#35c9c4',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: colors.accent,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.md,
   },
-  closeText: { fontWeight: '800', fontSize: 14 },
-  body: { padding: 16, paddingBottom: 32, gap: 20 },
-  section: { gap: 8 },
-  heading: { color: '#35c9c4', fontSize: 18, fontWeight: '800' },
-  paragraph: { color: '#e6e8ee', fontSize: 16, lineHeight: 23 },
+  closeText: { ...textVariants.label, color: colors.text.onAccent },
+  body: { padding: spacing.md, paddingBottom: spacing['3xl'], gap: spacing.lg },
+  section: { gap: spacing.xs },
+  heading: { ...textVariants.heading, color: colors.accent },
+  paragraph: { ...textVariants.body, color: colors.text.primary },
   openButton: {
     position: 'absolute',
-    right: 12,
-    bottom: 12,
-    backgroundColor: '#000a',
+    right: spacing.sm,
+    bottom: spacing.sm,
+    backgroundColor: colors.scrim,
     borderWidth: 1,
-    borderColor: '#35c9c4',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    borderColor: colors.accent,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radii.md,
   },
-  openButtonText: { color: '#fff', fontWeight: '800', fontSize: 14 },
+  openButtonText: { ...textVariants.label, color: colors.text.primary },
 });

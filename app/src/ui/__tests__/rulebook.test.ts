@@ -5,12 +5,12 @@ import { rulebook } from '../rulebook';
 
 const text = () =>
   rulebook()
-    .flatMap((s) => [s.title, ...s.paragraphs])
+    .flatMap((section) => [section.title, ...section.paragraphs])
     .join('\n');
 
 describe('rulebook', () => {
   it('covers every topic the Rules screen must explain', () => {
-    const ids = rulebook().map((s) => s.id);
+    const ids = rulebook().map((section) => section.id);
     for (const topic of [
       'lining-up',
       'throwing',
@@ -25,20 +25,22 @@ describe('rulebook', () => {
 
   it('has unique section ids and no empty sections', () => {
     const sections = rulebook();
-    expect(new Set(sections.map((s) => s.id)).size).toBe(sections.length);
-    for (const s of sections) {
-      expect(s.title.length).toBeGreaterThan(0);
-      expect(s.paragraphs.length).toBeGreaterThan(0);
+    expect(new Set(sections.map((section) => section.id)).size).toBe(
+      sections.length
+    );
+    for (const section of sections) {
+      expect(section.title.length).toBeGreaterThan(0);
+      expect(section.paragraphs.length).toBeGreaterThan(0);
     }
   });
 
   it('quotes the numbers from config', () => {
-    const t = text();
-    expect(t).toContain(`${config.targetScore} points`);
-    expect(t).toContain(`${config.cubesPerRound} cubes per round`);
-    expect(t).toContain(`up to ${config.windChargesPerThrow} wind charge`);
-    expect(t).toContain('-1 point');
-    expect(t).toContain('worth 4');
+    const rules = text();
+    expect(rules).toContain(`${config.targetScore} points`);
+    expect(rules).toContain(`${config.cubesPerRound} cubes per round`);
+    expect(rules).toContain(`up to ${config.windChargesPerThrow} wind charge`);
+    expect(rules).toContain('-1 point');
+    expect(rules).toContain('worth 4');
   });
 
   it('follows config changes', () => {

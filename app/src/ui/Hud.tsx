@@ -1,20 +1,19 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { config } from '../game/config';
 import type { GameEngine } from '../game/engine';
+import { colors, opacity, radii, spacing, textVariants } from '../theme';
 
 function Lights({ team, score }: { team: number; score: number }) {
   return (
     <View style={styles.lights}>
-      {Array.from({ length: config.targetScore }, (_, i) => (
+      {Array.from({ length: config.targetScore }, (_, pointIndex) => (
         <View
-          key={i}
+          key={pointIndex}
           style={[
             styles.light,
-            {
-              backgroundColor: i < score ? config.teamColors[team] : '#2a2f3a',
-            },
+            pointIndex < score ? teamFillStyles[team] : styles.lightOff,
           ]}
         />
       ))}
@@ -34,16 +33,10 @@ function Rack({
 }) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
-      {Array.from({ length: config.cubesPerRound }, (_, i) => (
+      {Array.from({ length: config.cubesPerRound }, (_, cubeIndex) => (
         <View
-          key={i}
-          style={[
-            styles.rackCube,
-            {
-              backgroundColor:
-                i < left ? config.teamColors[team] : 'transparent',
-            },
-          ]}
+          key={cubeIndex}
+          style={[styles.rackCube, cubeIndex < left && teamFillStyles[team]]}
         />
       ))}
     </View>
@@ -51,19 +44,22 @@ function Rack({
 }
 
 export function Hud({ engine }: { engine: GameEngine }) {
-  const [, bump] = useReducer((n: number) => n + 1, 0);
+  const [, bump] = useReducer((count: number) => count + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
 
   useEffect(() => {
-    const unsubscribe = engine.subscribe((e) => {
-      if (e.type === 'state' || e.type === 'round_ended') bump();
-      if (e.type === 'message') {
-        setToast(e.text);
+    const unsubscribe = engine.subscribe((event) => {
+      if (event.type === 'state' || event.type === 'round_ended') bump();
+      if (event.type === 'message') {
+        setToast(event.text);
         clearTimeout(toastTimer.current);
-        toastTimer.current = setTimeout(() => setToast(null), e.seconds * 1000);
+        toastTimer.current = setTimeout(
+          () => setToast(null),
+          event.seconds * 1000
+        );
       }
     });
     return () => {
@@ -87,16 +83,16 @@ export function Hud({ engine }: { engine: GameEngine }) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <View style={styles.top} pointerEvents="none">
-        {[0, 1].map((t) => (
-          <View key={t} style={styles.scoreRow}>
-            <Text style={[styles.teamName, { color: config.teamColors[t] }]}>
-              {config.teamNames[t]} {engine.scores[t]}
+        {[0, 1].map((teamIndex) => (
+          <View key={teamIndex} style={styles.scoreRow}>
+            <Text style={[styles.teamName, teamTextStyles[teamIndex]]}>
+              {config.teamNames[teamIndex]} {engine.scores[teamIndex]}
             </Text>
-            <Lights team={t} score={engine.scores[t]} />
+            <Lights team={teamIndex} score={engine.scores[teamIndex]} />
             <Rack
-              team={t}
-              left={engine.shotsLeft[t]}
-              killed={engine.roundKilled[t]}
+              team={teamIndex}
+              left={engine.shotsLeft[teamIndex]}
+              killed={engine.roundKilled[teamIndex]}
             />
           </View>
         ))}
@@ -111,8 +107,7 @@ export function Hud({ engine }: { engine: GameEngine }) {
 
       {engine.phase === 'game_over' && (
         <View style={styles.overlay}>
-          <Text
-            style={[styles.win, { color: config.teamColors[engine.winner] }]}>
+          <Text style={[styles.win, teamTextStyles[engine.winner]]}>
             {config.teamNames[engine.winner]} wins!
           </Text>
           <Text style={styles.sub}>
@@ -127,44 +122,78 @@ export function Hud({ engine }: { engine: GameEngine }) {
   );
 }
 
+/** Score light size in density independent pixels. */
+const LIGHT_SIZE = 10;
+/** Rack cube size in density independent pixels. */
+const RACK_CUBE_SIZE = 9;
+/** Width of the team name column, so the score lights line up. */
+const TEAM_NAME_WIDTH = 60;
+
 const styles = StyleSheet.create({
-  top: { paddingTop: 8, paddingHorizontal: 12, gap: 4 },
-  scoreRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  teamName: { fontWeight: '800', fontSize: 14, width: 60 },
-  lights: { flexDirection: 'row', gap: 3 },
-  light: { width: 10, height: 10, borderRadius: 2 },
-  rack: { flexDirection: 'row', gap: 2, marginLeft: 'auto' },
-  rackKilled: { opacity: 0.3 },
-  rackCube: { width: 9, height: 9, borderWidth: 1, borderColor: '#5a6070' },
-  banner: { color: '#fff', fontWeight: '700', fontSize: 13, marginTop: 2 },
+  top: {
+    paddingTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    gap: spacing['2xs'],
+  },
+  scoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  teamName: {
+    ...textVariants.label,
+    width: TEAM_NAME_WIDTH,
+  },
+  lights: { flexDirection: 'row', gap: spacing['2xs'] },
+  light: { width: LIGHT_SIZE, height: LIGHT_SIZE, borderRadius: radii.sm },
+  lightOff: { backgroundColor: colors.indicatorOff },
+  rack: { flexDirection: 'row', gap: spacing['3xs'], marginLeft: 'auto' },
+  rackKilled: { opacity: opacity.disabled },
+  rackCube: {
+    width: RACK_CUBE_SIZE,
+    height: RACK_CUBE_SIZE,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  banner: {
+    color: colors.text.primary,
+    ...textVariants.label,
+    marginTop: spacing['3xs'],
+  },
   toast: {
     position: 'absolute',
     top: '40%',
     alignSelf: 'center',
-    backgroundColor: '#000c',
-    padding: 14,
-    borderRadius: 8,
+    backgroundColor: colors.scrimStrong,
+    padding: spacing.md,
+    borderRadius: radii.md,
   },
   toastText: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 18,
+    color: colors.text.primary,
+    ...textVariants.heading,
     textAlign: 'center',
   },
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#000b',
+    backgroundColor: colors.scrim,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: spacing.sm,
   },
-  win: { fontSize: 36, fontWeight: '900' },
-  sub: { color: '#fff', fontSize: 20 },
+  win: textVariants.display,
+  sub: { ...textVariants.score, color: colors.text.primary },
   button: {
-    backgroundColor: '#35c9c4',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: colors.accent,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.md,
   },
-  buttonText: { fontWeight: '800', fontSize: 16 },
+  buttonText: {
+    color: colors.text.onAccent,
+    ...textVariants.button,
+  },
 });
+
+/** Background fill in each team's colour, indexed by team. */
+const teamFillStyles = colors.team.map((teamColor) => ({
+  backgroundColor: teamColor,
+}));
+
+/** Text in each team's colour, indexed by team. */
+const teamTextStyles = colors.team.map((teamColor) => ({ color: teamColor }));
