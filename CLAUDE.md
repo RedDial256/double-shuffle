@@ -25,6 +25,21 @@ rather than striking it out, and put the reasoning for decisions in
 * GitHub Actions orchestrates CI (typecheck, lint, tests) and the EAS deploys
   described in `docs/roadmap.md`.
 
+## Labels
+
+Keep the label set small. Use only these, plus GitHub's defaults:
+
+* `blocked`: waiting on another issue, PR or external dependency.
+* `waiting-user-input`: needs an answer, decision or action from the user.
+* `hotfix`: urgent fix that should ship as soon as possible.
+* `bugfix`: fixes a bug.
+* `needs-manual-test`: add it to every PR whose behaviour Claude could not
+  verify itself (touch and gestures, physics feel, on-device performance,
+  sound, haptics, visuals, EAS builds), with a "How to test" section in the PR
+  body giving exact steps and what to look for. The user removes the label
+  after testing.
+* `high-priority`: do this before other work in its milestone.
+
 ## Stack decisions
 
 * Navigation uses Expo Router.
