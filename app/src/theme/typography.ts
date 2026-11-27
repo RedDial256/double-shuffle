@@ -5,7 +5,7 @@ export const fontSize = {
   md: 16,
   lg: 18,
   xl: 20,
-  xxl: 24,
+  '2xl': 24,
   /** Headline moments, such as the winner announcement. */
   display: 36,
 } as const;

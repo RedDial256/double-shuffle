@@ -55,13 +55,18 @@ Keep the label set small. Use only these, plus GitHub's defaults:
 
 * Styles use the design tokens in `app/src/theme` (spacing, colours, font
   sizes and weights, radii, opacity), never hardcoded values. Spacing comes
-  from the scale 2, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64. Grow the
-  token set when a screen needs a new value, and keep `docs/design-system.md`
-  in step.
+  from the scale 2, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64. Name
+  tokens by role or scale step (`spacing.md`, `colors.accent`), never by their
+  value, and don't add a token for zero. Grow the token set when a screen
+  needs a new value, and keep `docs/design-system.md` in step.
 * Everything in English: code, comments, UI text, commit messages, docs.
 * Variables and functions have names that explain their purpose. No
   single-letter names (`e`, `v`, `s`, `i`…): write `event`, `view`, `state`,
   `index`. ESLint's `id-length` rule warns about them; don't add new ones.
+* Fix lint warnings at the source. If ESLint flags something the code really
+  needs, change the rule in `app/eslint.config.mjs` (with a comment saying
+  why) instead of leaving the warning. The app uses the automatic JSX
+  runtime, so `import React` is not needed for JSX.
 * Commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:` …).
   commitlint enforces it: a `commit-msg` hook (installed by `npm install` in
   `app/`) checks each commit, and CI checks the PR title, which becomes the

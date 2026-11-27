@@ -1,23 +1,24 @@
 /**
- * Spacing scale for padding, margin and gap, keyed by its value in density
- * independent pixels: `spacing[12]` is 12. Only values on the scale exist, so
- * an off-scale value fails to type-check.
+ * Spacing scale for padding, margin and gap, in density independent pixels.
+ *
+ * Tokens are named by step on the scale, not by value, so the scale can be
+ * retuned (for example for tablets) without renaming every use. `md` is the
+ * default gap between related elements. There is no zero token: write `0`.
  */
 export const spacing = {
-  0: 0,
-  2: 2,
-  4: 4,
-  8: 8,
-  12: 12,
-  16: 16,
-  20: 20,
-  24: 24,
-  28: 28,
-  32: 32,
-  40: 40,
-  48: 48,
-  56: 56,
-  64: 64,
+  '3xs': 2,
+  '2xs': 4,
+  xs: 8,
+  sm: 12,
+  md: 16,
+  lg: 20,
+  xl: 24,
+  '2xl': 28,
+  '3xl': 32,
+  '4xl': 40,
+  '5xl': 48,
+  '6xl': 56,
+  '7xl': 64,
 } as const;
 
 export type SpacingToken = keyof typeof spacing;

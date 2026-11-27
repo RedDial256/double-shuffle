@@ -1,22 +1,31 @@
 import { GameEngine } from '../src/game/engine';
-const e = new GameEngine();
-e.subscribe((ev) => {
+const engine = new GameEngine();
+engine.subscribe((ev) => {
   if (ev.type !== 'state') {
     console.log(ev.type === 'round_ended' ? ev.result.summary : ev.type);
   }
 });
-e.startMatch();
-let t = 0;
-for (let i = 0; i < 60 * 600 && e.phase !== 'game_over'; i++) {
-  if (e.phase === 'aiming') {
-    const p = 0.45 + Math.random() * 0.2;
-    e.launch(0, -1, p);
-    const c = e.liveCube!;
+engine.startMatch();
+let elapsedSeconds = 0;
+for (
+  let frameIndex = 0;
+  frameIndex < 60 * 600 && engine.phase !== 'game_over';
+  frameIndex++
+) {
+  if (engine.phase === 'aiming') {
+    const power = 0.45 + Math.random() * 0.2;
+    engine.launch(0, -1, power);
     console.log(
-      `t=${t.toFixed(1)} round ${e.roundIndex} team ${e.currentTeam} power ${p.toFixed(2)}`
+      `t=${elapsedSeconds.toFixed(1)} round ${engine.roundIndex} team ${engine.currentTeam} power ${power.toFixed(2)}`
     );
   }
-  e.update(1 / 60);
-  t += 1 / 60;
+  engine.update(1 / 60);
+  elapsedSeconds += 1 / 60;
 }
-console.log('final', e.scores, e.phase, 'time', t.toFixed(0));
+console.log(
+  'final',
+  engine.scores,
+  engine.phase,
+  'time',
+  elapsedSeconds.toFixed(0)
+);

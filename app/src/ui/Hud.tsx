@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { config } from '../game/config';
@@ -15,12 +15,12 @@ import {
 function Lights({ team, score }: { team: number; score: number }) {
   return (
     <View style={styles.lights}>
-      {Array.from({ length: config.targetScore }, (_, i) => (
+      {Array.from({ length: config.targetScore }, (_, pointIndex) => (
         <View
-          key={i}
+          key={pointIndex}
           style={[
             styles.light,
-            i < score ? teamFillStyles[team] : styles.lightOff,
+            pointIndex < score ? teamFillStyles[team] : styles.lightOff,
           ]}
         />
       ))}
@@ -40,10 +40,10 @@ function Rack({
 }) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
-      {Array.from({ length: config.cubesPerRound }, (_, i) => (
+      {Array.from({ length: config.cubesPerRound }, (_, cubeIndex) => (
         <View
-          key={i}
-          style={[styles.rackCube, i < left && teamFillStyles[team]]}
+          key={cubeIndex}
+          style={[styles.rackCube, cubeIndex < left && teamFillStyles[team]]}
         />
       ))}
     </View>
@@ -51,19 +51,22 @@ function Rack({
 }
 
 export function Hud({ engine }: { engine: GameEngine }) {
-  const [, bump] = useReducer((n: number) => n + 1, 0);
+  const [, bump] = useReducer((count: number) => count + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
 
   useEffect(() => {
-    const unsubscribe = engine.subscribe((e) => {
-      if (e.type === 'state' || e.type === 'round_ended') bump();
-      if (e.type === 'message') {
-        setToast(e.text);
+    const unsubscribe = engine.subscribe((event) => {
+      if (event.type === 'state' || event.type === 'round_ended') bump();
+      if (event.type === 'message') {
+        setToast(event.text);
         clearTimeout(toastTimer.current);
-        toastTimer.current = setTimeout(() => setToast(null), e.seconds * 1000);
+        toastTimer.current = setTimeout(
+          () => setToast(null),
+          event.seconds * 1000
+        );
       }
     });
     return () => {
@@ -87,16 +90,16 @@ export function Hud({ engine }: { engine: GameEngine }) {
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       <View style={styles.top} pointerEvents="none">
-        {[0, 1].map((t) => (
-          <View key={t} style={styles.scoreRow}>
-            <Text style={[styles.teamName, teamTextStyles[t]]}>
-              {config.teamNames[t]} {engine.scores[t]}
+        {[0, 1].map((teamIndex) => (
+          <View key={teamIndex} style={styles.scoreRow}>
+            <Text style={[styles.teamName, teamTextStyles[teamIndex]]}>
+              {config.teamNames[teamIndex]} {engine.scores[teamIndex]}
             </Text>
-            <Lights team={t} score={engine.scores[t]} />
+            <Lights team={teamIndex} score={engine.scores[teamIndex]} />
             <Rack
-              team={t}
-              left={engine.shotsLeft[t]}
-              killed={engine.roundKilled[t]}
+              team={teamIndex}
+              left={engine.shotsLeft[teamIndex]}
+              killed={engine.roundKilled[teamIndex]}
             />
           </View>
         ))}
@@ -135,20 +138,20 @@ const TEAM_NAME_WIDTH = 60;
 
 const styles = StyleSheet.create({
   top: {
-    paddingTop: spacing[8],
-    paddingHorizontal: spacing[12],
-    gap: spacing[4],
+    paddingTop: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    gap: spacing['2xs'],
   },
-  scoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
+  scoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   teamName: {
     fontWeight: fontWeight.extraBold,
     fontSize: fontSize.sm,
     width: TEAM_NAME_WIDTH,
   },
-  lights: { flexDirection: 'row', gap: spacing[4] },
+  lights: { flexDirection: 'row', gap: spacing['2xs'] },
   light: { width: LIGHT_SIZE, height: LIGHT_SIZE, borderRadius: radii.sm },
   lightOff: { backgroundColor: colors.indicatorOff },
-  rack: { flexDirection: 'row', gap: spacing[2], marginLeft: 'auto' },
+  rack: { flexDirection: 'row', gap: spacing['3xs'], marginLeft: 'auto' },
   rackKilled: { opacity: opacity.disabled },
   rackCube: {
     width: RACK_CUBE_SIZE,
@@ -160,14 +163,14 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     fontWeight: fontWeight.bold,
     fontSize: fontSize.sm,
-    marginTop: spacing[2],
+    marginTop: spacing['3xs'],
   },
   toast: {
     position: 'absolute',
     top: '40%',
     alignSelf: 'center',
     backgroundColor: colors.scrimStrong,
-    padding: spacing[16],
+    padding: spacing.md,
     borderRadius: radii.md,
   },
   toastText: {
@@ -181,14 +184,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.scrim,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing[12],
+    gap: spacing.sm,
   },
   win: { fontSize: fontSize.display, fontWeight: fontWeight.black },
   sub: { color: colors.text.primary, fontSize: fontSize.xl },
   button: {
     backgroundColor: colors.accent,
-    paddingHorizontal: spacing[24],
-    paddingVertical: spacing[12],
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
     borderRadius: radii.md,
   },
   buttonText: {

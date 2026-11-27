@@ -258,9 +258,11 @@ set of design tokens in `app/src/theme` (spacing, colours, font sizes and
 weights, radii, opacity), documented in `docs/design-system.md`.
 
 * Spacing uses the usual React Native scale (2, 4, 8, 12, 16, 20, 24, 28, 32,
-  40, 48, 56, 64), keyed by value so `spacing[12]` is self-explanatory and
-  off-scale values fail to type-check. T-shirt names (`sm`, `md` …) were
-  rejected because 13 steps need awkward names like `4xl`.
+  40, 48, 56, 64) with t-shirt names (`3xs` … `md` 16 … `7xl`), the same
+  naming as font sizes. Keys equal to the values (`spacing[12]`) were tried
+  first and dropped: a token named after its value can never change value,
+  which defeats the point of a token. There is no zero token; `0` is written
+  as a literal.
 * Colours have two layers: a raw `palette` named by hue, and semantic `colors`
   named by role that components use. The board and team colours moved out of
   the game `config.ts`, which now holds only rules and physics.
