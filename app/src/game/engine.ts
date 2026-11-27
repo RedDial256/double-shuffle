@@ -350,8 +350,13 @@ export class GameEngine {
       cube.body.applyLinearImpulse(Vec2(ax * k, ay * k), cube.body.getWorldCenter(), true);
 
       // +Y is backwards (towards the shooter's own platform): a push that
-      // leaves the cube heading that way costs the throw a point.
-      if (cube.body.getLinearVelocity().y > config.windBackwardPenaltySpeed) {
+      // leaves the thrown cube heading that way costs the throw a point.
+      // Only the cube being thrown can earn the penalty (docs/decisions.md D-15);
+      // anything else the blast catches is just moved.
+      if (
+        cube === this.liveCube &&
+        cube.body.getLinearVelocity().y > config.windBackwardPenaltySpeed
+      ) {
         cube.knockedBack = true;
       }
     }
@@ -406,8 +411,9 @@ export class GameEngine {
       return;
     }
 
-    // Clearly back on the shooter's own platform, behind the starting line.
-    if (c.y > yIceNear() + 1) {
+    // All the way back onto the shooter's own platform: every part of the
+    // cube is behind the starting line (docs/decisions.md D-16).
+    if (c.forwardEdgeY > yIceNear()) {
       if (c.knockedBack) this.leaveBoard(c, 'killed_back', 'round_killer');
       else this.leaveBoard(c, 'off_the_back', 'off_the_back'); // D-06: no penalty
       return;

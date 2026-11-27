@@ -59,7 +59,8 @@ export function Board({ engine }: Props) {
   const worldW = config.rinkWidth + 2;
   const worldH = yBoardEnd();
   const scale = size.w ? Math.min(size.w / worldW, size.h / worldH) : 1;
-  const ox = (size.w - worldW * scale) / 2 + scale;
+  // World x = 0 is the centre line of the rink, so it maps to mid-screen.
+  const ox = size.w / 2;
   const oy = (size.h - worldH * scale) / 2;
 
   useEffect(() => engine.subscribe((e) => e.type === 'state' && bump()), [engine]);
@@ -82,7 +83,7 @@ export function Board({ engine }: Props) {
         else if (w.exploded) {
           const t = Math.max(0, w.flash / 0.22);
           out.push(w.blastX, w.blastY, BLAST_RADIUS * (1 - t * 0.55), t);
-        } else out.push(w.x, w.y, 0.2, 1);
+        } else out.push(w.x, w.y, 0.3, 1);
       }
       frame.value = out;
       raf = requestAnimationFrame(loop);
@@ -222,7 +223,7 @@ function ChargeSprite({ frame, index }: { frame: SharedValue<number[]>; index: n
     const a = frame.value[o + 3] ?? 0;
     return (frame.value[o + 2] ?? 0) > 0.5 ? a * 0.35 : a * 0.85; // blast vs bolt
   });
-  return <Circle cx={cx} cy={cy} r={r} color="white" opacity={opacity} />;
+  return <Circle cx={cx} cy={cy} r={r} color={config.colors.windCharge} opacity={opacity} />;
 }
 
 function AimOverlay({ aim, team }: { aim: SharedValue<number[]>; team: number }) {

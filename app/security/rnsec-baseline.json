@@ -7,6 +7,20 @@
       "severity": "MEDIUM",
       "file": "package.json",
       "description": "Vulnerability in expo (moderate)"
+    },
+    {
+      "key": "NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in jest (moderate)",
+      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
+      "severity": "MEDIUM",
+      "file": "package.json",
+      "description": "Vulnerability in jest (moderate)"
+    },
+    {
+      "key": "NPM_VULNERABLE_DEPENDENCY | package.json | Vulnerability in jest-expo (moderate)",
+      "ruleId": "NPM_VULNERABLE_DEPENDENCY",
+      "severity": "MEDIUM",
+      "file": "package.json",
+      "description": "Vulnerability in jest-expo (moderate)"
     }
   ]
 }

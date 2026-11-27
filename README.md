@@ -8,7 +8,8 @@ Skizzleman and ImpulseSV.
 Design notes live in [`docs/game-design.md`](docs/game-design.md), scope and
 conventions in [`docs/implementation-brief.md`](docs/implementation-brief.md),
 and every judgement call made during implementation in
-[`docs/decisions.md`](docs/decisions.md).
+[`docs/decisions.md`](docs/decisions.md), and the plan to v1 in
+[`docs/roadmap.md`](docs/roadmap.md).
 
 ## Stack
 
@@ -33,15 +34,21 @@ npx expo start
 ```
 
 Then scan the QR code with Expo Go, or press `a` (Android emulator) or `i`
-(iOS simulator) in the terminal. `npm run web` also works for quick tuning in a
-browser, with the mouse standing in for touch.
+(iOS simulator) in the terminal.
 
-Before calling a change done, run `npx tsc --noEmit` from `app/`.
+`npm run web` also works for quick tuning in a browser, with the mouse
+standing in for touch. It first copies Skia's `canvaskit.wasm` into
+`app/public/` (git-ignored), which the web build needs to draw.
+
+Before calling a change done, run `npm run typecheck` and `npm test` from
+`app/`. The unit tests in `app/src/game/__tests__/` cover the scoring rules and
+the engine (throws, turns, rounds, wind charges, the Round Killer, knockouts and
+the win condition) without a device.
 
 `app/scripts/sim.ts` plays a whole match headlessly with random throws and
 prints the round summaries, which is handy for checking pacing after changing
 the numbers (run it with any TypeScript runner, for example
-`npx tsx scripts/sim.ts`).
+`npm run sim`).
 
 ## How to play
 

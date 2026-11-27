@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { config } from '../game/config';
 import { GameEngine } from '../game/engine';
@@ -19,21 +19,42 @@ function Lights({ team, score }: { team: number; score: number }) {
   );
 }
 
+/** Cubes the team still has to throw this round, like the rack beside the rink. */
+function Rack({ team, left, killed }: { team: number; left: number; killed: boolean }) {
+  return (
+    <View style={[styles.rack, killed && styles.rackKilled]}>
+      {Array.from({ length: config.cubesPerRound }, (_, i) => (
+        <View
+          key={i}
+          style={[
+            styles.rackCube,
+            { backgroundColor: i < left ? config.teamColors[team] : 'transparent' },
+          ]}
+        />
+      ))}
+    </View>
+  );
+}
+
 export function Hud({ engine }: { engine: GameEngine }) {
   const [, bump] = useReducer((n: number) => n + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  useEffect(
-    () =>
-      engine.subscribe((e) => {
-        if (e.type === 'state' || e.type === 'round_ended') bump();
-        if (e.type === 'message') {
-          setToast(e.text);
-          setTimeout(() => setToast(null), e.seconds * 1000);
-        }
-      }),
-    [engine],
-  );
+  useEffect(() => {
+    const unsubscribe = engine.subscribe((e) => {
+      if (e.type === 'state' || e.type === 'round_ended') bump();
+      if (e.type === 'message') {
+        setToast(e.text);
+        clearTimeout(toastTimer.current);
+        toastTimer.current = setTimeout(() => setToast(null), e.seconds * 1000);
+      }
+    });
+    return () => {
+      unsubscribe();
+      clearTimeout(toastTimer.current);
+    };
+  }, [engine]);
 
   const team = engine.currentTeam;
   const defender = engine.defendingTeam;
@@ -42,7 +63,9 @@ export function Hud({ engine }: { engine: GameEngine }) {
   else if (engine.phase === 'sliding')
     banner = `${config.teamNames[defender]}: tap to fire (${engine.windChargesLeft} left)`;
   else if (engine.phase === 'round_break' || engine.phase === 'game_over')
-    banner = engine.lastResult?.summary ?? '';
+    banner = `Round ${engine.roundIndex + (engine.phase === 'game_over' ? 1 : 0)}: ${
+      engine.lastResult?.summary ?? ''
+    }`;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
@@ -53,6 +76,7 @@ export function Hud({ engine }: { engine: GameEngine }) {
               {config.teamNames[t]} {engine.scores[t]}
             </Text>
             <Lights team={t} score={engine.scores[t]} />
+            <Rack team={t} left={engine.shotsLeft[t]} killed={engine.roundKilled[t]} />
           </View>
         ))}
         <Text style={styles.banner}>{banner}</Text>
@@ -87,6 +111,9 @@ const styles = StyleSheet.create({
   teamName: { fontWeight: '800', fontSize: 14, width: 60 },
   lights: { flexDirection: 'row', gap: 3 },
   light: { width: 10, height: 10, borderRadius: 2 },
+  rack: { flexDirection: 'row', gap: 2, marginLeft: 'auto' },
+  rackKilled: { opacity: 0.3 },
+  rackCube: { width: 9, height: 9, borderWidth: 1, borderColor: '#5a6070' },
   banner: { color: '#fff', fontWeight: '700', fontSize: 13, marginTop: 2 },
   toast: {
     position: 'absolute',

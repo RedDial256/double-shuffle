@@ -43,3 +43,6 @@ dist/
 
 # rnsec reports (npm run security)
 rnsec-reports/
+
+# CanvasKit copied in by `npm run web` (setup-skia-web)
+/public/canvaskit.wasm

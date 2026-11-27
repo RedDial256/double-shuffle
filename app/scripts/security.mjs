@@ -30,7 +30,8 @@ const NPM_SEVERITY = { critical: 'HIGH', high: 'HIGH', moderate: 'MEDIUM' };
 // npm is a .cmd shim on Windows, which spawnSync only finds through a shell.
 const SHELL = process.platform === 'win32';
 
-const keyOf = (ruleId, file, description) => [ruleId, file, description].join(' | ');
+const keyOf = (ruleId, file, description) =>
+  [ruleId, file, description].join(' | ');
 
 const scan = () => {
   const json = join(reports, 'rnsec.json');
@@ -55,7 +56,9 @@ const scan = () => {
     { cwd: ROOT, stdio: 'ignore' }
   );
   if (result.error) throw result.error;
-  if (!existsSync(json)) throw new Error(`rnsec wrote no report (exit ${result.status}).`);
+  if (!existsSync(json)) {
+    throw new Error(`rnsec wrote no report (exit ${result.status}).`);
+  }
   const { findings } = JSON.parse(readFileSync(json, 'utf8'));
   return findings.map((f) => {
     const file = relative(ROOT, f.filePath).replaceAll('\\', '/');
@@ -91,7 +94,9 @@ const audit = () => {
       `npm audit failed (${auditError(result, output)}); dependency findings were not checked.`
     );
     // Keep the baseline entries so they are not reported as resolved.
-    return baseline.filter((f) => f.ruleId === NPM_RULE).map((f) => ({ ...f, unchecked: true }));
+    return baseline
+      .filter((f) => f.ruleId === NPM_RULE)
+      .map((f) => ({ ...f, unchecked: true }));
   }
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   const direct = { ...pkg.dependencies, ...pkg.devDependencies };
@@ -112,24 +117,33 @@ const audit = () => {
 };
 
 const auditError = (result, output) => {
-  if (result.error?.code === 'ETIMEDOUT') return `timed out after ${NPM_AUDIT_TIMEOUT / 1000} s`;
+  if (result.error?.code === 'ETIMEDOUT') {
+    return `timed out after ${NPM_AUDIT_TIMEOUT / 1000} s`;
+  }
   if (result.error) return result.error.message;
   if (output?.error?.summary) return output.error.summary;
   return `exited with ${result.status}`;
 };
 
 const rnsecVersion = () =>
-  JSON.parse(readFileSync(join(ROOT, 'node_modules/rnsec/package.json'), 'utf8')).version;
+  JSON.parse(
+    readFileSync(join(ROOT, 'node_modules/rnsec/package.json'), 'utf8')
+  ).version;
 
 const report = () => {
   const ci = !!process.env.GITHUB_ACTIONS;
-  const line = (f) => `${f.severity} ${f.ruleId} in ${f.file}: ${f.description}`;
+  const line = (f) =>
+    `${f.severity} ${f.ruleId} in ${f.file}: ${f.description}`;
   const annotate = (level, text) =>
     console.log(ci ? `::${level} title=rnsec::${text}` : `${level}: ${text}`);
 
   newHigh.forEach((f) => annotate('error', `New: ${line(f)}`));
-  added.filter((f) => f.severity !== 'HIGH').forEach((f) => annotate('warning', `New: ${line(f)}`));
-  resolved.forEach((f) => annotate('warning', `Resolved, remove from the baseline: ${line(f)}`));
+  added
+    .filter((f) => f.severity !== 'HIGH')
+    .forEach((f) => annotate('warning', `New: ${line(f)}`));
+  resolved.forEach((f) =>
+    annotate('warning', `Resolved, remove from the baseline: ${line(f)}`)
+  );
   warnings.forEach((w) => annotate('warning', w));
 
   const summary = [
@@ -144,11 +158,15 @@ const report = () => {
       : []),
     ...section('New', added),
     ...section('Resolved (run `npm run security:baseline`)', resolved),
-    ...(warnings.length ? ['', '### Warnings', '', ...warnings.map((w) => `- ${w}`)] : []),
+    ...(warnings.length
+      ? ['', '### Warnings', '', ...warnings.map((w) => `- ${w}`)]
+      : []),
     '',
   ].join('\n');
   console.log(`\n${summary}`);
-  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+  }
 };
 
 const section = (title, findings) => {
@@ -159,7 +177,9 @@ const section = (title, findings) => {
     '',
     '| Severity | Rule | File | Description |',
     '| --- | --- | --- | --- |',
-    ...findings.map((f) => `| ${f.severity} | ${f.ruleId} | ${f.file} | ${f.description} |`),
+    ...findings.map(
+      (f) => `| ${f.severity} | ${f.ruleId} | ${f.file} | ${f.description} |`
+    ),
   ];
 };
 
@@ -172,7 +192,9 @@ const { values } = parseArgs({
 const reports = resolve(ROOT, values.reports);
 mkdirSync(reports, { recursive: true });
 
-const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')).findings : [];
+const baseline = existsSync(BASELINE)
+  ? JSON.parse(readFileSync(BASELINE, 'utf8')).findings
+  : [];
 const warnings = [];
 const current = [...scan(), ...audit()];
 
@@ -181,8 +203,13 @@ if (values.update) {
     .map(({ unchecked: _, ...f }) => f)
     .sort((a, b) => a.key.localeCompare(b.key));
   mkdirSync(dirname(BASELINE), { recursive: true });
-  writeFileSync(BASELINE, `${JSON.stringify({ rnsec: rnsecVersion(), findings }, null, 2)}\n`);
-  console.log(`Baseline updated: ${findings.length} finding(s) in ${relative(ROOT, BASELINE)}`);
+  writeFileSync(
+    BASELINE,
+    `${JSON.stringify({ rnsec: rnsecVersion(), findings }, null, 2)}\n`
+  );
+  console.log(
+    `Baseline updated: ${findings.length} finding(s) in ${relative(ROOT, BASELINE)}`
+  );
   warnings.forEach((w) => console.log(`warning: ${w}`));
   process.exit(0);
 }
