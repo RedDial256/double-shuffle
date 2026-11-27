@@ -55,6 +55,9 @@ Keep the label set small. Use only these, plus GitHub's defaults:
 
 * Everything in English: code, comments, UI text, commit messages, docs.
 * Commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:` …).
+  commitlint enforces it: a `commit-msg` hook (installed by `npm install` in
+  `app/`) checks each commit, and CI checks the PR title, which becomes the
+  squash-merge commit on `main`.
 * Commit messages never mention conversations, sessions or AI authorship: no
   `Co-Authored-By` trailers for an AI, no session links.
 * Pull request descriptions follow the same rule: no "Requested by" or

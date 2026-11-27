@@ -1,6 +1,6 @@
 # Double Shuffle — Roadmap to v1
 
-_Last updated: 2026-11-26_
+_Last updated: 2026-11-27_
 
 This is the living plan for getting Double Shuffle to a solid v1. It sits next
 to `game-design.md` (the rules), `implementation-brief.md` (scope and
@@ -89,7 +89,7 @@ Art comes after balance on purpose: the rink proportions can still change
   `eslint-plugin-react-you-might-not-need-an-effect` and `useEffectReducer`.
 * Tests for `app/src/game`, plus a runner for `scripts/sim.ts`.
 * CI on GitHub Actions: `tsc --noEmit`, lint, tests.
-* Conventional Commits (commitlint) and release-please (see Versioning).
+* release-please (see Versioning).
 
 **Done when:** `main` is green in CI, docs match the code, and 0.1.0 has been
 released.
@@ -244,7 +244,7 @@ sort before `beta-2`).
 **Automation:**
 
 * **Conventional Commits** (`feat:`, `fix:`, `feat!:`), checked by commitlint
-  in a commit hook and in CI.
+  in a `commit-msg` hook and, on the PR title, in CI.
 * **release-please** as a GitHub Action keeps a release PR open with the next
   version and the CHANGELOG. Merging it creates the tag and the GitHub
   Release.
@@ -293,8 +293,7 @@ rotate, both our own and fan-made.
 
 ## Next steps
 
-1. Finish M0 (push, lint and format, docs), and add Conventional Commits and
-   release-please.
+1. Finish M0 (push, lint and format, docs), and add release-please.
 2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
 3. Add rules tests to `app/src/game`, starting with the page 6 example.
 4. Port the rulebook and the end-of-round summary.
