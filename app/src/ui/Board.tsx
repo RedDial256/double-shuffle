@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -29,6 +29,7 @@ import { defaultMode } from '../game/mode';
 import { colors, opacity as opacityLevels } from '../theme';
 
 import { useAim } from './useAim';
+import { useEngineState } from './useEngineState';
 
 // Fixed to the default mode until the slots are sized from the match (#14).
 const CUBE_SLOTS = defaultMode.cubesPerRound * 2;
@@ -61,7 +62,7 @@ interface Props {
 
 export function Board({ engine }: Props) {
   const [size, setSize] = useState({ w: 0, h: 0 });
-  const [, bump] = useReducer((count: number) => count + 1, 0);
+  useEngineState(engine);
   const frame = useSharedValue<number[]>([]);
   const aim = useSharedValue<number[]>([0, 0, 0, 0, 0, 0]);
 
@@ -72,11 +73,6 @@ export function Board({ engine }: Props) {
   // World x = 0 is the centre line of the rink, so it maps to mid-screen.
   const ox = size.w / 2;
   const oy = (size.h - worldH * scale) / 2;
-
-  useEffect(
-    () => engine.subscribe((event) => event.type === 'state' && bump()),
-    [engine]
-  );
 
   useEffect(() => {
     let raf = 0;
