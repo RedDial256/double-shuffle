@@ -25,6 +25,8 @@ rather than striking it out, and put the reasoning for decisions in
   example `claude/21-add-new-feature` or `claude/33-fix-game-loop-bug`. When
   there is no issue for the work, leave the number out:
   `claude/fix-game-loop-bug`.
+* Agents keep their open PRs up to date with main and resolve merge conflicts
+  without being asked.
 * Every PR runs the rnsec security audit.
 * GitHub Actions orchestrates CI (typecheck, lint, tests) and the EAS deploys
   described in `docs/roadmap.md`.
