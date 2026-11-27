@@ -40,7 +40,7 @@ The framework-free engine lives in `app/src/game`, and the Skia board and HUD
 in `app/src/ui`.
 
 **Missing:** the in-game rulebook, a proper end-of-round summary (it is only a
-banner line today), tests, CI, Expo Router and release automation.
+banner line today), tests, CI and Expo Router.
 
 **Technical debt seen in the code:**
 
@@ -66,7 +66,7 @@ banner line today), tests, CI, Expo Router and release automation.
 | 6 | Analytics tool | To investigate | M5 |
 | 7 | Bundle ID, store name, icon | To investigate | M5 |
 | 8 | Deploys | Decided: automatic internal EAS builds, with room for manual ones. Play internal testing and TestFlight only from M5 | M2 |
-| 9 | Versioning | Decided: automated SemVer, 0.x → beta → rc → 1.0.0. Proposed tool: release-please | M0 |
+| 9 | Versioning | Decided: automated SemVer with release-please, 0.x → beta → rc → 1.0.0 (D-17) | — |
 
 ## Milestones
 
@@ -88,7 +88,6 @@ Art comes after balance on purpose: the rink proportions can still change
 * Tests for `app/src/game`, plus a runner for `scripts/sim.ts`.
 * CI on GitHub Actions: `tsc --noEmit` and tests (ESLint and Prettier
   already run on every PR and push to `main`).
-* Conventional Commits (commitlint) and release-please (see Versioning).
 
 **Done when:** `main` is green in CI, docs match the code, and 0.1.0 has been
 released.
@@ -228,7 +227,8 @@ low-priority queue slows playtests down.
 
 ## Versioning
 
-SemVer, with pre-releases before 1.0.0:
+SemVer, with pre-releases before 1.0.0. How to cut releases and switch
+phases: `releasing.md`.
 
 | Phase | Versions | When |
 |---|---|---|
@@ -243,7 +243,7 @@ sort before `beta-2`).
 **Automation:**
 
 * **Conventional Commits** (`feat:`, `fix:`, `feat!:`), checked by commitlint
-  in a commit hook and in CI.
+  in a `commit-msg` hook and, on the PR title, in CI.
 * **release-please** as a GitHub Action keeps a release PR open with the next
   version and the CHANGELOG. Merging it creates the tag and the GitHub
   Release.
@@ -292,8 +292,7 @@ rotate, both our own and fan-made.
 
 ## Next steps
 
-1. Finish M0 (typecheck and tests in CI, docs), and add Conventional Commits and
-   release-please.
+1. Finish M0 (typecheck and tests in CI, docs) and release 0.1.0.
 2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
 3. Add rules tests to `app/src/game`, starting with the page 6 example.
 4. Port the rulebook and the end-of-round summary.
