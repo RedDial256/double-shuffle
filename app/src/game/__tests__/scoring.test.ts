@@ -50,13 +50,13 @@ describe('zoneValue', () => {
 
 describe('scoreRound', () => {
   it('is a blank end with no cubes', () => {
-    const r = scoreRound([]);
-    expect(r.points).toEqual([0, 0]);
-    expect(r.leader).toBe(-1);
+    const result = scoreRound([]);
+    expect(result.points).toEqual([0, 0]);
+    expect(result.leader).toBe(-1);
   });
 
   it('reproduces the rulebook page 6 example: Red 5, Blue 0', () => {
-    const r = scoreRound([
+    const result = scoreRound([
       cube(0, 1), // Red in band 3
       cube(0, band + 0.5), // Red at the top of band 2
       cube(1, band + 1.2), // Blue's best, behind both of those
@@ -66,15 +66,19 @@ describe('scoreRound', () => {
       cube(1, band + 2.4),
       cube(1, band + 2.4),
     ]);
-    expect(r.leader).toBe(0);
-    expect(r.points).toEqual([5, 0]);
-    expect(r.scoring).toHaveLength(2);
+    expect(result.leader).toBe(0);
+    expect(result.points).toEqual([5, 0]);
+    expect(result.scoring).toHaveLength(2);
   });
 
   it('only scores the leader for cubes ahead of the rival best cube', () => {
-    const r = scoreRound([cube(1, 0.5), cube(0, 1), cube(1, band * 2 + 1)]);
-    expect(r.leader).toBe(1);
-    expect(r.points).toEqual([0, 3]);
+    const result = scoreRound([
+      cube(1, 0.5),
+      cube(0, 1),
+      cube(1, band * 2 + 1),
+    ]);
+    expect(result.leader).toBe(1);
+    expect(result.points).toEqual([0, 3]);
   });
 
   it('scores the 4-point overhang', () => {
@@ -82,38 +86,41 @@ describe('scoreRound', () => {
   });
 
   it('gives nothing for a lead held in neutral ice', () => {
-    const r = scoreRound([cube(0, 12), cube(1, 15)]);
-    expect(r.leader).toBe(0);
-    expect(r.points).toEqual([0, 0]);
+    const result = scoreRound([cube(0, 12), cube(1, 15)]);
+    expect(result.leader).toBe(0);
+    expect(result.points).toEqual([0, 0]);
   });
 
   it('treats equal best cubes as a blank end', () => {
-    const r = scoreRound([cube(0, 1), cube(1, 1)]);
-    expect(r.leader).toBe(-1);
-    expect(r.points).toEqual([0, 0]);
+    const result = scoreRound([cube(0, 1), cube(1, 1)]);
+    expect(result.leader).toBe(-1);
+    expect(result.points).toEqual([0, 0]);
   });
 
   it('ignores cubes that left the board', () => {
-    const r = scoreRound([
+    const result = scoreRound([
       cube(1, -0.2, { state: 'off_the_back' }),
       cube(0, 4),
     ]);
-    expect(r.leader).toBe(0);
-    expect(r.points).toEqual([2, 0]);
+    expect(result.leader).toBe(0);
+    expect(result.points).toEqual([2, 0]);
   });
 
   it('replaces a knocked-back cube with -1 and leaves it out of the lead (D-05)', () => {
-    const r = scoreRound([cube(1, 0.5, { knockedBack: true }), cube(0, 4)]);
-    expect(r.leader).toBe(0);
-    expect(r.penalties).toEqual([0, 1]);
-    expect(r.points).toEqual([2, -1]);
-    expect(r.summary).toContain('windburst');
+    const result = scoreRound([
+      cube(1, 0.5, { knockedBack: true }),
+      cube(0, 4),
+    ]);
+    expect(result.leader).toBe(0);
+    expect(result.penalties).toEqual([0, 1]);
+    expect(result.points).toEqual([2, -1]);
+    expect(result.summary).toContain('windburst');
   });
 
   it('does not penalise a knocked-back cube that left the board', () => {
-    const r = scoreRound([
+    const result = scoreRound([
       cube(0, 30, { knockedBack: true, state: 'killed_back' }),
     ]);
-    expect(r.penalties).toEqual([0, 0]);
+    expect(result.penalties).toEqual([0, 0]);
   });
 });
