@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useReducer, useState } from 'react';
-import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import type { LayoutChangeEvent } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
 import {
   Canvas,
   Circle,
@@ -9,11 +11,9 @@ import {
   Rect,
   vec,
 } from '@shopify/react-native-skia';
-import {
-  SharedValue,
-  useDerivedValue,
-  useSharedValue,
-} from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
+import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+
 import {
   config,
   dispensers,
@@ -24,8 +24,9 @@ import {
   yIceFar,
   yIceNear,
 } from '../game/config';
-import { GameEngine } from '../game/engine';
+import type { GameEngine } from '../game/engine';
 import { defaultMode } from '../game/mode';
+
 import { useAim } from './useAim';
 
 // Fixed to the default mode until the slots are sized from the match (#14).
@@ -38,7 +39,13 @@ const CHARGE_STRIDE = 4;
 function shade(hex: string, amount: number): string {
   const n = parseInt(hex.slice(1), 16);
   const ch = (v: number) =>
-    Math.max(0, Math.min(255, Math.round(v + (amount >= 0 ? (255 - v) * amount : v * amount))));
+    Math.max(
+      0,
+      Math.min(
+        255,
+        Math.round(v + (amount >= 0 ? (255 - v) * amount : v * amount))
+      )
+    );
   const r = ch((n >> 16) & 255);
   const g = ch((n >> 8) & 255);
   const b = ch(n & 255);
@@ -63,7 +70,10 @@ export function Board({ engine }: Props) {
   const ox = size.w / 2;
   const oy = (size.h - worldH * scale) / 2;
 
-  useEffect(() => engine.subscribe((e) => e.type === 'state' && bump()), [engine]);
+  useEffect(
+    () => engine.subscribe((e) => e.type === 'state' && bump()),
+    [engine]
+  );
 
   useEffect(() => {
     let raf = 0;
@@ -82,7 +92,12 @@ export function Board({ engine }: Props) {
         if (!w) out.push(0, 0, 0, 0);
         else if (w.exploded) {
           const t = Math.max(0, w.flash / 0.22);
-          out.push(w.blastX, w.blastY, engine.mode.windBlastRadius * (1 - t * 0.55), t);
+          out.push(
+            w.blastX,
+            w.blastY,
+            engine.mode.windBlastRadius * (1 - t * 0.55),
+            t
+          );
         } else out.push(w.x, w.y, 0.3, 1);
       }
       frame.value = out;
@@ -107,10 +122,28 @@ export function Board({ engine }: Props) {
       <Canvas style={StyleSheet.absoluteFill}>
         <Group transform={[{ translateX: ox }, { translateY: oy }, { scale }]}>
           {/* Platforms */}
-          <Rect x={-hw} y={0} width={hw * 2} height={yFar} color={config.colors.platform} />
-          <Rect x={-hw} y={yNear} width={hw * 2} height={yBoardEnd() - yNear} color={config.colors.platform} />
+          <Rect
+            x={-hw}
+            y={0}
+            width={hw * 2}
+            height={yFar}
+            color={config.colors.platform}
+          />
+          <Rect
+            x={-hw}
+            y={yNear}
+            width={hw * 2}
+            height={yBoardEnd() - yNear}
+            color={config.colors.platform}
+          />
           {/* Ice */}
-          <Rect x={-hw} y={yFar} width={hw * 2} height={yNear - yFar} color={config.colors.ice} />
+          <Rect
+            x={-hw}
+            y={yFar}
+            width={hw * 2}
+            height={yNear - yFar}
+            color={config.colors.ice}
+          />
           {/* Far (live) bands, deepest first, then the decorative near bands */}
           {[0, 1, 2].map((i) => (
             <Rect
@@ -143,10 +176,28 @@ export function Board({ engine }: Props) {
             />
           ))}
           {/* Starting line */}
-          <Rect x={-hw} y={yNear - 0.1} width={hw * 2} height={0.2} color={config.colors.startLine} />
+          <Rect
+            x={-hw}
+            y={yNear - 0.1}
+            width={hw * 2}
+            height={0.2}
+            color={config.colors.startLine}
+          />
           {/* Walls + dispensers */}
-          <Rect x={-hw - 1} y={0} width={1} height={yBoardEnd()} color={config.colors.wall} />
-          <Rect x={hw} y={0} width={1} height={yBoardEnd()} color={config.colors.wall} />
+          <Rect
+            x={-hw - 1}
+            y={0}
+            width={1}
+            height={yBoardEnd()}
+            color={config.colors.wall}
+          />
+          <Rect
+            x={hw}
+            y={0}
+            width={1}
+            height={yBoardEnd()}
+            color={config.colors.wall}
+          />
           {dispenserList.map((d, i) => (
             <Rect
               key={`disp${i}`}
@@ -203,18 +254,34 @@ function CubeSprite({
       { rotate: f[o + 2] ?? 0 },
     ];
   });
-  const opacity = useDerivedValue(() => frame.value[index * CUBE_STRIDE + 3] ?? 0);
+  const opacity = useDerivedValue(
+    () => frame.value[index * CUBE_STRIDE + 3] ?? 0
+  );
   return (
     <Group transform={transform} opacity={opacity}>
       <Rect x={-0.5} y={-0.5} width={1} height={1} color={shade(base, -0.25)} />
       <Rect x={-0.38} y={-0.38} width={0.76} height={0.76} color={base} />
-      <Rect x={-0.18} y={-0.18} width={0.36} height={0.36} color={shade(base, 0.35)} />
-      {knocked && <Rect x={-0.1} y={-0.1} width={0.2} height={0.2} color="#2b2b2b" />}
+      <Rect
+        x={-0.18}
+        y={-0.18}
+        width={0.36}
+        height={0.36}
+        color={shade(base, 0.35)}
+      />
+      {knocked && (
+        <Rect x={-0.1} y={-0.1} width={0.2} height={0.2} color="#2b2b2b" />
+      )}
     </Group>
   );
 }
 
-function ChargeSprite({ frame, index }: { frame: SharedValue<number[]>; index: number }) {
+function ChargeSprite({
+  frame,
+  index,
+}: {
+  frame: SharedValue<number[]>;
+  index: number;
+}) {
   const o = index * CHARGE_STRIDE;
   const cx = useDerivedValue(() => frame.value[o] ?? 0);
   const cy = useDerivedValue(() => frame.value[o + 1] ?? 0);
@@ -223,10 +290,24 @@ function ChargeSprite({ frame, index }: { frame: SharedValue<number[]>; index: n
     const a = frame.value[o + 3] ?? 0;
     return (frame.value[o + 2] ?? 0) > 0.5 ? a * 0.35 : a * 0.85; // blast vs bolt
   });
-  return <Circle cx={cx} cy={cy} r={r} color={config.colors.windCharge} opacity={opacity} />;
+  return (
+    <Circle
+      cx={cx}
+      cy={cy}
+      r={r}
+      color={config.colors.windCharge}
+      opacity={opacity}
+    />
+  );
 }
 
-function AimOverlay({ aim, team }: { aim: SharedValue<number[]>; team: number }) {
+function AimOverlay({
+  aim,
+  team,
+}: {
+  aim: SharedValue<number[]>;
+  team: number;
+}) {
   const color = shade(config.teamColors[team], 0.2);
   const p1 = useDerivedValue(() => vec(aim.value[1], aim.value[2]));
   const p2 = useDerivedValue(() => vec(aim.value[3], aim.value[4]));

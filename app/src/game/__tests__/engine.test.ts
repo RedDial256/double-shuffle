@@ -50,7 +50,10 @@ describe('throwing', () => {
     const { e } = newMatch();
     expect(e.phase).toBe('aiming');
     expect(e.currentTeam).toBe(0);
-    expect(e.shotsLeft).toEqual([classicMode.cubesPerRound, classicMode.cubesPerRound]);
+    expect(e.shotsLeft).toEqual([
+      classicMode.cubesPerRound,
+      classicMode.cubesPerRound,
+    ]);
     expect(e.liveCube?.state).toBe('racked');
     expect(e.liveCube?.y).toBeCloseTo(yIceNear() - 0.5);
   });
@@ -120,7 +123,9 @@ describe('turns and rounds', () => {
 
   it('alternates the first thrower between rounds (D-08)', () => {
     const { e } = newMatch();
-    for (let i = 0; i < classicMode.cubesPerRound * 2; i++) throwAndSettle(e, 1);
+    for (let i = 0; i < classicMode.cubesPerRound * 2; i++) {
+      throwAndSettle(e, 1);
+    }
     runToPhase(e, 'aiming');
     expect(e.roundIndex).toBe(1);
     expect(e.currentTeam).toBe(1);
@@ -183,9 +188,9 @@ describe('turns and rounds', () => {
       blankEnd(e);
       expect(e.phase).toBe('game_over');
       expect(e.winner).toBe(1);
-      expect(
-        events.filter((ev) => ev.type === 'game_over')
-      ).toEqual([{ type: 'game_over', winner: 1 }]);
+      expect(events.filter((ev) => ev.type === 'game_over')).toEqual([
+        { type: 'game_over', winner: 1 },
+      ]);
     });
 
     it('still picks the higher total when the leader crosses too', () => {

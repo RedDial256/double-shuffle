@@ -21,4 +21,11 @@ export default [
   // Flags effects that only derive state, chain state updates or reset state
   // on prop change: https://react.dev/learn/you-might-not-need-an-effect
   reactYouMightNotNeedAnEffect.configs.recommended,
+  {
+    rules: {
+      // Variables and functions get names that say what they are for. Object
+      // properties are left alone so data like `x`/`y` and library APIs pass.
+      'id-length': ['warn', { min: 2, properties: 'never', exceptions: ['_'] }],
+    },
+  },
 ];
