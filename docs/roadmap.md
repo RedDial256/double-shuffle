@@ -85,10 +85,9 @@ Art comes after balance on purpose: the rink proportions can still change
 ### M0 — Foundation
 
 * Repository on GitHub.
-* ESLint and Prettier with `rn-tooling-config`,
-  `eslint-plugin-react-you-might-not-need-an-effect` and `useEffectReducer`.
 * Tests for `app/src/game`, plus a runner for `scripts/sim.ts`.
-* CI on GitHub Actions: `tsc --noEmit`, lint, tests.
+* CI on GitHub Actions: `tsc --noEmit` and tests (ESLint and Prettier
+  already run on every PR and push to `main`).
 
 **Done when:** `main` is green in CI, docs match the code, and 0.1.0 has been
 released.
@@ -293,7 +292,7 @@ rotate, both our own and fan-made.
 
 ## Next steps
 
-1. Finish M0 (push, lint and format, docs) and release 0.1.0.
+1. Finish M0 (typecheck and tests in CI, docs) and release 0.1.0.
 2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
 3. Add rules tests to `app/src/game`, starting with the page 6 example.
 4. Port the rulebook and the end-of-round summary.
