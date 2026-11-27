@@ -1,6 +1,6 @@
 /**
  * Match engine: physics (planck), turn loop, wind charges and the win
- * condition. Port of sulphur_cube.gd, wind_charge.gd and game_manager.gd.
+ * condition.
  *
  * Framework-free on purpose: the React/Skia layer only calls the public
  * methods, calls `update(dt)` every frame and reads the public state.
