@@ -34,6 +34,7 @@ const CUBE_STRIDE = 4;
 const CHARGE_STRIDE = 4;
 
 const BLAST_RADIUS = config.windBlastRadius;
+const SCORED_RING = '#f5d76e';
 
 function shade(hex: string, amount: number): string {
   const n = parseInt(hex.slice(1), 16);
@@ -98,6 +99,10 @@ export function Board({ engine }: Props) {
     setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height });
 
   const dispenserList = useMemo(() => dispensers(), []);
+  // During the round summary, ring the cubes that scored and dim the rest.
+  const showResult =
+    (engine.phase === 'round_break' || engine.phase === 'game_over') && engine.lastResult;
+  const scoring = new Set(showResult ? engine.lastResult?.scoring : []);
   const hw = halfWidth();
   const yFar = yIceFar();
   const yNear = yIceNear();
@@ -166,6 +171,9 @@ export function Board({ engine }: Props) {
               index={i}
               team={engine.cubes[i]?.team ?? 0}
               knocked={engine.cubes[i]?.knockedBack ?? false}
+              highlight={
+                !showResult ? 'none' : scoring.has(engine.cubes[i]!) ? 'scored' : 'dimmed'
+              }
             />
           ))}
 
@@ -187,11 +195,13 @@ function CubeSprite({
   index,
   team,
   knocked,
+  highlight,
 }: {
   frame: SharedValue<number[]>;
   index: number;
   team: number;
   knocked: boolean;
+  highlight: 'none' | 'scored' | 'dimmed';
 }) {
   const base = config.teamColors[team];
   const transform = useDerivedValue(() => {
@@ -206,10 +216,23 @@ function CubeSprite({
   const opacity = useDerivedValue(() => frame.value[index * CUBE_STRIDE + 3] ?? 0);
   return (
     <Group transform={transform} opacity={opacity}>
-      <Rect x={-0.5} y={-0.5} width={1} height={1} color={shade(base, -0.25)} />
-      <Rect x={-0.38} y={-0.38} width={0.76} height={0.76} color={base} />
-      <Rect x={-0.18} y={-0.18} width={0.36} height={0.36} color={shade(base, 0.35)} />
-      {knocked && <Rect x={-0.1} y={-0.1} width={0.2} height={0.2} color="#2b2b2b" />}
+      {highlight === 'scored' && (
+        <Rect
+          x={-0.72}
+          y={-0.72}
+          width={1.44}
+          height={1.44}
+          color={SCORED_RING}
+          style="stroke"
+          strokeWidth={0.14}
+        />
+      )}
+      <Group opacity={highlight === 'dimmed' ? 0.4 : 1}>
+        <Rect x={-0.5} y={-0.5} width={1} height={1} color={shade(base, -0.25)} />
+        <Rect x={-0.38} y={-0.38} width={0.76} height={0.76} color={base} />
+        <Rect x={-0.18} y={-0.18} width={0.36} height={0.36} color={shade(base, 0.35)} />
+        {knocked && <Rect x={-0.1} y={-0.1} width={0.2} height={0.2} color="#2b2b2b" />}
+      </Group>
     </Group>
   );
 }

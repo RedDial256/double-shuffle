@@ -62,7 +62,8 @@ export const config = {
   // Timings (seconds)
   maxSlideSeconds: 25,
   resolveDelay: 0.9,
-  roundBreakDelay: 3.2,
+  /** How long the end-of-round summary stays up before the next round. */
+  roundBreakDelay: 9,
 
   teamColors: ['#d8452f', '#3a7ad9'],
   teamNames: ['Red', 'Blue'],

@@ -71,6 +71,8 @@ export class GameEngine {
   charges: WindCharge[] = [];
   liveCube: Cube | null = null;
   lastResult: RoundResult | null = null;
+  /** 1-based number of the round `lastResult` belongs to. */
+  lastResultRound = 0;
   winner = -1;
 
   private world: World;
@@ -130,6 +132,13 @@ export class GameEngine {
 
   restart() {
     this.startMatch();
+  }
+
+  /** Skip the rest of the round summary and start the next round now. */
+  nextRound() {
+    if (this.phase !== 'round_break') return;
+    this.timers = [];
+    this.startRound();
   }
 
   private startRound() {
@@ -193,6 +202,7 @@ export class GameEngine {
     this.phase = 'round_break';
     const result = scoreRound(this.cubes);
     this.lastResult = result;
+    this.lastResultRound = this.roundIndex + 1;
 
     for (const t of [0, 1]) {
       this.scores[t] += result.points[t];

@@ -1,6 +1,6 @@
 # Double Shuffle — Roadmap to v1
 
-_Last updated: 2026-11-26_
+_Last updated: 2026-11-27_
 
 This is the living plan for getting Double Shuffle to a solid v1. It sits next
 to `game-design.md` (the rules), `implementation-brief.md` (scope and
@@ -39,8 +39,8 @@ The React Native port covers almost all of the Original rules (D-01 to D-10).
 The framework-free engine lives in `app/src/game`, and the Skia board and HUD
 in `app/src/ui`.
 
-**Missing:** the in-game rulebook, a proper end-of-round summary (it is only a
-banner line today), tests, CI, Expo Router and release automation.
+**Missing:** the in-game rulebook, tests, CI, Expo Router and release
+automation.
 
 **Technical debt seen in the code:**
 
@@ -98,8 +98,6 @@ released.
 
 * Finish the game loop port.
 * Port the rulebook and the Rules button.
-* End-of-round summary: who holds the front, which cubes scored (highlighted
-  on the board, from `RoundResult.scoring`), penalties.
 * Rules tests: the page 6 example (Red 5, Blue 0), the 4-point overhang, a cube
   straddling two bands (D-04), the windburst penalty (D-05), the Round Killer,
   knockouts without a penalty (D-06), match totals floored at zero (D-07), both
@@ -297,7 +295,7 @@ rotate, both our own and fan-made.
    release-please.
 2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
 3. Add rules tests to `app/src/game`, starting with the page 6 example.
-4. Port the rulebook and the end-of-round summary.
+4. Port the rulebook.
 5. Turn `config` into a `GameMode` passed to the engine, to prepare the
    presets.
 6. First fps measurement and first playtest on a real device.
