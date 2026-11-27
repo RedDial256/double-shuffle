@@ -234,3 +234,23 @@ knocked-back cube that stopped on the platform just behind the line stayed in
 play and only cost -1. The check is now "every part of the cube is behind the
 starting line" (its leading edge, rotation included, has crossed it), the
 mirror image of the 4-point overhang test at the far end.
+
+## D-20 — Design tokens in `app/src/theme`
+
+Styles had colours, spacing and font sizes written inline, and ESLint's
+`react-native/no-color-literals` warned about them. The app now has a small
+set of design tokens in `app/src/theme` (spacing, colours, font sizes and
+weights, radii, opacity), documented in `docs/design-system.md`.
+
+* Spacing uses the usual React Native scale (2, 4, 8, 12, 16, 20, 24, 28, 32,
+  40, 48, 56, 64), keyed by value so `spacing[12]` is self-explanatory and
+  off-scale values fail to type-check. T-shirt names (`sm`, `md` …) were
+  rejected because 13 steps need awkward names like `4xl`.
+* Colours have two layers: a raw `palette` named by hue, and semantic `colors`
+  named by role that components use. The board and team colours moved out of
+  the game `config.ts`, which now holds only rules and physics.
+* Off-scale values snapped to the nearest step, which changes a few pixels:
+  the score-light gap 3 → 4, the toast padding 14 → 16, and the banner font
+  13 → 14.
+* Tokens are plain constants, not a theme context: there is one theme, and a
+  context can wrap them later if a second one is ever needed.

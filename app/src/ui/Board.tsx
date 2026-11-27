@@ -25,6 +25,7 @@ import {
   yIceNear,
 } from '../game/config';
 import { GameEngine } from '../game/engine';
+import { colors } from '../theme';
 import { useAim } from './useAim';
 
 const CUBE_SLOTS = config.cubesPerRound * 2;
@@ -107,10 +108,10 @@ export function Board({ engine }: Props) {
       <Canvas style={StyleSheet.absoluteFill}>
         <Group transform={[{ translateX: ox }, { translateY: oy }, { scale }]}>
           {/* Platforms */}
-          <Rect x={-hw} y={0} width={hw * 2} height={yFar} color={config.colors.platform} />
-          <Rect x={-hw} y={yNear} width={hw * 2} height={yBoardEnd() - yNear} color={config.colors.platform} />
+          <Rect x={-hw} y={0} width={hw * 2} height={yFar} color={colors.board.platform} />
+          <Rect x={-hw} y={yNear} width={hw * 2} height={yBoardEnd() - yNear} color={colors.board.platform} />
           {/* Ice */}
-          <Rect x={-hw} y={yFar} width={hw * 2} height={yNear - yFar} color={config.colors.ice} />
+          <Rect x={-hw} y={yFar} width={hw * 2} height={yNear - yFar} color={colors.board.ice} />
           {/* Far (live) bands, deepest first, then the decorative near bands */}
           {[0, 1, 2].map((i) => (
             <Rect
@@ -119,7 +120,7 @@ export function Board({ engine }: Props) {
               y={yFar + config.band * i}
               width={hw * 2}
               height={config.band}
-              color={config.colors.iceBand[i]}
+              color={colors.board.iceBands[i]}
             />
           ))}
           {[0, 1, 2].map((i) => (
@@ -129,7 +130,7 @@ export function Board({ engine }: Props) {
               y={yNear - config.band * (i + 1)}
               width={hw * 2}
               height={config.band}
-              color={config.colors.iceBand[i]}
+              color={colors.board.iceBands[i]}
             />
           ))}
           {[...farBandBoundaries(), ...nearBandBoundaries()].map((y, i) => (
@@ -139,14 +140,14 @@ export function Board({ engine }: Props) {
               y={y - config.divider / 2}
               width={hw * 2}
               height={config.divider}
-              color={config.colors.divider}
+              color={colors.board.divider}
             />
           ))}
           {/* Starting line */}
-          <Rect x={-hw} y={yNear - 0.1} width={hw * 2} height={0.2} color={config.colors.startLine} />
+          <Rect x={-hw} y={yNear - 0.1} width={hw * 2} height={0.2} color={colors.board.startLine} />
           {/* Walls + dispensers */}
-          <Rect x={-hw - 1} y={0} width={1} height={yBoardEnd()} color={config.colors.wall} />
-          <Rect x={hw} y={0} width={1} height={yBoardEnd()} color={config.colors.wall} />
+          <Rect x={-hw - 1} y={0} width={1} height={yBoardEnd()} color={colors.board.wall} />
+          <Rect x={hw} y={0} width={1} height={yBoardEnd()} color={colors.board.wall} />
           {dispenserList.map((d, i) => (
             <Rect
               key={`disp${i}`}
@@ -154,7 +155,7 @@ export function Board({ engine }: Props) {
               y={d.y - 0.4}
               width={0.9}
               height={0.8}
-              color={config.colors.dispenser}
+              color={colors.board.dispenser}
             />
           ))}
 
@@ -193,7 +194,7 @@ function CubeSprite({
   team: number;
   knocked: boolean;
 }) {
-  const base = config.teamColors[team];
+  const base = colors.team[team];
   const transform = useDerivedValue(() => {
     const f = frame.value;
     const o = index * CUBE_STRIDE;
@@ -209,7 +210,7 @@ function CubeSprite({
       <Rect x={-0.5} y={-0.5} width={1} height={1} color={shade(base, -0.25)} />
       <Rect x={-0.38} y={-0.38} width={0.76} height={0.76} color={base} />
       <Rect x={-0.18} y={-0.18} width={0.36} height={0.36} color={shade(base, 0.35)} />
-      {knocked && <Rect x={-0.1} y={-0.1} width={0.2} height={0.2} color="#2b2b2b" />}
+      {knocked && <Rect x={-0.1} y={-0.1} width={0.2} height={0.2} color={colors.board.knockedMarker} />}
     </Group>
   );
 }
@@ -223,11 +224,11 @@ function ChargeSprite({ frame, index }: { frame: SharedValue<number[]>; index: n
     const a = frame.value[o + 3] ?? 0;
     return (frame.value[o + 2] ?? 0) > 0.5 ? a * 0.35 : a * 0.85; // blast vs bolt
   });
-  return <Circle cx={cx} cy={cy} r={r} color={config.colors.windCharge} opacity={opacity} />;
+  return <Circle cx={cx} cy={cy} r={r} color={colors.board.windCharge} opacity={opacity} />;
 }
 
 function AimOverlay({ aim, team }: { aim: SharedValue<number[]>; team: number }) {
-  const color = shade(config.teamColors[team], 0.2);
+  const color = shade(colors.team[team], 0.2);
   const p1 = useDerivedValue(() => vec(aim.value[1], aim.value[2]));
   const p2 = useDerivedValue(() => vec(aim.value[3], aim.value[4]));
   const opacity = useDerivedValue(() => aim.value[0]);

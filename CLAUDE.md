@@ -53,6 +53,11 @@ Keep the label set small. Use only these, plus GitHub's defaults:
 
 ## Conventions
 
+* Styles use the design tokens in `app/src/theme` (spacing, colours, font
+  sizes and weights, radii, opacity), never hardcoded values. Spacing comes
+  from the scale 2, 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64. Grow the
+  token set when a screen needs a new value, and keep `docs/design-system.md`
+  in step.
 * Everything in English: code, comments, UI text, commit messages, docs.
 * Commit messages follow Conventional Commits (`feat:`, `fix:`, `chore:` …).
 * Commit messages never mention conversations, sessions or AI authorship: no

@@ -8,7 +8,8 @@ Skizzleman and ImpulseSV.
 Design notes live in [`docs/game-design.md`](docs/game-design.md), scope and
 conventions in [`docs/implementation-brief.md`](docs/implementation-brief.md),
 and every judgement call made during implementation in
-[`docs/decisions.md`](docs/decisions.md), and the plan to v1 in
+[`docs/decisions.md`](docs/decisions.md), the design tokens in
+[`docs/design-system.md`](docs/design-system.md), and the plan to v1 in
 [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Stack

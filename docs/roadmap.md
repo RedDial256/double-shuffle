@@ -1,6 +1,6 @@
 # Double Shuffle — Roadmap to v1
 
-_Last updated: 2026-11-26_
+_Last updated: 2026-11-27_
 
 This is the living plan for getting Double Shuffle to a solid v1. It sits next
 to `game-design.md` (the rules), `implementation-brief.md` (scope and
@@ -153,7 +153,8 @@ again without touching code.
 
 * Original voxel art drawn from scratch: cubes, ice, walls, dispensers, wood
   platform.
-* Book-style UI for Rules and menus.
+* Book-style UI for Rules and menus, built on the design tokens in
+  `app/src/theme` (see `design-system.md`).
 * Sound with `expo-audio` (throw, slide, impact, blast, Round Killer, win) and
   haptics with `expo-haptics`.
 * Juice: blast particles, lights filling up, a big Round Killer moment.

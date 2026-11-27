@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GameEngine } from './src/game/engine';
 import { Board } from './src/ui/Board';
+import { colors } from './src/theme';
 import { Hud } from './src/ui/Hud';
 
 export default function App() {
@@ -24,6 +25,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#14171f' },
+  root: { flex: 1, backgroundColor: colors.background },
   fill: { flex: 1 },
 });
