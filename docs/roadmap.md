@@ -100,10 +100,6 @@ released.
 * Port the rulebook and the Rules button.
 * End-of-round summary: who holds the front, which cubes scored (highlighted
   on the board, from `RoundResult.scoring`), penalties.
-* Rules tests: the page 6 example (Red 5, Blue 0), the 4-point overhang, a cube
-  straddling two bands (D-04), the windburst penalty (D-05), the Round Killer,
-  knockouts without a penalty (D-06), match totals floored at zero (D-07), both
-  teams crossing 15 in the same round.
 * Fix the slot and toast issues listed above.
 
 **Done when:** a full match plays on a device, at least as well as the Godot

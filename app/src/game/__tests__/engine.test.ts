@@ -164,6 +164,55 @@ describe('turns and rounds', () => {
     expect(e.scores).toEqual([0, 0]);
     expect(e.phase).toBe('aiming');
   });
+  describe('both teams past the target in the same round', () => {
+    const target = classicMode.targetScore;
+
+    /** Play out a blank end: every throw falls off the back for 0 points. */
+    function blankEnd(e: GameEngine) {
+      while (e.phase === 'aiming') throwAndSettle(e, 1);
+      expect(e.lastResult?.points).toEqual([0, 0]);
+    }
+
+    // Only the team holding the front scores, so in the Classic rules one
+    // team can't overtake the other in a single round. These tests start the
+    // round with totals already at the line to reach findWinner's two-team
+    // branch, which a mode where both teams score would hit in play.
+    it('gives the match to the higher total', () => {
+      const { e, events } = newMatch();
+      e.scores = [target, target + 2];
+      blankEnd(e);
+      expect(e.phase).toBe('game_over');
+      expect(e.winner).toBe(1);
+      expect(
+        events.filter((ev) => ev.type === 'game_over')
+      ).toEqual([{ type: 'game_over', winner: 1 }]);
+    });
+
+    it('still picks the higher total when the leader crosses too', () => {
+      const { e } = newMatch();
+      e.scores = [target + 3, target - 1];
+      // Blue crosses the target with one cube in the 3-point band; Red's total
+      // stays higher.
+      throwAndSettle(e, 1); // Red: off the back
+      const blue = e.liveCube!;
+      e.launch(0, -1, 0.5);
+      run(e, (x) => x.phase !== 'sliding');
+      teleport(blue, -4, yIceFar() + 1.5);
+      run(e, (x) => x.phase !== 'resolving');
+      while (e.phase === 'aiming') throwAndSettle(e, 1);
+      expect(e.lastResult?.points).toEqual([0, 3]);
+      expect(e.scores).toEqual([target + 3, target + 2]);
+      expect(e.winner).toBe(0);
+    });
+
+    it('gives a tie on the total to Red', () => {
+      const { e } = newMatch();
+      e.scores = [target + 1, target + 1];
+      blankEnd(e);
+      expect(e.phase).toBe('game_over');
+      expect(e.winner).toBe(0);
+    });
+  });
 });
 
 describe('wind charges', () => {
