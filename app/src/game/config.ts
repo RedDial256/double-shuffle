@@ -64,18 +64,7 @@ export const config = {
   resolveDelay: 0.9,
   roundBreakDelay: 3.2,
 
-  teamColors: ['#d8452f', '#3a7ad9'],
   teamNames: ['Red', 'Blue'],
-  colors: {
-    ice: '#bed7f2',
-    iceBand: ['#aecbee', '#9ebfe9', '#8fb4e5'],
-    divider: '#9c9c97',
-    platform: '#8a5a2b',
-    wall: '#e0b23f',
-    startLine: '#35c9c4',
-    dispenser: '#3b2a20',
-    windCharge: '#2e3a55',
-  },
 };
 
 export const iceLength = () => config.band * 6 + config.neutral;

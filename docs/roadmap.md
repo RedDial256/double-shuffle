@@ -148,7 +148,8 @@ again without touching code.
 
 * Original voxel art drawn from scratch: cubes, ice, walls, dispensers, wood
   platform.
-* Book-style UI for Rules and menus.
+* Book-style UI for Rules and menus, built on the design tokens in
+  `app/src/theme` (see `design-system.md`).
 * Sound with `expo-audio` (throw, slide, impact, blast, Round Killer, win) and
   haptics with `expo-haptics`.
 * Juice: blast particles, lights filling up, a big Round Killer moment.
