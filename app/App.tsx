@@ -1,10 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 import { GameEngine } from './src/game/engine';
-import { Board } from './src/ui/Board';
 import { colors } from './src/theme';
+import { Board } from './src/ui/Board';
 import { Hud } from './src/ui/Hud';
 
 export default function App() {

@@ -1,8 +1,16 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+
 import { config } from '../game/config';
-import { GameEngine } from '../game/engine';
-import { colors, fontSize, fontWeight, opacity, radii, spacing } from '../theme';
+import type { GameEngine } from '../game/engine';
+import {
+  colors,
+  fontSize,
+  fontWeight,
+  opacity,
+  radii,
+  spacing,
+} from '../theme';
 
 function Lights({ team, score }: { team: number; score: number }) {
   return (
@@ -10,7 +18,10 @@ function Lights({ team, score }: { team: number; score: number }) {
       {Array.from({ length: config.targetScore }, (_, i) => (
         <View
           key={i}
-          style={[styles.light, i < score ? teamFillStyles[team] : styles.lightOff]}
+          style={[
+            styles.light,
+            i < score ? teamFillStyles[team] : styles.lightOff,
+          ]}
         />
       ))}
     </View>
@@ -18,7 +29,15 @@ function Lights({ team, score }: { team: number; score: number }) {
 }
 
 /** Cubes the team still has to throw this round, like the rack beside the rink. */
-function Rack({ team, left, killed }: { team: number; left: number; killed: boolean }) {
+function Rack({
+  team,
+  left,
+  killed,
+}: {
+  team: number;
+  left: number;
+  killed: boolean;
+}) {
   return (
     <View style={[styles.rack, killed && styles.rackKilled]}>
       {Array.from({ length: config.cubesPerRound }, (_, i) => (
@@ -34,7 +53,9 @@ function Rack({ team, left, killed }: { team: number; left: number; killed: bool
 export function Hud({ engine }: { engine: GameEngine }) {
   const [, bump] = useReducer((n: number) => n + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     const unsubscribe = engine.subscribe((e) => {
@@ -55,12 +76,13 @@ export function Hud({ engine }: { engine: GameEngine }) {
   const defender = engine.defendingTeam;
   let banner = '';
   if (engine.phase === 'aiming') banner = `${config.teamNames[team]} to throw`;
-  else if (engine.phase === 'sliding')
+  else if (engine.phase === 'sliding') {
     banner = `${config.teamNames[defender]}: tap to fire (${engine.windChargesLeft} left)`;
-  else if (engine.phase === 'round_break' || engine.phase === 'game_over')
+  } else if (engine.phase === 'round_break' || engine.phase === 'game_over') {
     banner = `Round ${engine.roundIndex + (engine.phase === 'game_over' ? 1 : 0)}: ${
       engine.lastResult?.summary ?? ''
     }`;
+  }
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
@@ -71,7 +93,11 @@ export function Hud({ engine }: { engine: GameEngine }) {
               {config.teamNames[t]} {engine.scores[t]}
             </Text>
             <Lights team={t} score={engine.scores[t]} />
-            <Rack team={t} left={engine.shotsLeft[t]} killed={engine.roundKilled[t]} />
+            <Rack
+              team={t}
+              left={engine.shotsLeft[t]}
+              killed={engine.roundKilled[t]}
+            />
           </View>
         ))}
         <Text style={styles.banner}>{banner}</Text>
@@ -108,9 +134,17 @@ const RACK_CUBE_SIZE = 9;
 const TEAM_NAME_WIDTH = 60;
 
 const styles = StyleSheet.create({
-  top: { paddingTop: spacing[8], paddingHorizontal: spacing[12], gap: spacing[4] },
+  top: {
+    paddingTop: spacing[8],
+    paddingHorizontal: spacing[12],
+    gap: spacing[4],
+  },
   scoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
-  teamName: { fontWeight: fontWeight.extraBold, fontSize: fontSize.sm, width: TEAM_NAME_WIDTH },
+  teamName: {
+    fontWeight: fontWeight.extraBold,
+    fontSize: fontSize.sm,
+    width: TEAM_NAME_WIDTH,
+  },
   lights: { flexDirection: 'row', gap: spacing[4] },
   light: { width: LIGHT_SIZE, height: LIGHT_SIZE, borderRadius: radii.sm },
   lightOff: { backgroundColor: colors.indicatorOff },
@@ -157,11 +191,17 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[12],
     borderRadius: radii.md,
   },
-  buttonText: { color: colors.text.onAccent, fontWeight: fontWeight.extraBold, fontSize: fontSize.md },
+  buttonText: {
+    color: colors.text.onAccent,
+    fontWeight: fontWeight.extraBold,
+    fontSize: fontSize.md,
+  },
 });
 
 /** Background fill in each team's colour, indexed by team. */
-const teamFillStyles = colors.team.map((teamColor) => ({ backgroundColor: teamColor }));
+const teamFillStyles = colors.team.map((teamColor) => ({
+  backgroundColor: teamColor,
+}));
 
 /** Text in each team's colour, indexed by team. */
 const teamTextStyles = colors.team.map((teamColor) => ({ color: teamColor }));

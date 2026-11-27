@@ -1,8 +1,10 @@
-import { useMemo, useRef } from 'react';
-import { GestureResponderEvent } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import { useLayoutEffect, useMemo, useRef } from 'react';
+import type { GestureResponderEvent } from 'react-native';
+
+import type { SharedValue } from 'react-native-reanimated';
+
 import { config, iceLength, yIceNear } from '../game/config';
-import { GameEngine } from '../game/engine';
+import type { GameEngine } from '../game/engine';
 
 interface View {
   scale: number;
@@ -21,16 +23,26 @@ type Mode = 'none' | 'placing' | 'aiming';
  * `aim` is [active, originX, originY, tipX, tipY, power], read by the Skia
  * overlay.
  */
-export function useAim(engine: GameEngine, aim: SharedValue<number[]>, view: View) {
+export function useAim(
+  engine: GameEngine,
+  aim: SharedValue<number[]>,
+  view: View
+) {
   const viewRef = useRef(view);
-  viewRef.current = view;
+  // Keep the latest layout for the touch handlers without rebuilding them.
+  useLayoutEffect(() => {
+    viewRef.current = view;
+  });
   const state = useRef({ mode: 'none' as Mode, sx: 0, sy: 0, nx: 0, ny: 0 });
 
   return useMemo(() => {
     const toWorld = (e: GestureResponderEvent) => {
       const v = viewRef.current;
       const { locationX, locationY } = e.nativeEvent;
-      return { x: (locationX - v.ox) / v.scale, y: (locationY - v.oy) / v.scale };
+      return {
+        x: (locationX - v.ox) / v.scale,
+        y: (locationY - v.oy) / v.scale,
+      };
     };
 
     /** Direction and power implied by the current drag (world units). */
@@ -40,7 +52,10 @@ export function useAim(engine: GameEngine, aim: SharedValue<number[]>, view: Vie
       const py = s.sy - s.ny;
       const length = Math.hypot(px, py);
       const screenLength = length * viewRef.current.scale;
-      const power = Math.max(0, Math.min(1, screenLength / config.aimDragFullPowerPx));
+      const power = Math.max(
+        0,
+        Math.min(1, screenLength / config.aimDragFullPowerPx)
+      );
 
       let dx = 0;
       let dy = -1;
@@ -60,11 +75,18 @@ export function useAim(engine: GameEngine, aim: SharedValue<number[]>, view: Vie
       if (!cube) return;
       const { dx, dy, power } = currentShot();
       const reach = 3 + power * iceLength() * 0.9;
-      aim.value = [1, cube.x, cube.y, cube.x + dx * reach, cube.y + dy * reach, power];
+      aim.set([
+        1,
+        cube.x,
+        cube.y,
+        cube.x + dx * reach,
+        cube.y + dy * reach,
+        power,
+      ]);
     };
 
     const hide = () => {
-      aim.value = [0, 0, 0, 0, 0, 0];
+      aim.set([0, 0, 0, 0, 0, 0]);
     };
 
     return {
