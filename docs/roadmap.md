@@ -100,10 +100,6 @@ released.
 * Port the rulebook and the Rules button.
 * End-of-round summary: who holds the front, which cubes scored (highlighted
   on the board, from `RoundResult.scoring`), penalties.
-* Rules tests: the page 6 example (Red 5, Blue 0), the 4-point overhang, a cube
-  straddling two bands (D-04), the windburst penalty (D-05), the Round Killer,
-  knockouts without a penalty (D-06), match totals floored at zero (D-07), both
-  teams crossing 15 in the same round.
 * Fix the slot and toast issues listed above.
 
 **Done when:** a full match plays on a device, at least as well as the Godot
@@ -292,7 +288,6 @@ rotate, both our own and fan-made.
 1. Finish M0 (push, lint and format, docs), and add Conventional Commits and
    release-please.
 2. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
-3. Add rules tests to `app/src/game`, starting with the page 6 example.
-4. Port the rulebook and the end-of-round summary.
-5. First fps measurement and first playtest on a real device.
-6. Create one GitHub milestone per M0–M5 and their issues.
+3. Port the rulebook and the end-of-round summary.
+4. First fps measurement and first playtest on a real device.
+5. Create one GitHub milestone per M0–M5 and their issues.
