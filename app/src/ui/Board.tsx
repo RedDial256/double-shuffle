@@ -107,7 +107,12 @@ export function Board({ engine }: Props) {
     return () => cancelAnimationFrame(raf);
   }, [engine, frame]);
 
-  const handlers = useAim(engine, aim, { scale, ox, oy });
+  const handlers = useAim(engine, aim, {
+    scale,
+    ox,
+    oy,
+    height: size.h,
+  });
 
   const onLayout = (event: LayoutChangeEvent) =>
     setSize({
