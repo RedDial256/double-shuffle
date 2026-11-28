@@ -481,10 +481,15 @@ Round Killer didn't happen.
 * This drops the earlier idea (#17) of scaling blasts down by about 0.6 for a
   concrete cube. Whatever material the cube ends up with, the net push must
   keep the Round Killer a real threat.
-* A charge in flight is drawn bigger (radius 0.5 blocks), dark with a white
-  core. A blast is a filled burst plus a thick ring that grows to the blast
-  radius over `windBlastFlashSeconds` (0.5 s, up from 0.22), and every cube it
-  hits flashes white for the same time.
+* A charge in flight is drawn bigger (radius 0.5 blocks) and pale, like a
+  ball of wind: a near-white body with blue swirl rings, drawn from scratch
+  in the spirit of the original's wind charges with no game textures. A
+  blast is a pale burst plus a blue ring that grows to the blast radius over
+  `windBlastFlashSeconds` (0.5 s, up from 0.22), and every cube it hits
+  flashes white for the same time.
+* Charges grazed cubes without going off, so `windTriggerDistance` goes from
+  0.75 to 1.05 blocks from the cube's centre: a charge now bursts when it
+  touches any part of the cube's side.
 * The numbers are a starting point for the M2 playtests.
 
 ## D-29 — History page

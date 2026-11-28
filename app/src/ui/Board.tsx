@@ -374,12 +374,12 @@ function ChargeSprite({
   const alpha = useDerivedValue(() => frame.value[offset + 3] ?? 0);
   const exploded = useDerivedValue(() => frame.value[offset + 4] ?? 0);
 
-  // In flight: a dark bolt with a bright core.
+  // In flight: a pale ball of wind with a blue swirl inside.
   const boltOpacity = useDerivedValue(() => (exploded.value ? 0 : alpha.value));
-  const coreRadius = useDerivedValue(() => radius.value * 0.45);
-  // Exploded: a filled burst and a thick ring that grows and fades.
+  const swirlRadius = useDerivedValue(() => radius.value * 0.5);
+  // Exploded: a pale burst and a blue ring that grows and fades.
   const burstOpacity = useDerivedValue(() =>
-    exploded.value ? alpha.value * 0.35 : 0
+    exploded.value ? alpha.value * 0.6 : 0
   );
   const ringOpacity = useDerivedValue(() => (exploded.value ? alpha.value : 0));
   return (
@@ -393,14 +393,27 @@ function ChargeSprite({
       <Circle
         c={center}
         r={radius}
-        color={colors.board.windCharge}
+        color={colors.board.windSwirl}
         opacity={ringOpacity}
         style="stroke"
-        strokeWidth={0.35}
+        strokeWidth={0.3}
       />
       <Group opacity={boltOpacity}>
         <Circle c={center} r={radius} color={colors.board.windCharge} />
-        <Circle c={center} r={coreRadius} color={colors.board.blastFlash} />
+        <Circle
+          c={center}
+          r={radius}
+          color={colors.board.windSwirl}
+          style="stroke"
+          strokeWidth={0.1}
+        />
+        <Circle
+          c={center}
+          r={swirlRadius}
+          color={colors.board.windSwirl}
+          style="stroke"
+          strokeWidth={0.09}
+        />
       </Group>
     </Group>
   );

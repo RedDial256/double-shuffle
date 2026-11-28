@@ -79,7 +79,7 @@ export const config = {
   windMaxTravel: 9,
   windBackwardPenaltySpeed: px(40),
   /** Charge detonates when it is this close to a cube's centre. */
-  windTriggerDistance: 0.75,
+  windTriggerDistance: 1.05,
   /** How long a blast's ring and the flash on the cubes it hits last. */
   windBlastFlashSeconds: 0.5,
 
