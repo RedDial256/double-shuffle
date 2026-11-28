@@ -76,3 +76,16 @@ merge a commit with `Release-As: 1.0.0`.
 
 `Release-As` must be in the commit that lands on `main`. With squash merges,
 put it at the end of the squash commit's message when merging.
+
+## Internal test builds
+
+Until the automatic deploys of issue #19, an internal Android build is made by
+hand from `app/`, logged in to the project's Expo account:
+
+```bash
+npx eas-cli@latest build --platform android --profile preview
+```
+
+EAS prints a link and a QR code for the APK. Testers open it on the phone and
+allow installs from unknown sources. Each build uses one of the Free plan's 15
+Android builds a month (`roadmap.md`, Deploys).

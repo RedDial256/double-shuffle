@@ -1,6 +1,6 @@
 # Double Shuffle — Roadmap to v1
 
-_Last updated: 2026-11-27_
+_Last updated: 2026-11-28_
 
 This is the living plan for getting Double Shuffle to a solid v1. It sits next
 to `game-design.md` (the rules), `implementation-brief.md` (scope and
@@ -169,7 +169,8 @@ and vibration.
 ## Deploys
 
 Until M5, deploys are internal EAS builds only, not store tracks. Set this up
-at the end of M1.
+at the end of M1. Until then, internal Android builds are manual
+(`eas build --profile preview`, D-22).
 
 **EAS Free plan limits** ([pricing](https://expo.dev/pricing),
 [FAQ](https://docs.expo.dev/billing/faq/), checked 2026-11-26):
