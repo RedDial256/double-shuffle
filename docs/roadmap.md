@@ -96,8 +96,7 @@ infrastructure (D-22).
 | 0.2.0 | M3, then the point-of-view throw, then M2 | Planned |
 | Later | M4, then M5 as betas | To plan |
 
-**Order inside 0.2.0:** fix throw power (found in the 0.1.0 playtest), the
-M3 items, the point-of-view throw, then the rest of
+**Order inside 0.2.0:** the M3 items, the point-of-view throw, then the rest of
 M2. The fps measurement and the playtests run on the build with the app shell
 and the new throw, so they measure what players will actually use.
 
@@ -121,9 +120,6 @@ version did, with the rules tested.
 
 Part of 0.2.0, after M3.
 
-* Fix throw power: full power must be reachable on a phone, and a forward
-  drag must not snap to the angle limits (found in the 0.1.0 playtest; done
-  first in 0.2.0).
 * Measure performance on a mid-range Android phone. Below 60 fps, move the
   loop to Reanimated's `useFrameCallback` or cut per-frame allocations.
 * Throw from the shooter's point of view (D-23): the board on top, a throw
@@ -313,7 +309,7 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: fix throw power, then build M3 (Expo Router,
+2. 0.2.0: build M3 (Expo Router,
    presets and Custom mode, saved settings, game over flow, score band, History
    page).
 3. The point-of-view throw with hit zones on the cube.
