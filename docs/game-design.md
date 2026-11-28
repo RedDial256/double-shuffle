@@ -112,13 +112,17 @@ Resolved so far: win condition (Section 7), cubes per team (Section 2), camera f
 
 ## 13. Reference Assets
 
-Stored in the project folder (`double-shuffle/`) / provided in chat:
-- `top view.png` — overhead view of the ice rink, showing zone markings (labelled "1", "2", …) near each end and the lever position.
-- `front view.png` — eye-level view from a player's starting platform, showing the cube rack (red/blue) and the fenced rink boundary.
+Stored in `docs/reference/`:
+- `top-view.png` — overhead view of the ice rink, showing zone markings (labelled "1", "2", …) near each end and the lever position.
+- `front-view.png` — eye-level view from a player's starting platform, showing the cube rack (red/blue) and the fenced rink boundary.
 - `page-3-winning.jpg` — rulebook **page 2** ("Winning" rule — filename is off by one, content is page 2).
 - `regras-6-pontos.webp` — rulebook page 6 ("Scoring Visual" — example board state with Red:5, Blue:0).
 - `regras-8.webp` — rulebook page 8 ("Starting" + "Windburst" rules).
 - `regras-9-killer-return.webp` — rulebook page 9 ("The Round Killer" rule).
+- `page-7.jpg` — rulebook page 7.
+- `shuffle-stick-pov.jpg` — first-person view of a throw in the original: the player holds a shuffle stick (a spear) in front of the racked cubes. Reference for the point-of-view throw idea (#63).
+- `launch-portions.png` — wiki table of the sulfur cube's nine launch portions: where the cube is hit sets the direction (left, straight, right) and the trajectory (down, standard, up).
+- `concrete-attributes.png` — wiki table of block attributes; concrete is in the "Slow Bouncy" archetype (knockback resistance 0.4, bounciness 0.6, friction 0.3, air drag 0.05).
 - Pages 3–5 exist but are additional worked scoring examples in the same style as page 6; not individually transcribed since they don't add new rules.
 
 ## 14. Glossary

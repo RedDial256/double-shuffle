@@ -140,6 +140,6 @@ Explicitly out of scope and not built, per the brief: RNG bumpers, the
 
 ## Note on the reference images
 
-`top view.png`, `front view.png` and the `regras-*` / `page-*` captures in the
-project root are research references: screenshots of a Minecraft build. They
-are not bundled into the app and nothing in the game is traced from them.
+The images in `docs/reference/` are research references: screenshots of the
+Minecraft build and third-party wiki tables. They are not bundled into the app
+and nothing in the game is traced from them.
