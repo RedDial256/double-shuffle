@@ -92,7 +92,7 @@ app/                   the Expo app
       mode.ts          GameMode: per-match rules, and the Classic mode
       scoring.ts       pure scoring functions
       engine.ts        physics world, turns, rounds, wind charges, win condition
-    app/               Expo Router routes: index (Home), game, pause, rules, settings
+    app/               Expo Router routes: index (Home), new-match, game, pause, rules, history, settings
     ui/
       Board.tsx        Skia canvas: draws the rink and runs the frame loop
       useAim.ts        all touch input: line up, pull-back throw, wind charges

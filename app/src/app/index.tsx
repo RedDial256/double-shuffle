@@ -23,6 +23,7 @@ export default function HomeScreen() {
           onPress={() => router.push('/new-match')}
         />
         <MenuButton label="Rules" onPress={() => router.push('/rules')} />
+        <MenuButton label="History" onPress={() => router.push('/history')} />
         <MenuButton label="Settings" onPress={() => router.push('/settings')} />
       </View>
     </SafeAreaView>
