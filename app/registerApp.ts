@@ -1,10 +1,6 @@
-import { registerRootComponent } from 'expo';
-
-import App from './App';
-
-// Native (iOS and Android): Skia is built into the app, so App can be
-// registered straight away. registerRootComponent calls
-// AppRegistry.registerComponent('main', () => App).
+// Native (iOS and Android): Skia is built into the app, so Expo Router's
+// entry can load straight away. It registers the routes in src/app.
 export function registerApp() {
-  registerRootComponent(App);
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('expo-router/entry');
 }

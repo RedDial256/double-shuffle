@@ -4,5 +4,7 @@ export const opacity = {
   disabled: 0.3,
   /** Pushed into the background, such as cubes that did not score. */
   dimmed: 0.4,
+  /** A button while a finger is on it. */
+  pressed: 0.8,
   full: 1,
 } as const;

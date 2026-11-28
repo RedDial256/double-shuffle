@@ -16,7 +16,7 @@ is deliberately small: add a token when a screen needs one, not ahead of time.
 | Font size | `typography.ts` | `xs` 12, `sm` 14, `md` 16, `lg` 18, `xl` 20, `2xl` 24, `display` 36 |
 | Font weight | `typography.ts` | `regular` 400, `bold` 700, `extraBold` 800, `black` 900 |
 | Radii | `radii.ts` | `none` 0, `sm` 2, `md` 8, `full` 9999 |
-| Opacity | `opacity.ts` | `disabled` 0.3, `dimmed` 0.4, `full` 1 |
+| Opacity | `opacity.ts` | `disabled` 0.3, `dimmed` 0.4, `pressed` 0.8, `full` 1 |
 
 Tokens are named by their step on a scale (`spacing.md`, `spacing['2xl']`),
 never by their value, so a scale can be retuned without renaming every use,
