@@ -291,7 +291,7 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: the point-of-view throw with hit zones on the cube. 3. Then the rest
-   of M2 on top of it: first fps measurement and playtests on a
+2. 0.2.0: the point-of-view throw with hit zones on the cube.
+3. Then the rest of M2 on top of it: first fps measurement and playtests on a
    real device.
 4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
