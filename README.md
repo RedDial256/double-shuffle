@@ -23,6 +23,8 @@ and every judgement call made during implementation in
   re-render every frame.
 * **planck** (a JavaScript port of Box2D) handles the 2D physics: sliding,
   wall and cube collisions, and the wind-charge impulses.
+* **zustand** with AsyncStorage keeps the player's settings (mode, Custom
+  options, sound and haptics) and saves them on the device.
 
 ## Running it
 
