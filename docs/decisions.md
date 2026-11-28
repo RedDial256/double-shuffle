@@ -344,3 +344,30 @@ manual build needs.
   `com.reddial.doubleshuffle`. Open decision 7 can still change them before the
   first store upload in M5; the only cost is that testers reinstall the app.
 * iOS waits for an Apple Developer account, as the Deploys section says.
+
+## D-23 — Throwing from the shooter's point of view, in 0.2.0
+
+The 0.1.0 playtest found the top-down pull-back hard to control and short on
+power. In the original build, players stand behind the cube and hit it with a
+shuffle stick, and where they hit it changes the shot: the left of the cube
+sends it right, the right sends it left, and hitting low or high changes its
+trajectory. That choice, and the risk of an off-centre hit, is a big part of
+the fun.
+
+0.2.0 brings it in full rather than in steps: the game screen splits into the
+board on top (about 70%) and a throw panel below with the cube up close and an
+original stick. The shooter picks one of nine hit points and swipes the stick
+into it. The game stays 2D and top-down, so "trajectory" becomes how the cube
+grips the ice (more friction for a low shot, a short low-friction skim for a
+lifted one) rather than real height. A little randomness grows with distance
+from the centre.
+
+The cube material starts from concrete in the original (bounciness about 0.6,
+knockback resistance 0.4, so wind blasts scale by about 0.6) and is tuned in
+playtests. The gesture-handler move and the clearer aiming feedback were
+separate M2 items; they are part of this work now, since the throw panel
+replaces the old aiming.
+
+The throw comes after the M3 screens and before the fps measurement and the
+playtests, so those measure the final throw. Only the mechanic is borrowed:
+the stick, the cube close-up and the panel are original art.

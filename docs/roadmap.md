@@ -69,7 +69,7 @@ Open work is tracked as GitHub issues, one milestone per section below.
 | 7 | Bundle ID, store name, icon | To investigate | M5 |
 | 8 | Deploys | Decided: automatic internal EAS builds, with room for manual ones. Play internal testing and TestFlight only from M5 | M2 |
 | 9 | Versioning | Decided: automated SemVer with release-please, 0.x → beta → rc → 1.0.0 (D-17) | — |
-| 10 | Throwing from the shooter's point of view (split screen, hit zones on the cube) | Open: see #63 | 0.2.0 scope |
+| 10 | Throwing from the shooter's point of view (split screen, hit zones on the cube) | Decided: all of it in 0.2.0 (D-23) | — |
 
 ## Milestones
 
@@ -93,12 +93,13 @@ infrastructure (D-22).
 | Version | Contents | Status |
 |---|---|---|
 | 0.1.0 | M0 and most of M1 | Released |
-| 0.2.0 | M3 first, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
+| 0.2.0 | M3, then the point-of-view throw, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
 | Later | M4, then M5 as betas | To plan |
 
 **Order inside 0.2.0:** fix throw power (found in the 0.1.0 playtest), cube
-slots from the match, then the M3 items, then M2. The fps measurement and the playtests run on the build with the app
-shell, so they measure what players will actually use.
+slots from the match, the M3 items, the point-of-view throw, then the rest of
+M2. The fps measurement and the playtests run on the build with the app shell
+and the new throw, so they measure what players will actually use.
 
 ### M0 — Foundation
 
@@ -124,12 +125,13 @@ Part of 0.2.0, after M3.
   first in 0.2.0).
 * Measure performance on a mid-range Android phone. Below 60 fps, move the
   loop to Reanimated's `useFrameCallback` or cut per-frame allocations.
-* Move input to gesture-handler (Pan to aim and line up, Tap for wind
-  charges).
+* Throw from the shooter's point of view (D-23): the board on top, a throw
+  panel below with an original shuffle stick, and a 3×3 grid of hit points on
+  the cube that sets direction and how the cube grips the ice. Input moves to
+  gesture-handler, with a readable power indicator and a clear "ready to
+  throw" state. Cube material starts from concrete in the original.
 * Debug panel for live tuning: `dampIce`, `launchSpeedMax`, `windTravelSpeed`,
-  `windBlastImpulse`, `aimDragFullPowerPx`.
-* Clearer aiming feedback: a readable power indicator and a visible "ready to
-  throw" state.
+  `windBlastImpulse`, `aimDragFullPowerPx`, `cubeBounce`, `wallBounce`.
 * Automatic internal deploys in place (see Deploys), so playtests use real
   builds.
 * At least 5 two-player playtest sessions, with findings logged in
@@ -313,8 +315,7 @@ rotate, both our own and fan-made.
 2. 0.2.0: fix throw power, size the cube slots from the match, then build M3 (Expo Router,
    presets and Custom mode, saved settings, game over flow, score band, History
    page).
-3. Then M2 on top of the shell: first fps measurement and playtests on a real
-   device.
-4. Decide how far to take throwing from the shooter's point of view
-   (decision 10).
+3. The point-of-view throw with hit zones on the cube.
+4. Then the rest of M2 on top of it: first fps measurement and playtests on a
+   real device.
 5. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
