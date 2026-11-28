@@ -15,6 +15,9 @@ rather than striking it out, and put the reasoning for decisions in
 
 * Record feedback the user gives that will matter in future sessions in this
   file, in the same change or in a small follow-up PR.
+* Every minor version must include features that are interesting to the
+  player. When planning a release, pair infrastructure or tuning work with
+  player-facing features rather than shipping it alone (D-22).
 
 ## Workflow
 

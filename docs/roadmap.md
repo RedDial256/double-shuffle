@@ -75,13 +75,28 @@ Open work is tracked as GitHub issues, one milestone per section below.
 |---|---|---|
 | M0 Foundation | — | M1 |
 | M1 Complete loop | — | M0 |
-| M2 Feel and balance | M1 | M3 |
-| M3 App shell | M1 | M2 |
+| M2 Feel and balance | M1, M3 (measured on the shell) | — |
+| M3 App shell | M1 | — |
 | M4 Art, sound, haptics | M2 (stable proportions) | M3 |
 | M5 Release | M3, M4 | — |
 
 Art comes after balance on purpose: the rink proportions can still change
 (D-02), and art made before then would need redoing.
+
+### Milestones by version
+
+Every minor version ships something a player notices, not only tuning or
+infrastructure (D-22).
+
+| Version | Contents | Status |
+|---|---|---|
+| 0.1.0 | M0 and most of M1 | Released |
+| 0.2.0 | M3 first, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
+| Later | M4, then M5 as betas | To plan |
+
+**Order inside 0.2.0:** cube slots from the match, then the M3 items, then
+M2. The fps measurement and the playtests run on the build with the app
+shell, so they measure what players will actually use.
 
 ### M0 — Foundation
 
@@ -100,6 +115,8 @@ version did, with the rules tested.
 
 ### M2 — Feel and balance
 
+Part of 0.2.0, after M3.
+
 * Measure performance on a mid-range Android phone. Below 60 fps, move the
   loop to Reanimated's `useFrameCallback` or cut per-frame allocations.
 * Move input to gesture-handler (Pan to aim and line up, Tap for wind
@@ -117,6 +134,8 @@ version did, with the rules tested.
 throw or wind charge was unfair.
 
 ### M3 — App shell
+
+Part of 0.2.0, first.
 
 * Expo Router: Home, Game, Rules, Settings, and a Pause modal.
 * Pause the engine when the app goes to the background (`AppState`).
@@ -170,7 +189,7 @@ and vibration.
 
 Until M5, deploys are internal EAS builds only, not store tracks. Set this up
 at the end of M1. Until then, internal Android builds are manual
-(`eas build --profile preview`, D-22).
+(`eas build --profile preview`, D-23).
 
 **EAS Free plan limits** ([pricing](https://expo.dev/pricing),
 [FAQ](https://docs.expo.dev/billing/faq/), checked 2026-11-26):
@@ -280,6 +299,9 @@ rotate, both our own and fan-made.
 
 ## Next steps
 
-1. Finish M0: typecheck and tests in CI, and release 0.1.0.
-2. First fps measurement and first playtest on a real device.
-3. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+1. Finish M0: typecheck and tests in CI.
+2. 0.2.0: size the cube slots from the match, then build M3 (Expo Router,
+   presets and Custom mode, saved settings, game over flow).
+3. Then M2 on top of the shell: first fps measurement and playtests on a real
+   device.
+4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
