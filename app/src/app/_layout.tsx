@@ -26,6 +26,7 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen name="rules" />
+        <Stack.Screen name="history" />
         <Stack.Screen name="settings" />
       </Stack>
     </GameEngineProvider>

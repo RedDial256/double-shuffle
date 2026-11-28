@@ -491,3 +491,24 @@ Round Killer didn't happen.
   0.75 to 1.05 blocks from the cube's centre: a charge now bursts when it
   touches any part of the cube's side.
 * The numbers are a starting point for the M2 playtests.
+
+## D-29 — History page
+
+Home has a History entry next to Rules. The page is text only, kept as data
+in `app/src/ui/history.ts` and drawn by the same `TextPage` component as the
+rulebook.
+
+* Sections: shuffleboard's history, how it scores and the curling rule Double
+  Shuffle adds, Hermitcraft, "Shuffled to Bits", credits, and a line saying the
+  game is a fan tribute not affiliated with Hermitcraft, Mojang or Microsoft.
+* Facts were checked against public sources: Wikipedia's Shuffleboard article
+  (Tudor England, Henry VIII, deck shuffleboard, Daytona Beach in 1913) and
+  the St. Petersburg Shuffleboard Club's history page (founded 1924, "the
+  first strictly shuffleboard club"). Hermitcraft's start in 2012 comes from
+  the r/HermitCraft wiki.
+* Couldn't confirm from a public source: the Season 11 dates and the details of
+  the "Shuffled to Bits" build. The text says only what the design doc
+  already relies on (Skizzleman and ImpulseSV built it in Season 11), and the
+  user reviews the final wording.
+* No links for now, so nothing leaves the app. No logos, skins, screenshots
+  or textures.

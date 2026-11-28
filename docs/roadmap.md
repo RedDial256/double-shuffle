@@ -140,12 +140,6 @@ throw or wind charge was unfair.
 
 Part of 0.2.0, first.
 
-* History screen on Home (Expo Router already has Home, Game, Rules,
-  Settings and the Pause modal).
-* History and inspiration page: shuffleboard, Hermitcraft Season 11's
-  "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
-  no Minecraft or Hermitcraft assets, with a not-affiliated line.
-
 **Done when:** you can open the app, play, pause, change a setting and start
 again without touching code.
 
@@ -297,8 +291,7 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: build M3 (History page).
-3. The point-of-view throw with hit zones on the cube.
-4. Then the rest of M2 on top of it: first fps measurement and playtests on a
+2. 0.2.0: the point-of-view throw with hit zones on the cube.
+3. Then the rest of M2 on top of it: first fps measurement and playtests on a
    real device.
-5. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
