@@ -47,7 +47,7 @@ This is a handoff document for whoever (human or agent) implements the game next
 - Keep `src/game/` free of React and React Native imports. The UI layer calls the engine's public methods, calls `update(dt)` every frame, and reads its state. That's what lets `sim.ts` and unit tests run the game without a device.
 - Every tunable number goes in `app/src/game/config.ts`, or in the `GameMode` (`app/src/game/mode.ts`) when it is a per-match rule, never inline in the engine or UI.
 - Run `npx tsc --noEmit` (and `npx expo lint`) from `app/` before calling a change done.
-- The reference images already sitting in the project root (`top view.png`, `front view.png`, the `regras-*.webp` / `page-*.jpg` rulebook captures) are **research references only** — screenshots someone else took of a Minecraft build. They're for measurements and style reference, not game assets. Leave them where they are; don't bundle them into the app.
+- The reference images in `docs/reference/` (the rink views, the rulebook captures and the wiki tables) are **research references only**: screenshots someone else took of a Minecraft build, and third-party wiki content. They're for measurements, mechanics and style reference, not game assets. Don't bundle them into the app.
 
 ## 5. Art & Assets — IP Note
 

@@ -19,7 +19,7 @@ long ice rink" and Section 4 says "the zones a player is aiming for are the
 ones nearest their opponent".
 
 That cannot be squared with the scoring rule. Rulebook page 6 (the
-`regras-6-pontos.webp` capture) is a worked example, and it draws **red and
+`docs/reference/regras-6-pontos.webp` capture) is a worked example, and it draws **red and
 blue cubes interleaved inside the same bands**:
 
 ```
