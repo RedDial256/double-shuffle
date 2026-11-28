@@ -7,6 +7,8 @@ export const colors = {
   background: palette.slate950,
   /** Board drawing on the Skia canvas. */
   board: {
+    /** Flash on a cube a wind blast just hit, and the core of a charge. */
+    blastFlash: palette.white,
     dispenser: palette.brown900,
     divider: palette.grey500,
     ice: palette.ice100,

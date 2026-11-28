@@ -462,3 +462,27 @@ The game screen is a column: a score band on top, then the board.
   (option 3 in #62), or filling them with scenery (option 1). The user chose
   cropping.
 * The physics and the rink's proportions (D-02) don't change.
+
+## D-28 — Stronger, more visible windbursts
+
+The 0.1.0 playtest found the windbursts barely visible and too weak: a
+defender could almost never push a cube back to the starting line, so the
+Round Killer didn't happen.
+
+* Classic's `windBlastImpulse` goes from `px(620)` to `px(2790)` (×4.5). The
+  linear falloff with distance stays, so cubes near the edge of the blast are
+  only nudged. Measured with the engine: a charge that bursts just ahead of a
+  cube sliding into the deepest bands now sends it back past the starting
+  line (Round Killer). A diagonal hit costs it 20 to 30 blocks, and a burst
+  beside the cube mostly shoves it sideways. Timing is still the skill.
+* At ×1 a clean hit moved a cube about 8 blocks back. ×2 got about 20 blocks
+  and ×3 about 30, still short of the line.
+* Gentle, Strong and Chaotic keep their multipliers on top of the new base.
+* This drops the earlier idea (#17) of scaling blasts down by about 0.6 for a
+  concrete cube. Whatever material the cube ends up with, the net push must
+  keep the Round Killer a real threat.
+* A charge in flight is drawn bigger (radius 0.5 blocks), dark with a white
+  core. A blast is a filled burst plus a thick ring that grows to the blast
+  radius over `windBlastFlashSeconds` (0.5 s, up from 0.22), and every cube it
+  hits flashes white for the same time.
+* The numbers are a starting point for the M2 playtests.

@@ -30,6 +30,8 @@ export interface Cube {
   team: number;
   state: CubeState;
   knockedBack: boolean;
+  /** Seconds left of the flash a wind blast leaves on the cube it hits. */
+  blastedFor: number;
   body: Body;
   slowFor: number;
   // Mirrors of the body, refreshed every step so render/scoring read plain data.
@@ -53,7 +55,6 @@ export interface WindCharge {
 }
 
 const FIXED_DT = 1 / 120;
-const BLAST_FLASH = 0.22;
 const HALF = 0.5;
 
 export type EngineEvent =
@@ -190,6 +191,7 @@ export class GameEngine {
       team,
       state: 'racked',
       knockedBack: false,
+      blastedFor: 0,
       body,
       slowFor: 0,
       x: 0,
@@ -367,7 +369,7 @@ export class GameEngine {
 
   private detonate(charge: WindCharge) {
     charge.exploded = true;
-    charge.flash = BLAST_FLASH;
+    charge.flash = config.windBlastFlashSeconds;
     charge.blastX = charge.x;
     charge.blastY = charge.y;
     const radius = this.mode.windBlastRadius;
@@ -386,6 +388,7 @@ export class GameEngine {
       const impulse = this.mode.windBlastImpulse * (1 - dist / radius);
 
       this.disturb(cube);
+      cube.blastedFor = config.windBlastFlashSeconds;
       cube.body.applyLinearImpulse(
         Vec2(ax * impulse, ay * impulse),
         cube.body.getWorldCenter(),
@@ -526,6 +529,7 @@ export class GameEngine {
     this.world.step(dt, 8, 3);
     for (const cube of this.cubes) {
       if (this.isOnBoard(cube)) this.sync(cube);
+      cube.blastedFor = Math.max(0, cube.blastedFor - dt);
     }
     for (const cube of this.cubes) this.stepCube(cube, dt);
     this.stepCharges(dt);

@@ -299,6 +299,19 @@ describe('wind charges', () => {
     expect(red.knockedBack).toBe(false);
   });
 
+  it('lets a clean blast drive a cube from the scoring bands back to the starting line', () => {
+    const { engine } = newMatch();
+    const cube = engine.liveCube!;
+    engine.launch(0, -1, 0.9);
+    run(engine, () => cube.y < yIceFar() + 6);
+    expect(engine.phase).toBe('sliding');
+    blastBackwards(engine, cube);
+    expect(cube.blastedFor).toBeGreaterThan(0);
+    run(engine, (game) => game.phase !== 'sliding');
+    expect(cube.state).toBe('killed_back');
+    expect(engine.roundKilled[0]).toBe(true);
+  });
+
   it('triggers the Round Killer when a knocked-back cube reaches the platform', () => {
     const { engine, events } = newMatch();
     const cube = engine.liveCube!;
