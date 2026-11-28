@@ -23,6 +23,8 @@ import {
   yBoardEnd,
   yIceFar,
   yIceNear,
+  yViewBottom,
+  yViewTop,
 } from '../game/config';
 import type { GameEngine } from '../game/engine';
 import { colors, opacity as opacityLevels } from '../theme';
@@ -63,13 +65,15 @@ export function Board({ engine }: Props) {
   const frame = useSharedValue<number[]>([]);
   const aim = useSharedValue<number[]>([0, 0, 0, 0, 0, 0]);
 
-  // Fit the whole board on screen (docs/decisions.md D-11).
+  // Fit the ice, the walls and a slice of each platform on screen (D-11,
+  // D-27). The rest of the platforms falls outside the canvas.
   const worldW = config.rinkWidth + 2;
-  const worldH = yBoardEnd();
+  const viewTop = yViewTop();
+  const worldH = yViewBottom() - viewTop;
   const scale = size.w ? Math.min(size.w / worldW, size.h / worldH) : 1;
   // World x = 0 is the centre line of the rink, so it maps to mid-screen.
   const ox = size.w / 2;
-  const oy = (size.h - worldH * scale) / 2;
+  const oy = (size.h - worldH * scale) / 2 - viewTop * scale;
 
   useEffect(() => {
     let raf = 0;

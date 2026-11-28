@@ -28,6 +28,14 @@ export const config = {
   band: 3,
   neutral: 20,
   divider: 0.4,
+  /**
+   * How much of each platform the game screen shows, in blocks. A cube past
+   * the back edge has fallen off and isn't drawn, so the far platform only
+   * needs a sliver; the shooter's platform keeps room to slide the cube
+   * sideways and to show a cube knocked back onto it (docs/decisions.md D-27).
+   */
+  viewFarPlatform: 1,
+  viewNearPlatform: 2.5,
 
   // Throw physics (blocks/s)
   launchSpeedMin: px(430),
@@ -71,6 +79,9 @@ export const yIceFar = () => config.platform;
 export const yIceNear = () => yIceFar() + iceLength();
 export const yBoardEnd = () => yIceNear() + config.platform;
 export const halfWidth = () => config.rinkWidth / 2;
+/** Top and bottom of the part of the board the game screen shows. */
+export const yViewTop = () => yIceFar() - config.viewFarPlatform;
+export const yViewBottom = () => yIceNear() + config.viewNearPlatform;
 
 /** Band boundaries at the scoring (far) end, nearest the edge first. */
 export const farBandBoundaries = () =>
