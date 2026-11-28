@@ -143,7 +143,6 @@ throw or wind charge was unfair.
 
 Part of 0.2.0, first.
 
-
 **Done when:** you can open the app, play, pause, change a setting and start
 again without touching code.
 
