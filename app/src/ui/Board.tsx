@@ -25,15 +25,12 @@ import {
   yIceNear,
 } from '../game/config';
 import type { GameEngine } from '../game/engine';
-import { defaultMode } from '../game/mode';
 import { colors, opacity as opacityLevels } from '../theme';
 
+import { spriteSlots } from './spriteSlots';
 import { useAim } from './useAim';
 import { useEngineState } from './useEngineState';
 
-// Fixed to the default mode until the slots are sized from the match (#14).
-const CUBE_SLOTS = defaultMode.cubesPerRound * 2;
-const CHARGE_SLOTS = 4;
 /** Per cube: x, y, angle, visible. Per charge: x, y, radius, alpha. */
 const CUBE_STRIDE = 4;
 const CHARGE_STRIDE = 4;
@@ -81,13 +78,15 @@ export function Board({ engine }: Props) {
       engine.update((now - last) / 1000);
       last = now;
       const out: number[] = [];
-      for (let slotIndex = 0; slotIndex < CUBE_SLOTS; slotIndex++) {
+      // Read every frame: a new match can change how many sprites there are.
+      const frameSlots = spriteSlots(engine.mode);
+      for (let slotIndex = 0; slotIndex < frameSlots.cubes; slotIndex++) {
         const cube = engine.cubes[slotIndex];
         if (cube && engine.isOnBoard(cube)) {
           out.push(cube.x, cube.y, cube.angle, 1);
         } else out.push(0, 0, 0, 0);
       }
-      for (let slotIndex = 0; slotIndex < CHARGE_SLOTS; slotIndex++) {
+      for (let slotIndex = 0; slotIndex < frameSlots.charges; slotIndex++) {
         const charge = engine.charges[slotIndex];
         if (!charge) out.push(0, 0, 0, 0);
         else if (charge.exploded) {
@@ -121,6 +120,8 @@ export function Board({ engine }: Props) {
     });
 
   const dispenserList = useMemo(() => dispensers(), []);
+  // Re-read on every render: the engine emits a state event when a match starts.
+  const slots = spriteSlots(engine.mode);
   // During the round summary, ring the cubes that scored and dim the rest.
   const showResult =
     (engine.phase === 'round_break' || engine.phase === 'game_over') &&
@@ -225,7 +226,7 @@ export function Board({ engine }: Props) {
           ))}
 
           {/* Cubes */}
-          {Array.from({ length: CUBE_SLOTS }, (_, slotIndex) => (
+          {Array.from({ length: slots.cubes }, (_, slotIndex) => (
             <CubeSprite
               key={`c${slotIndex}`}
               frame={frame}
@@ -243,11 +244,11 @@ export function Board({ engine }: Props) {
           ))}
 
           {/* Wind charges / blasts */}
-          {Array.from({ length: CHARGE_SLOTS }, (_, slotIndex) => (
+          {Array.from({ length: slots.charges }, (_, slotIndex) => (
             <ChargeSprite
               key={`w${slotIndex}`}
               frame={frame}
-              index={slotIndex}
+              offset={slots.cubes * CUBE_STRIDE + slotIndex * CHARGE_STRIDE}
             />
           ))}
 
@@ -333,12 +334,12 @@ function CubeSprite({
 
 function ChargeSprite({
   frame,
-  index,
+  offset,
 }: {
   frame: SharedValue<number[]>;
-  index: number;
+  /** Where this charge's values start in `frame`, after all the cubes. */
+  offset: number;
 }) {
-  const offset = index * CHARGE_STRIDE;
   const cx = useDerivedValue(() => frame.value[offset] ?? 0);
   const cy = useDerivedValue(() => frame.value[offset + 1] ?? 0);
   const radius = useDerivedValue(() => frame.value[offset + 2] ?? 0);

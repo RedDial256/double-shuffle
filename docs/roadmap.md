@@ -93,10 +93,10 @@ infrastructure (D-22).
 | Version | Contents | Status |
 |---|---|---|
 | 0.1.0 | M0 and most of M1 | Released |
-| 0.2.0 | M3, then the point-of-view throw, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
+| 0.2.0 | M3, then the point-of-view throw, then M2 | Planned |
 | Later | M4, then M5 as betas | To plan |
 
-**Order inside 0.2.0:** cube slots from the match, the M3 items, the point-of-view throw, then the rest of
+**Order inside 0.2.0:** the M3 items, the point-of-view throw, then the rest of
 M2. The fps measurement and the playtests run on the build with the app shell
 and the new throw, so they measure what players will actually use.
 
@@ -110,7 +110,8 @@ released.
 
 ### M1 — Complete loop
 
-* Size the board's cube slots from the match, not a constant.
+All items done; the board sizes its cube and wind charge sprites from the
+match.
 
 **Done when:** a full match plays on a device, at least as well as the Godot
 version did, with the rules tested.
@@ -308,7 +309,7 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: size the cube slots from the match, then build M3 (Expo Router,
+2. 0.2.0: build M3 (Expo Router,
    presets and Custom mode, saved settings, game over flow, score band, History
    page).
 3. The point-of-view throw with hit zones on the cube.
