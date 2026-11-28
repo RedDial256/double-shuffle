@@ -327,3 +327,20 @@ players will actually get, with navigation, the Pause modal and the presets,
 instead of on today's single screen, and the playtests can try the presets
 too. M1's last item, sizing the cube slots from the match, comes before M3
 because the Custom mode changes cubes per round.
+
+## D-23 — A manual internal Android build for 0.1.0
+
+0.1.0 goes to internal testers as a manual `eas build --profile preview`
+Android APK, installed from the EAS link or QR code. The automatic flow in
+`roadmap.md` (Deploys, issue #19) still comes in M2; this only adds what a
+manual build needs.
+
+* `app/eas.json` has a single `preview` profile with `distribution: internal`
+  and `buildType: apk`. The `development` and `production` profiles come with
+  issue #36.
+* `appVersionSource: remote` lets EAS own the Android version code from the
+  first build, so it never has to be bumped by hand.
+* The Android package and iOS bundle ID are provisionally
+  `com.reddial.doubleshuffle`. Open decision 7 can still change them before the
+  first store upload in M5; the only cost is that testers reinstall the app.
+* iOS waits for an Apple Developer account, as the Deploys section says.

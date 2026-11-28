@@ -6,9 +6,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "ios": {
+      "bundleIdentifier": "com.reddial.doubleshuffle",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.reddial.doubleshuffle",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -19,6 +21,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "15c96ede-d9f7-45ad-b347-1ff9fc978f08"
+      }
+    },
+    "owner": "reddial"
   }
 }
