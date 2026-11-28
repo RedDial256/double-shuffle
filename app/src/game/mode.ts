@@ -40,7 +40,10 @@ export const classicMode: Readonly<GameMode> = Object.freeze({
   alternateFirstShooter: true,
   allowNegativeMatchScore: false,
   windBlastRadius: 3,
-  windBlastImpulse: px(620),
+  // A clean hit just ahead of a cube in the scoring bands drives it back to
+  // the starting line (the Round Killer); a glancing one still costs ground
+  // (docs/decisions.md D-28).
+  windBlastImpulse: px(2790),
 });
 
 export const defaultMode = classicMode;

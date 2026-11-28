@@ -33,9 +33,15 @@ import { spriteSlots } from './spriteSlots';
 import { useAim } from './useAim';
 import { useEngineState } from './useEngineState';
 
-/** Per cube: x, y, angle, visible. Per charge: x, y, radius, alpha. */
-const CUBE_STRIDE = 4;
-const CHARGE_STRIDE = 4;
+/**
+ * Per cube: x, y, angle, visible, blast flash (1 just hit, fading to 0).
+ * Per charge: x, y, radius, alpha, and whether it has exploded (1) or is
+ * still flying (0).
+ */
+const CUBE_STRIDE = 5;
+const CHARGE_STRIDE = 5;
+/** Radius of a wind charge in flight, in blocks. */
+const BOLT_RADIUS = 0.5;
 
 function shade(hex: string, amount: number): string {
   const packedColor = parseInt(hex.slice(1), 16);
@@ -87,21 +93,32 @@ export function Board({ engine }: Props) {
       for (let slotIndex = 0; slotIndex < frameSlots.cubes; slotIndex++) {
         const cube = engine.cubes[slotIndex];
         if (cube && engine.isOnBoard(cube)) {
-          out.push(cube.x, cube.y, cube.angle, 1);
-        } else out.push(0, 0, 0, 0);
+          out.push(
+            cube.x,
+            cube.y,
+            cube.angle,
+            1,
+            cube.blastedFor / config.windBlastFlashSeconds
+          );
+        } else out.push(0, 0, 0, 0, 0);
       }
       for (let slotIndex = 0; slotIndex < frameSlots.charges; slotIndex++) {
         const charge = engine.charges[slotIndex];
-        if (!charge) out.push(0, 0, 0, 0);
+        if (!charge) out.push(0, 0, 0, 0, 0);
         else if (charge.exploded) {
-          const flashLeft = Math.max(0, charge.flash / 0.22);
+          // The ring grows out to the blast radius as the flash fades.
+          const flashLeft = Math.max(
+            0,
+            charge.flash / config.windBlastFlashSeconds
+          );
           out.push(
             charge.blastX,
             charge.blastY,
-            engine.mode.windBlastRadius * (1 - flashLeft * 0.55),
-            flashLeft
+            engine.mode.windBlastRadius * (1 - flashLeft * flashLeft * 0.7),
+            flashLeft,
+            1
           );
-        } else out.push(charge.x, charge.y, 0.3, 1);
+        } else out.push(charge.x, charge.y, BOLT_RADIUS, 1, 0);
       }
       frame.value = out;
       raf = requestAnimationFrame(loop);
@@ -290,6 +307,9 @@ function CubeSprite({
   const opacity = useDerivedValue(
     () => frame.value[index * CUBE_STRIDE + 3] ?? 0
   );
+  const blastOpacity = useDerivedValue(
+    () => (frame.value[index * CUBE_STRIDE + 4] ?? 0) * 0.85
+  );
   return (
     <Group transform={transform} opacity={opacity}>
       {highlight === 'scored' && (
@@ -332,6 +352,15 @@ function CubeSprite({
           />
         )}
       </Group>
+      {/* A wind blast just hit this cube. */}
+      <Rect
+        x={-0.5}
+        y={-0.5}
+        width={1}
+        height={1}
+        color={colors.board.blastFlash}
+        opacity={blastOpacity}
+      />
     </Group>
   );
 }
@@ -346,19 +375,53 @@ function ChargeSprite({
 }) {
   const cx = useDerivedValue(() => frame.value[offset] ?? 0);
   const cy = useDerivedValue(() => frame.value[offset + 1] ?? 0);
+  const center = useDerivedValue(() => vec(cx.value, cy.value));
   const radius = useDerivedValue(() => frame.value[offset + 2] ?? 0);
-  const opacity = useDerivedValue(() => {
-    const alpha = frame.value[offset + 3] ?? 0;
-    return (frame.value[offset + 2] ?? 0) > 0.5 ? alpha * 0.35 : alpha * 0.85; // blast vs bolt
-  });
+  const alpha = useDerivedValue(() => frame.value[offset + 3] ?? 0);
+  const exploded = useDerivedValue(() => frame.value[offset + 4] ?? 0);
+
+  // In flight: a pale ball of wind with a blue swirl inside.
+  const boltOpacity = useDerivedValue(() => (exploded.value ? 0 : alpha.value));
+  const swirlRadius = useDerivedValue(() => radius.value * 0.5);
+  // Exploded: a pale burst and a blue ring that grows and fades.
+  const burstOpacity = useDerivedValue(() =>
+    exploded.value ? alpha.value * 0.6 : 0
+  );
+  const ringOpacity = useDerivedValue(() => (exploded.value ? alpha.value : 0));
   return (
-    <Circle
-      cx={cx}
-      cy={cy}
-      r={radius}
-      color={colors.board.windCharge}
-      opacity={opacity}
-    />
+    <Group>
+      <Circle
+        c={center}
+        r={radius}
+        color={colors.board.windCharge}
+        opacity={burstOpacity}
+      />
+      <Circle
+        c={center}
+        r={radius}
+        color={colors.board.windSwirl}
+        opacity={ringOpacity}
+        style="stroke"
+        strokeWidth={0.3}
+      />
+      <Group opacity={boltOpacity}>
+        <Circle c={center} r={radius} color={colors.board.windCharge} />
+        <Circle
+          c={center}
+          r={radius}
+          color={colors.board.windSwirl}
+          style="stroke"
+          strokeWidth={0.1}
+        />
+        <Circle
+          c={center}
+          r={swirlRadius}
+          color={colors.board.windSwirl}
+          style="stroke"
+          strokeWidth={0.09}
+        />
+      </Group>
+    </Group>
   );
 }
 

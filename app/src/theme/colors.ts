@@ -7,6 +7,8 @@ export const colors = {
   background: palette.slate950,
   /** Board drawing on the Skia canvas. */
   board: {
+    /** Flash on a cube a wind blast just hit, and the core of a charge. */
+    blastFlash: palette.white,
     dispenser: palette.brown900,
     divider: palette.grey500,
     ice: palette.ice100,
@@ -19,7 +21,10 @@ export const colors = {
     scoredRing: palette.gold200,
     startLine: palette.teal400,
     wall: palette.gold400,
-    windCharge: palette.navy700,
+    /** Body of a wind charge and its burst: pale, like a ball of wind. */
+    windCharge: palette.frost50,
+    /** Swirl lines on a wind charge and the ring of its blast. */
+    windSwirl: palette.sky500,
   },
   border: {
     /** Edge of a card that marks a key moment, such as the round summary. */
