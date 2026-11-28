@@ -35,14 +35,15 @@ export function rulebook(
       id: 'lining-up',
       title: 'Lining up',
       paragraphs: [
-        'Both teams throw from the wooden platform at the bottom of the rink. Before you throw, drag on the platform to slide your cube left or right along the starting line.',
+        'Both teams throw from the wooden platform at the bottom of the rink. Before you throw, drag anywhere on the board to slide your cube left or right along the starting line.',
       ],
     },
     {
       id: 'throwing',
       title: 'Throwing',
       paragraphs: [
-        'Touch the ice above the starting line, pull back, and let go. The further you pull, the harder the throw. The aim line shows the direction and the power.',
+        'Below the board you see your cube up close, with the shuffle stick behind it. Tap the cube to choose where the stick will hit it, then swipe up from the stick. The longer the swipe, the harder the throw; the bar beside the cube shows the power.',
+        'Hit the left of the cube to curve it right, or the right to curve it left. Hit the top for a low shot that grips the ice and stops sooner, or the bottom to lift it so it skims the first few blocks. The further from the centre you hit, the less exact the throw. The dashed line on the board shows where the hit is heading.',
         'Your cube can knock other cubes around. Knock an opposing cube off the far end and it scores nothing this round.',
       ],
     },

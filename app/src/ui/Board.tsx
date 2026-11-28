@@ -11,6 +11,7 @@ import {
   Rect,
   vec,
 } from '@shopify/react-native-skia';
+import { GestureDetector } from 'react-native-gesture-handler';
 import type { SharedValue } from 'react-native-reanimated';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -19,6 +20,7 @@ import {
   dispensers,
   farBandBoundaries,
   halfWidth,
+  iceLength,
   nearBandBoundaries,
   yBoardEnd,
   yIceFar,
@@ -30,7 +32,8 @@ import type { GameEngine } from '../game/engine';
 import { colors, opacity as opacityLevels } from '../theme';
 
 import { spriteSlots } from './spriteSlots';
-import { useAim } from './useAim';
+import { useThrowStore } from './throwStore';
+import { useBoardGesture } from './useBoardGesture';
 import { useEngineState } from './useEngineState';
 
 /**
@@ -40,6 +43,8 @@ import { useEngineState } from './useEngineState';
  */
 const CUBE_STRIDE = 5;
 const CHARGE_STRIDE = 5;
+/** Length of the guide line before any swipe, in blocks. */
+const GUIDE_MIN_REACH = 4;
 /** Radius of a wind charge in flight, in blocks. */
 const BOLT_RADIUS = 0.5;
 
@@ -121,18 +126,32 @@ export function Board({ engine }: Props) {
         } else out.push(charge.x, charge.y, BOLT_RADIUS, 1, 0);
       }
       frame.value = out;
+
+      // While lining up, a guide shows where the chosen hit sends the cube;
+      // it reaches further as the swipe builds power.
+      const liveCube = engine.liveCube;
+      if (engine.phase === 'aiming' && liveCube) {
+        const { hitZone, swipePower } = useThrowStore.getState();
+        const turn = (-hitZone.column * config.hitAngleDeg * Math.PI) / 180;
+        const reach = GUIDE_MIN_REACH + swipePower * iceLength() * 0.85;
+        aim.value = [
+          swipePower > 0 ? 1 : opacityLevels.dimmed,
+          liveCube.x,
+          liveCube.y,
+          liveCube.x + Math.sin(turn) * reach,
+          liveCube.y - Math.cos(turn) * reach,
+          swipePower,
+        ];
+      } else if (aim.value[0] !== 0) {
+        aim.value = [0, 0, 0, 0, 0, 0];
+      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [engine, frame]);
+  }, [engine, frame, aim]);
 
-  const handlers = useAim(engine, aim, {
-    scale,
-    ox,
-    oy,
-    height: size.h,
-  });
+  const gesture = useBoardGesture(engine, { scale, ox, oy });
 
   const onLayout = (event: LayoutChangeEvent) =>
     setSize({
@@ -276,7 +295,9 @@ export function Board({ engine }: Props) {
           <AimOverlay aim={aim} team={engine.currentTeam} />
         </Group>
       </Canvas>
-      <View style={StyleSheet.absoluteFill} {...handlers} />
+      <GestureDetector gesture={gesture}>
+        <View style={StyleSheet.absoluteFill} />
+      </GestureDetector>
     </View>
   );
 }

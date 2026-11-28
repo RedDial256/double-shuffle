@@ -40,20 +40,34 @@ export const config = {
   // Throw physics (blocks/s)
   launchSpeedMin: px(430),
   launchSpeedMax: px(1850),
-  /** Pull length for full power when the screen has room for it. */
-  aimDragFullPowerPx: 320,
-  /** Full power never needs more than this share of the room below the finger. */
-  aimDragRoomShare: 0.85,
-  /** Shortest full-power pull, so a drag started low isn't twitchy. */
-  aimDragMinFullPowerPx: 96,
-  aimMaxAngleDeg: 22,
+  /** Share of the throw panel's height a swipe covers for full power. */
+  throwSwipeRoomShare: 0.75,
+  /** Never ask for less than this many pixels for full power. */
+  throwSwipeMinFullPowerPx: 120,
+  /** A swipe shorter than this doesn't throw. */
+  throwSwipeDeadZonePx: 12,
+
+  // Hit zones on the cube's face (hitZone.ts, D-30)
+  /** Turn from a hit in the left or right column, in degrees. */
+  hitAngleDeg: 6,
+  /** Most a corner hit can wobble the angle, in degrees. */
+  hitJitterAngleDeg: 2.5,
+  /** Most a corner hit can wobble the power, as a share of it. */
+  hitJitterPower: 0.06,
+  /** Ice damping multiplier for a low (top-row) shot that grips. */
+  lowShotDampScale: 1.3,
+  /** Blocks a lifted (bottom-row) shot skims before it grips. */
+  liftedSkimBlocks: 5,
+  /** Linear damping while a lifted shot skims. */
+  liftedSkimDamp: 0.1,
 
   dampIce: 0.85,
   dampDivider: 3.0,
   dampPlatform: 6.0,
   angularDamp: 4.0,
   wallBounce: 0.45,
-  cubeBounce: 0.55,
+  /** Concrete, like the cubes in the original build (D-30). */
+  cubeBounce: 0.6,
   stopSpeed: px(16),
   stopTime: 0.22,
 

@@ -39,6 +39,13 @@ export const colors = {
   scrimStrong: palette.blackAlpha80,
   /** Background of a card over the board, such as the round summary. */
   surface: palette.slate950Alpha93,
+  /** The shuffle stick and the cube's face in the throw panel. */
+  stick: {
+    /** Lines of the 3×3 hit grid on the cube's face. */
+    grid: palette.blackAlpha25,
+    head: palette.brown900,
+    shaft: palette.brown400,
+  },
   /** Team colours, indexed by team (0 = red, 1 = blue). */
   team: [palette.red500, palette.blue500],
   text: {

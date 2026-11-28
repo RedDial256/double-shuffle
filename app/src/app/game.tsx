@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AppState, BackHandler, StyleSheet } from 'react-native';
+import { AppState, BackHandler, StyleSheet, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import { Board } from '../ui/Board';
 import { useGameEngine } from '../ui/GameEngineContext';
 import { Hud } from '../ui/Hud';
 import { useMatchSetup } from '../ui/matchSetup';
+import { ThrowPanel } from '../ui/ThrowPanel';
 
 /** The match itself: the board, the HUD and a way into the Pause menu. */
 export default function GameScreen() {
@@ -57,7 +58,16 @@ export default function GameScreen() {
     <SafeAreaView style={styles.root}>
       <Hud
         engine={engine}
-        board={<Board engine={engine} />}
+        board={
+          <View style={styles.fill}>
+            <View style={styles.board}>
+              <Board engine={engine} />
+            </View>
+            <View style={styles.throwPanel}>
+              <ThrowPanel engine={engine} />
+            </View>
+          </View>
+        }
         onPause={openPause}
         onQuitToHome={() => router.dismissTo('/')}
       />
@@ -67,4 +77,9 @@ export default function GameScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
+  fill: { flex: 1 },
+  // The board takes about 70% under the score band, the throw panel the rest
+  // (docs/decisions.md D-30).
+  board: { flex: 7 },
+  throwPanel: { flex: 3 },
 });
