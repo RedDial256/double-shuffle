@@ -20,7 +20,7 @@ export default function HomeScreen() {
         <MenuButton
           label="Play"
           variant="primary"
-          onPress={() => router.push('/game')}
+          onPress={() => router.push('/new-match')}
         />
         <MenuButton label="Rules" onPress={() => router.push('/rules')} />
         <MenuButton label="Settings" onPress={() => router.push('/settings')} />
