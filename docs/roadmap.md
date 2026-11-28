@@ -27,7 +27,8 @@ v1 is ready when all of these are true:
 3. The physics is tuned by playtesting: a match takes 4 to 8 rounds, about 10
    to 15 minutes, at 60 fps on a mid-range Android phone.
 4. Original art (voxel style, no Minecraft textures), sound and basic haptics.
-5. A minimal app shell: Home, Game, Rules, Pause, Game over, Settings.
+5. A minimal app shell: Home, Game, Rules, Pause, Game over, Settings,
+   History.
 6. Signed EAS builds on Play internal testing and TestFlight.
 
 **Out of v1:** RNG bumpers, puck cam, the ruleset variant, online play,
@@ -137,7 +138,10 @@ throw or wind charge was unfair.
 
 Part of 0.2.0, first.
 
-* Expo Router: Home, Game, Rules, Settings, and a Pause modal.
+* Expo Router: Home, Game, Rules, Settings, History, and a Pause modal.
+* History and inspiration page: shuffleboard, Hermitcraft Season 11's
+  "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
+  no Minecraft or Hermitcraft assets, with a not-affiliated line.
 * Pause the engine when the app goes to the background (`AppState`).
 * **Presets** as `GameMode` objects (D-18): Quick (fewer cubes, lower target),
   Classic (4 cubes, 15 points, the rulebook rules, already `classicMode`), and
@@ -301,7 +305,7 @@ rotate, both our own and fan-made.
 
 1. Finish M0: typecheck and tests in CI.
 2. 0.2.0: size the cube slots from the match, then build M3 (Expo Router,
-   presets and Custom mode, saved settings, game over flow).
+   presets and Custom mode, saved settings, game over flow, History page).
 3. Then M2 on top of the shell: first fps measurement and playtests on a real
    device.
 4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
