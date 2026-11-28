@@ -146,7 +146,6 @@ Part of 0.2.0, first.
 * History and inspiration page: shuffleboard, Hermitcraft Season 11's
   "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
   no Minecraft or Hermitcraft assets, with a not-affiliated line.
-* Pause the engine when the app goes to the background (`AppState`).
 * **Presets** as `GameMode` objects (D-18): Quick (fewer cubes, lower target),
   Classic (4 cubes, 15 points, the rulebook rules, already `classicMode`), and
   maybe Chaotic (more wind charges, a stronger blast).
