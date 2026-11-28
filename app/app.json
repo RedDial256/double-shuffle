@@ -21,6 +21,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "15c96ede-d9f7-45ad-b347-1ff9fc978f08"
+      }
+    },
+    "owner": "reddial"
   }
 }
