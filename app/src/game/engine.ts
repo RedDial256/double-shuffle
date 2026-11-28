@@ -17,6 +17,7 @@ import {
   yIceFar,
   yIceNear,
 } from './config';
+import { centreHit, type HitShot, type HitZone, shotFromHit } from './hitZone';
 import type { GameMode } from './mode';
 import { defaultMode } from './mode';
 import type { CubeState, RoundResult } from './scoring';
@@ -30,6 +31,10 @@ export interface Cube {
   team: number;
   state: CubeState;
   knockedBack: boolean;
+  /** Damping multiplier from the hit, until the cube settles (D-30). */
+  dampScale: number;
+  /** Blocks left of a lifted shot's low-friction skim. */
+  skimLeft: number;
   /** Seconds left of the flash a wind blast leaves on the cube it hits. */
   blastedFor: number;
   body: Body;
@@ -76,6 +81,10 @@ export class GameEngine {
   shotsLeft: [number, number] = [0, 0];
   roundKilled: [boolean, boolean] = [false, false];
   windChargesLeft = 0;
+  /** Random numbers for the hit wobble; tests replace it to be repeatable. */
+  random: () => number = Math.random;
+  /** What the last throw's hit did, for the throw panel. */
+  lastShot: HitShot | null = null;
   cubes: Cube[] = [];
   charges: WindCharge[] = [];
   liveCube: Cube | null = null;
@@ -192,6 +201,8 @@ export class GameEngine {
       state: 'racked',
       knockedBack: false,
       blastedFor: 0,
+      dampScale: 1,
+      skimLeft: 0,
       body,
       slowFor: 0,
       x: 0,
@@ -284,19 +295,43 @@ export class GameEngine {
   }
 
   /** `dx, dy` unit direction, `power` 0..1. */
-  launch(dx: number, dy: number, power: number) {
+  /**
+   * Throw the live cube. `dx, dy` is the aimed direction (forward is -Y) and
+   * `power` runs from 0 to 1. `hitZone` is where the shuffle stick struck the
+   * cube's face: it turns the throw, changes how it grips the ice and adds a
+   * little wobble off centre (hitZone.ts).
+   */
+  launch(
+    dx: number,
+    dy: number,
+    power: number,
+    hitZone: Readonly<HitZone> = centreHit
+  ) {
     const cube = this.liveCube;
     if (!this.canAim() || !cube) return;
     this.phase = 'sliding';
     this.slideTime = 0;
     cube.state = 'live';
     cube.slowFor = 0;
-    const clampedPower = Math.max(0, Math.min(1, power));
+    const shot = shotFromHit(
+      hitZone,
+      Math.max(0, Math.min(1, power)),
+      this.random
+    );
+    cube.dampScale = shot.dampScale;
+    cube.skimLeft = shot.skimBlocks;
+    this.lastShot = shot;
     const speed =
       config.launchSpeedMin +
-      (config.launchSpeedMax - config.launchSpeedMin) * clampedPower;
+      (config.launchSpeedMax - config.launchSpeedMin) * shot.power;
+    const cos = Math.cos(shot.angle);
+    const sin = Math.sin(shot.angle);
+    // Rotate the aimed direction; with forward as -Y, a positive angle turns
+    // towards +X.
+    const directionX = dx * cos - dy * sin;
+    const directionY = dx * sin + dy * cos;
     cube.body.setAwake(true);
-    cube.body.setLinearVelocity(Vec2(dx * speed, dy * speed));
+    cube.body.setLinearVelocity(Vec2(directionX * speed, directionY * speed));
     this.emit({ type: 'state' });
   }
 
@@ -454,7 +489,13 @@ export class GameEngine {
       }
     }
 
-    cube.body.setLinearDamping(dampAt(cube.y));
+    // A lifted shot skims at first, then grips; a low one grips harder.
+    if (cube.skimLeft > 0) {
+      cube.skimLeft = Math.max(0, cube.skimLeft - speed * dt);
+      cube.body.setLinearDamping(config.liftedSkimDamp);
+    } else {
+      cube.body.setLinearDamping(dampAt(cube.y) * cube.dampScale);
+    }
 
     // Centre of mass past the far edge of the ice: it tips over and drops.
     if (cube.y < yIceFar()) {
@@ -481,6 +522,9 @@ export class GameEngine {
 
   private settle(cube: Cube) {
     cube.state = 'settled';
+    // The hit's effect lasts one slide; a barged cube slides as normal.
+    cube.dampScale = 1;
+    cube.skimLeft = 0;
     cube.body.setLinearVelocity(Vec2(0, 0));
     cube.body.setAngularVelocity(0);
   }
