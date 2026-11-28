@@ -27,7 +27,8 @@ v1 is ready when all of these are true:
 3. The physics is tuned by playtesting: a match takes 4 to 8 rounds, about 10
    to 15 minutes, at 60 fps on a mid-range Android phone.
 4. Original art (voxel style, no Minecraft textures), sound and basic haptics.
-5. A minimal app shell: Home, Game, Rules, Pause, Game over, Settings.
+5. A minimal app shell: Home, Game, Rules, Pause, Game over, Settings,
+   History.
 6. Signed EAS builds on Play internal testing and TestFlight.
 
 **Out of v1:** RNG bumpers, puck cam, the ruleset variant, online play,
@@ -68,6 +69,7 @@ Open work is tracked as GitHub issues, one milestone per section below.
 | 7 | Bundle ID, store name, icon | To investigate | M5 |
 | 8 | Deploys | Decided: automatic internal EAS builds, with room for manual ones. Play internal testing and TestFlight only from M5 | M2 |
 | 9 | Versioning | Decided: automated SemVer with release-please, 0.x → beta → rc → 1.0.0 (D-17) | — |
+| 10 | Throwing from the shooter's point of view (split screen, hit zones on the cube) | Decided: all of it in 0.2.0 (D-23) | — |
 
 ## Milestones
 
@@ -91,12 +93,13 @@ infrastructure (D-22).
 | Version | Contents | Status |
 |---|---|---|
 | 0.1.0 | M0 and most of M1 | Released |
-| 0.2.0 | M3 first, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
+| 0.2.0 | M3, then the point-of-view throw, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
 | Later | M4, then M5 as betas | To plan |
 
-**Order inside 0.2.0:** cube slots from the match, then the M3 items, then
-M2. The fps measurement and the playtests run on the build with the app
-shell, so they measure what players will actually use.
+**Order inside 0.2.0:** fix throw power (found in the 0.1.0 playtest), cube
+slots from the match, the M3 items, the point-of-view throw, then the rest of
+M2. The fps measurement and the playtests run on the build with the app shell
+and the new throw, so they measure what players will actually use.
 
 ### M0 — Foundation
 
@@ -117,14 +120,18 @@ version did, with the rules tested.
 
 Part of 0.2.0, after M3.
 
+* Fix throw power: full power must be reachable on a phone, and a forward
+  drag must not snap to the angle limits (found in the 0.1.0 playtest; done
+  first in 0.2.0).
 * Measure performance on a mid-range Android phone. Below 60 fps, move the
   loop to Reanimated's `useFrameCallback` or cut per-frame allocations.
-* Move input to gesture-handler (Pan to aim and line up, Tap for wind
-  charges).
+* Throw from the shooter's point of view (D-23): the board on top, a throw
+  panel below with an original shuffle stick, and a 3×3 grid of hit points on
+  the cube that sets direction and how the cube grips the ice. Input moves to
+  gesture-handler, with a readable power indicator and a clear "ready to
+  throw" state. Cube material starts from concrete in the original.
 * Debug panel for live tuning: `dampIce`, `launchSpeedMax`, `windTravelSpeed`,
-  `windBlastImpulse`, `aimDragFullPowerPx`.
-* Clearer aiming feedback: a readable power indicator and a visible "ready to
-  throw" state.
+  `windBlastImpulse`, `aimDragFullPowerPx`, `cubeBounce`, `wallBounce`.
 * Automatic internal deploys in place (see Deploys), so playtests use real
   builds.
 * At least 5 two-player playtest sessions, with findings logged in
@@ -137,7 +144,12 @@ throw or wind charge was unfair.
 
 Part of 0.2.0, first.
 
-* Expo Router: Home, Game, Rules, Settings, and a Pause modal.
+* Expo Router: Home, Game, Rules, Settings, History, and a Pause modal.
+* Game screen layout: the score, lights, cubes left and turn in a band above
+  the board, and the board filling the space below it (no empty side strips).
+* History and inspiration page: shuffleboard, Hermitcraft Season 11's
+  "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
+  no Minecraft or Hermitcraft assets, with a not-affiliated line.
 * Pause the engine when the app goes to the background (`AppState`).
 * **Presets** as `GameMode` objects (D-18): Quick (fewer cubes, lower target),
   Classic (4 cubes, 15 points, the rulebook rules, already `classicMode`), and
@@ -300,8 +312,10 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: size the cube slots from the match, then build M3 (Expo Router,
-   presets and Custom mode, saved settings, game over flow).
-3. Then M2 on top of the shell: first fps measurement and playtests on a real
-   device.
-4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+2. 0.2.0: fix throw power, size the cube slots from the match, then build M3 (Expo Router,
+   presets and Custom mode, saved settings, game over flow, score band, History
+   page).
+3. The point-of-view throw with hit zones on the cube.
+4. Then the rest of M2 on top of it: first fps measurement and playtests on a
+   real device.
+5. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
