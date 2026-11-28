@@ -411,3 +411,32 @@ clamped the same way.
 
 The numbers are a first guess and are tuned in the playtests (M2). Restart
 keeps the mode; a new mode needs a new match from Home.
+
+## D-26 — Saved settings with Zustand and AsyncStorage
+
+The player's choices live in one Zustand store (`app/src/ui/settingsStore.ts`)
+with the `persist` middleware writing to
+`@react-native-async-storage/async-storage`: the mode picked for the next
+match, the Custom options, and the sound and haptics toggles. They survive an
+app restart.
+
+* **Zustand** over React context: screens subscribe to the slice they read,
+  without a provider, and `persist` handles saving and reading back. It is
+  plain JavaScript, so it runs in Expo Go and in the unit tests.
+* **AsyncStorage** is the key-value store Expo recommends and ships in Expo
+  Go. The settings are a few small values with nothing secret in them, so
+  neither SQLite nor SecureStore is needed.
+* Only data is saved, never actions. Whatever is read back goes through
+  `sanitizeSavedSettings`: an unknown mode falls back to Classic, Custom
+  values are clamped (D-25), and a missing toggle is on. A change to the saved
+  shape bumps `SAVED_SETTINGS_VERSION`.
+* Reading back is asynchronous, so the first frame after launch shows the
+  defaults. Nothing on Home depends on the saved values, so it doesn't show.
+* The sound and haptics toggles are saved now and take effect when sound and
+  haptics land (M4).
+* `use-effect-reducer` was installed but unused, and is removed. The game
+  engine stays outside React and keeps its own state (`src/game/`); only app
+  state goes in the store.
+* Unistyles was considered and left out: it needs native modules
+  (react-native-nitro-modules) and so a development build, for little gain
+  over the token-based `StyleSheet`s already in place.

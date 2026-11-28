@@ -149,8 +149,6 @@ Part of 0.2.0, first.
 * History and inspiration page: shuffleboard, Hermitcraft Season 11's
   "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
   no Minecraft or Hermitcraft assets, with a not-affiliated line.
-* Save the last mode, the Custom settings and the sound and haptics
-  preferences on the device.
 
 **Done when:** you can open the app, play, pause, change a setting and start
 again without touching code.
@@ -304,7 +302,7 @@ rotate, both our own and fan-made.
 
 1. Finish M0: typecheck and tests in CI.
 2. 0.2.0: fix throw power, size the cube slots from the match, then build M3
-   (saved settings, score band, History page).
+   (score band, History page).
 3. The point-of-view throw with hit zones on the cube.
 4. Then the rest of M2 on top of it: first fps measurement and playtests on a
    real device.
