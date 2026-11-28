@@ -313,3 +313,17 @@ The text lives in `app/src/ui/rulebook.ts` as data and reads its numbers
 stays true when those defaults change or a game mode overrides them. It keeps
 the original rulebook's "Eyes Out Ray Finkle!" aside as an Easter egg. Styles
 use the design tokens (D-20); the book-style look comes in M4.
+
+## D-22 — 0.2.0 is the app shell plus feel and balance
+
+M2 (Feel and balance) on its own has little a player would notice: a frame
+rate measurement, a gesture-handler port, a debug panel and playtests. The
+rule for releases is that every minor version includes features that are
+interesting to the player, so 0.2.0 bundles M2 with M3 (App shell), which
+brings Home, Settings, the presets, the Custom mode and the game over flow.
+
+M3 goes first. The fps measurement and the playtests then run on the build
+players will actually get, with navigation, the Pause modal and the presets,
+instead of on today's single screen, and the playtests can try the presets
+too. M1's last item, sizing the cube slots from the match, comes before M3
+because the Custom mode changes cubes per round.
