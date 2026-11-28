@@ -32,7 +32,12 @@ export const config = {
   // Throw physics (blocks/s)
   launchSpeedMin: px(430),
   launchSpeedMax: px(1850),
+  /** Pull length for full power when the screen has room for it. */
   aimDragFullPowerPx: 320,
+  /** Full power never needs more than this share of the room below the finger. */
+  aimDragRoomShare: 0.85,
+  /** Shortest full-power pull, so a drag started low isn't twitchy. */
+  aimDragMinFullPowerPx: 96,
   aimMaxAngleDeg: 22,
 
   dampIce: 0.85,
