@@ -1,10 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { AppState, BackHandler, StyleSheet, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors } from '../theme';
+import { isAppInForeground } from '../ui/appState';
 import { Board } from '../ui/Board';
 import { useGameEngine } from '../ui/GameEngineContext';
 import { Hud } from '../ui/Hud';
@@ -21,6 +22,19 @@ export default function GameScreen() {
   }, [engine]);
 
   const openPause = useCallback(() => router.push('/pause'), []);
+
+  // Leaving the app (home button, app switcher, a call) pauses the match at
+  // once and shows the Pause menu on return, so a sliding cube waits.
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = AppState.addEventListener('change', (appState) => {
+        if (isAppInForeground(appState)) return;
+        engine.setPaused(true);
+        openPause();
+      });
+      return () => subscription.remove();
+    }, [engine, openPause])
+  );
 
   // Android's back button pauses instead of quitting the match.
   useFocusEffect(
