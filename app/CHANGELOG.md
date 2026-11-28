@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/RedDial256/double-shuffle/compare/v0.1.0...v0.1.1) (2026-11-28)
+
+
+### Bug Fixes
+
+* let throws reach full power and cancel forward drags ([#65](https://github.com/RedDial256/double-shuffle/issues/65)) ([ae53ee3](https://github.com/RedDial256/double-shuffle/commit/ae53ee32a780deeb877f49f3999ba352ae59c619))
+* size the board's cube and wind charge sprites from the match ([#66](https://github.com/RedDial256/double-shuffle/issues/66)) ([68ac464](https://github.com/RedDial256/double-shuffle/commit/68ac464b2f73e4290ca0f94e5c6da9e88f17f923))
+
 ## 0.1.0 (2026-11-28)
 
 
