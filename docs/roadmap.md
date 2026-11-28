@@ -143,9 +143,6 @@ throw or wind charge was unfair.
 
 Part of 0.2.0, first.
 
-* Done in 0.2.0, pending the user's playtest: Expo Router screens, pause in
-  the background, presets and Custom mode, game over flow, saved settings,
-  score band, History page.
 
 **Done when:** you can open the app, play, pause, change a setting and start
 again without touching code.
