@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AppState, BackHandler, StyleSheet, View } from 'react-native';
+import { AppState, BackHandler, StyleSheet } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,7 +10,6 @@ import { Board } from '../ui/Board';
 import { useGameEngine } from '../ui/GameEngineContext';
 import { Hud } from '../ui/Hud';
 import { useMatchSetup } from '../ui/matchSetup';
-import { PauseButton } from '../ui/PauseButton';
 
 /** The match itself: the board, the HUD and a way into the Pause menu. */
 export default function GameScreen() {
@@ -56,18 +55,16 @@ export default function GameScreen() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <View style={styles.fill}>
-        <Board engine={engine} />
-        {/* Under the HUD, so the round summary and game-over overlays sit
-            on top of it. */}
-        <PauseButton onPress={openPause} />
-        <Hud engine={engine} onQuitToHome={() => router.dismissTo('/')} />
-      </View>
+      <Hud
+        engine={engine}
+        board={<Board engine={engine} />}
+        onPause={openPause}
+        onQuitToHome={() => router.dismissTo('/')}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
-  fill: { flex: 1 },
 });

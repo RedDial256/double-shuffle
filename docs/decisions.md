@@ -440,3 +440,23 @@ app restart.
 * Unistyles was considered and left out: it needs native modules
   (react-native-nitro-modules) and so a development build, for little gain
   over the token-based `StyleSheet`s already in place.
+
+## D-27 — Score band above the board, platforms cropped
+
+The game screen is a column: a score band on top, then the board.
+
+* The band holds both scores, the score lights, the cubes left, whose turn it
+  is and the Pause button. Nothing is drawn over the rink any more, and the
+  Pause button no longer covers the shooter's platform.
+* The board no longer shows both platforms in full (this refines D-11). It
+  fits the ice, the walls, 1 block of the far platform and 2.5 blocks of the
+  shooter's platform (`viewFarPlatform`, `viewNearPlatform` in `config.ts`).
+  A cube past the back edge has fallen off and isn't drawn, so the far
+  platform only needs a sliver. The shooter's platform keeps room to slide the
+  cube sideways and to show a cube knocked back onto it.
+* On a tall phone this makes the rink about 10% wider on screen. The board
+  still fits by height on phones, so narrow dark strips remain at the sides;
+  removing them would mean widening the rink, which changes the physics
+  (option 3 in #62), or filling them with scenery (option 1). The user chose
+  cropping.
+* The physics and the rink's proportions (D-02) don't change.

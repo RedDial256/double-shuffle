@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useReducer, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { config } from '../game/config';
@@ -7,6 +7,7 @@ import { summariseRound } from '../game/roundSummary';
 import { colors, opacity, radii, spacing, textVariants } from '../theme';
 
 import { boardResetSteps } from './boardReset';
+import { PauseButton } from './PauseButton';
 import { RoundSummary } from './RoundSummary';
 
 function Lights({
@@ -60,11 +61,21 @@ function Rack({
 /** Time each score light takes to go out during the board reset. */
 const RESET_STEP_MS = 90;
 
+/**
+ * The game screen around the board: a score band on top (scores, score
+ * lights, cubes left, whose turn it is and Pause), the board filling the rest,
+ * and the toast, round summary and game-over overlays above both.
+ */
 export function Hud({
   engine,
+  board,
+  onPause,
   onQuitToHome,
 }: {
   engine: GameEngine;
+  /** The board, drawn below the score band. */
+  board: ReactNode;
+  onPause: () => void;
   /** Leaves the match from the game-over screen. */
   onQuitToHome: () => void;
 }) {
@@ -135,8 +146,8 @@ export function Hud({
       : null;
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      <View style={styles.top} pointerEvents="none">
+    <View style={styles.fill}>
+      <View style={styles.band}>
         {[0, 1].map((teamIndex) => (
           <View key={teamIndex} style={styles.scoreRow}>
             <Text style={[styles.teamName, teamTextStyles[teamIndex]]}>
@@ -155,8 +166,15 @@ export function Hud({
             />
           </View>
         ))}
-        <Text style={styles.banner}>{banner}</Text>
+        <View style={styles.bannerRow}>
+          <Text style={styles.banner} accessibilityLiveRegion="polite">
+            {banner}
+          </Text>
+          <PauseButton onPress={onPause} />
+        </View>
       </View>
+
+      <View style={styles.fill}>{board}</View>
 
       {toast && (
         <View style={styles.toast} pointerEvents="none">
@@ -216,10 +234,19 @@ const RACK_CUBE_SIZE = 9;
 const TEAM_NAME_WIDTH = 60;
 
 const styles = StyleSheet.create({
-  top: {
-    paddingTop: spacing.xs,
+  fill: { flex: 1 },
+  band: {
+    paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
     gap: spacing['2xs'],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.subtle,
+  },
+  bannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
   },
   scoreRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   teamName: {
@@ -240,7 +267,7 @@ const styles = StyleSheet.create({
   banner: {
     color: colors.text.primary,
     ...textVariants.label,
-    marginTop: spacing['3xs'],
+    flexShrink: 1,
   },
   toast: {
     position: 'absolute',
