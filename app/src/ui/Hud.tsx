@@ -6,6 +6,7 @@ import type { GameEngine } from '../game/engine';
 import { summariseRound } from '../game/roundSummary';
 import { colors, opacity, radii, spacing, textVariants } from '../theme';
 
+import { boardResetSteps } from './boardReset';
 import { RoundSummary } from './RoundSummary';
 
 function Lights({
@@ -56,12 +57,47 @@ function Rack({
   );
 }
 
-export function Hud({ engine }: { engine: GameEngine }) {
+/** Time each score light takes to go out during the board reset. */
+const RESET_STEP_MS = 90;
+
+export function Hud({
+  engine,
+  onQuitToHome,
+}: {
+  engine: GameEngine;
+  /** Leaves the match from the game-over screen. */
+  onQuitToHome: () => void;
+}) {
   const [, bump] = useReducer((count: number) => count + 1, 0);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined
   );
+
+  // While the loser resets the board, the lights show these instead of the
+  // final scores.
+  const [resetScores, setResetScores] = useState<[number, number] | null>(null);
+  const resetTimer = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined
+  );
+  useEffect(() => () => clearInterval(resetTimer.current), []);
+
+  const startRematch = () => {
+    if (resetScores) return;
+    const steps = boardResetSteps([engine.scores[0], engine.scores[1]]);
+    let stepIndex = 0;
+    setResetScores([engine.scores[0], engine.scores[1]]);
+    resetTimer.current = setInterval(() => {
+      if (stepIndex < steps.length) {
+        setResetScores(steps[stepIndex]);
+        stepIndex += 1;
+        return;
+      }
+      clearInterval(resetTimer.current);
+      setResetScores(null);
+      engine.restart();
+    }, RESET_STEP_MS);
+  };
 
   useEffect(() => {
     const unsubscribe = engine.subscribe((event) => {
@@ -108,7 +144,7 @@ export function Hud({ engine }: { engine: GameEngine }) {
             </Text>
             <Lights
               team={teamIndex}
-              score={engine.scores[teamIndex]}
+              score={resetScores?.[teamIndex] ?? engine.scores[teamIndex]}
               target={engine.mode.targetScore}
             />
             <Rack
@@ -136,16 +172,36 @@ export function Hud({ engine }: { engine: GameEngine }) {
 
       {engine.phase === 'game_over' && (
         <View style={styles.overlay}>
-          {summary && <RoundSummary summary={summary} />}
+          {summary && !resetScores && <RoundSummary summary={summary} />}
           <Text style={[styles.win, teamTextStyles[engine.winner]]}>
             {config.teamNames[engine.winner]} wins!
           </Text>
           <Text style={styles.sub}>
             {engine.scores[0]} – {engine.scores[1]}
           </Text>
-          <Pressable style={styles.button} onPress={() => engine.restart()}>
-            <Text style={styles.buttonText}>Play again</Text>
-          </Pressable>
+          {resetScores ? (
+            <Text
+              style={[styles.resetting, teamTextStyles[1 - engine.winner]]}
+              accessibilityLiveRegion="polite">
+              {config.teamNames[1 - engine.winner]} resets the board…
+            </Text>
+          ) : (
+            <View style={styles.gameOverButtons}>
+              <Pressable
+                style={styles.button}
+                onPress={startRematch}
+                accessibilityRole="button"
+                accessibilityHint="Starts a new match with the same rules">
+                <Text style={styles.buttonText}>Rematch</Text>
+              </Pressable>
+              <Pressable
+                style={styles.secondaryButton}
+                onPress={onQuitToHome}
+                accessibilityRole="button">
+                <Text style={styles.secondaryButtonText}>Home</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -224,6 +280,16 @@ const styles = StyleSheet.create({
     color: colors.text.onAccent,
     ...textVariants.button,
   },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.md,
+  },
+  secondaryButtonText: { color: colors.text.primary, ...textVariants.button },
+  gameOverButtons: { flexDirection: 'row', gap: spacing.sm },
+  resetting: textVariants.heading,
 });
 
 /** Background fill in each team's colour, indexed by team. */

@@ -61,7 +61,7 @@ export default function GameScreen() {
         {/* Under the HUD, so the round summary and game-over overlays sit
             on top of it. */}
         <PauseButton onPress={openPause} />
-        <Hud engine={engine} />
+        <Hud engine={engine} onQuitToHome={() => router.dismissTo('/')} />
       </View>
     </SafeAreaView>
   );
