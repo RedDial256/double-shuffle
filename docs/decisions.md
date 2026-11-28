@@ -454,8 +454,10 @@ The game screen is a column: a score band on top, then the board.
   A cube past the back edge has fallen off and isn't drawn, so the far
   platform only needs a sliver. The shooter's platform keeps room to slide the
   cube sideways and to show a cube knocked back onto it.
-* On a tall phone this makes the rink about 10% wider on screen. The board
-  still fits by height on phones, so narrow dark strips remain at the sides;
+* The band takes about 95 points of height, and the cropping wins that back:
+  on a tall phone the rink ends up a few percent larger than before, with
+  nothing overlapping it. The board still fits by height on phones, so narrow
+  dark strips remain at the sides;
   removing them would mean widening the rink, which changes the physics
   (option 3 in #62), or filling them with scenery (option 1). The user chose
   cropping.
