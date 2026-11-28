@@ -69,6 +69,7 @@ Open work is tracked as GitHub issues, one milestone per section below.
 | 7 | Bundle ID, store name, icon | To investigate | M5 |
 | 8 | Deploys | Decided: automatic internal EAS builds, with room for manual ones. Play internal testing and TestFlight only from M5 | M2 |
 | 9 | Versioning | Decided: automated SemVer with release-please, 0.x → beta → rc → 1.0.0 (D-17) | — |
+| 10 | Throwing from the shooter's point of view (split screen, hit zones on the cube) | Open: see #63 | 0.2.0 scope |
 
 ## Milestones
 
@@ -95,8 +96,8 @@ infrastructure (D-22).
 | 0.2.0 | M3 first, then M2, plus M1's cube slots (needed by Custom mode) | Planned |
 | Later | M4, then M5 as betas | To plan |
 
-**Order inside 0.2.0:** cube slots from the match, then the M3 items, then
-M2. The fps measurement and the playtests run on the build with the app
+**Order inside 0.2.0:** fix throw power (found in the 0.1.0 playtest), cube
+slots from the match, then the M3 items, then M2. The fps measurement and the playtests run on the build with the app
 shell, so they measure what players will actually use.
 
 ### M0 — Foundation
@@ -118,6 +119,9 @@ version did, with the rules tested.
 
 Part of 0.2.0, after M3.
 
+* Fix throw power: full power must be reachable on a phone, and a forward
+  drag must not snap to the angle limits (found in the 0.1.0 playtest; done
+  first in 0.2.0).
 * Measure performance on a mid-range Android phone. Below 60 fps, move the
   loop to Reanimated's `useFrameCallback` or cut per-frame allocations.
 * Move input to gesture-handler (Pan to aim and line up, Tap for wind
@@ -139,6 +143,8 @@ throw or wind charge was unfair.
 Part of 0.2.0, first.
 
 * Expo Router: Home, Game, Rules, Settings, History, and a Pause modal.
+* Game screen layout: the score, lights, cubes left and turn in a band above
+  the board, and the board filling the space below it (no empty side strips).
 * History and inspiration page: shuffleboard, Hermitcraft Season 11's
   "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
   no Minecraft or Hermitcraft assets, with a not-affiliated line.
@@ -304,8 +310,11 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: size the cube slots from the match, then build M3 (Expo Router,
-   presets and Custom mode, saved settings, game over flow, History page).
+2. 0.2.0: fix throw power, size the cube slots from the match, then build M3 (Expo Router,
+   presets and Custom mode, saved settings, game over flow, score band, History
+   page).
 3. Then M2 on top of the shell: first fps measurement and playtests on a real
    device.
-4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+4. Decide how far to take throwing from the shooter's point of view
+   (decision 10).
+5. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
