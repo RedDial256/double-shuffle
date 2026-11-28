@@ -391,3 +391,23 @@ Routes live in `app/src/app/`: `index` (Home), `game`, `pause`, `rules` and
   has to load before any Skia component is imported, so `registerApp.web.ts`
   loads it and then requires `expo-router/entry`; native requires the entry
   straight away. The web build is a single-page app (`web.output: single`).
+
+## D-25 — Presets and the Custom mode
+
+A match starts from a New match screen: pick a preset or Custom, then Start.
+
+| Mode | Cubes each | Target | Wind charges per throw | Wind |
+|---|---|---|---|---|
+| Quick | 3 | 9 | 2 | Classic |
+| Classic | 4 | 15 | 2 | Classic (the rulebook) |
+| Chaotic | 4 | 15 | 3 | blast radius ×1.3, impulse ×1.4 |
+
+Custom sets four options, each within safe limits: points to win 5 to 20,
+cubes per round 2 to 6, wind charges per throw 0 to 4, and wind strength
+Gentle (radius ×0.8, impulse ×0.7), Normal or Strong (×1.3, ×1.4). The upper
+limits keep the HUD's score lights and rack on one line on a phone, and the
+lower ones keep a round worth playing. Values read back from the device are
+clamped the same way.
+
+The numbers are a first guess and are tuned in the playtests (M2). Restart
+keeps the mode; a new mode needs a new match from Home.

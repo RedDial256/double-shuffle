@@ -61,7 +61,7 @@ Open work is tracked as GitHub issues, one milestone per section below.
 | 1 | Both teams throw from the same end (D-01) | Decided: yes, as implemented | — |
 | 2 | Navigation | Decided: Expo Router | — |
 | 3 | Settings | Decided: 2 or 3 presets plus a Custom mode with a few options | — |
-| 4 | Which presets, which Custom options | Decided: the M3 proposal below | — |
+| 4 | Which presets, which Custom options | Decided: Quick, Classic, Chaotic and Custom (D-25) | — |
 | 5 | Game loop on the JS thread or the UI thread | Decided: choose after measuring in M2 | M2 |
 | 6 | Analytics tool | To investigate | M5 |
 | 7 | Bundle ID, store name, icon | To investigate | M5 |
@@ -146,11 +146,6 @@ Part of 0.2.0, first.
 * History and inspiration page: shuffleboard, Hermitcraft Season 11's
   "Shuffled to Bits", and credits to Skizzleman and ImpulseSV. Text only,
   no Minecraft or Hermitcraft assets, with a not-affiliated line.
-* **Presets** as `GameMode` objects (D-18): Quick (fewer cubes, lower target),
-  Classic (4 cubes, 15 points, the rulebook rules, already `classicMode`), and
-  maybe Chaotic (more wind charges, a stronger blast).
-* **Custom mode** with a few options, each with safe limits: target score,
-  cubes per round, wind charges per throw, wind strength.
 * Save the last mode, the Custom settings and the sound and haptics
   preferences on the device.
 * Game over flow: rematch, back to Home, and the "loser resets the board"
@@ -307,8 +302,7 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: build M3 (presets and Custom mode, saved settings, game over flow,
-   score band, History page).
+2. 0.2.0: build M3 (saved settings, game over flow, score band, History page).
 3. The point-of-view throw with hit zones on the cube.
 4. Then the rest of M2 on top of it: first fps measurement and playtests on a
    real device.

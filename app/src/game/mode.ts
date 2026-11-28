@@ -44,3 +44,123 @@ export const classicMode: Readonly<GameMode> = Object.freeze({
 });
 
 export const defaultMode = classicMode;
+
+/** Fewer cubes and a lower target, for a match of a few minutes. */
+export const quickMode: Readonly<GameMode> = Object.freeze({
+  ...classicMode,
+  id: 'quick',
+  name: 'Quick',
+  targetScore: 9,
+  cubesPerRound: 3,
+});
+
+/** More wind charges and stronger blasts: the board never stays still. */
+export const chaoticMode: Readonly<GameMode> = Object.freeze({
+  ...classicMode,
+  id: 'chaotic',
+  name: 'Chaotic',
+  windChargesPerThrow: 3,
+  windBlastRadius: classicMode.windBlastRadius * 1.3,
+  windBlastImpulse: classicMode.windBlastImpulse * 1.4,
+});
+
+/** The presets offered before a match, in the order they are shown. */
+export const presetModes: readonly Readonly<GameMode>[] = [
+  quickMode,
+  classicMode,
+  chaoticMode,
+];
+
+/** Wind strength for the Custom mode, as multiples of Classic's blast. */
+export const windStrengths = {
+  gentle: { label: 'Gentle', radius: 0.8, impulse: 0.7 },
+  normal: { label: 'Normal', radius: 1, impulse: 1 },
+  strong: { label: 'Strong', radius: 1.3, impulse: 1.4 },
+} as const;
+
+export type WindStrength = keyof typeof windStrengths;
+
+/** The options a player can set in the Custom mode. */
+export interface CustomSettings {
+  targetScore: number;
+  cubesPerRound: number;
+  windChargesPerThrow: number;
+  windStrength: WindStrength;
+}
+
+/**
+ * Safe limits for each Custom option. Beyond these the HUD runs out of room
+ * (score lights, rack) or a match stops being fun (a 1-cube round, 30
+ * points).
+ */
+export const customLimits = {
+  targetScore: { min: 5, max: 20 },
+  cubesPerRound: { min: 2, max: 6 },
+  windChargesPerThrow: { min: 0, max: 4 },
+} as const;
+
+/** Custom starts from the rulebook rules. */
+export const defaultCustomSettings: Readonly<CustomSettings> = Object.freeze({
+  targetScore: classicMode.targetScore,
+  cubesPerRound: classicMode.cubesPerRound,
+  windChargesPerThrow: classicMode.windChargesPerThrow,
+  windStrength: 'normal',
+});
+
+const clampToLimit = (
+  value: number,
+  limit: { min: number; max: number },
+  fallback: number
+) =>
+  Number.isFinite(value)
+    ? Math.max(limit.min, Math.min(limit.max, Math.round(value)))
+    : fallback;
+
+/**
+ * Brings Custom settings within the safe limits. Also used on settings read
+ * back from the device, which may be from an older version or edited.
+ */
+export function clampCustomSettings(
+  settings: Partial<CustomSettings>
+): CustomSettings {
+  const defaults = defaultCustomSettings;
+  return {
+    targetScore: clampToLimit(
+      settings.targetScore ?? defaults.targetScore,
+      customLimits.targetScore,
+      defaults.targetScore
+    ),
+    cubesPerRound: clampToLimit(
+      settings.cubesPerRound ?? defaults.cubesPerRound,
+      customLimits.cubesPerRound,
+      defaults.cubesPerRound
+    ),
+    windChargesPerThrow: clampToLimit(
+      settings.windChargesPerThrow ?? defaults.windChargesPerThrow,
+      customLimits.windChargesPerThrow,
+      defaults.windChargesPerThrow
+    ),
+    windStrength:
+      settings.windStrength && settings.windStrength in windStrengths
+        ? settings.windStrength
+        : defaults.windStrength,
+  };
+}
+
+/** The Custom mode for a set of options, within the safe limits. */
+export function customMode(
+  settings: Partial<CustomSettings>
+): Readonly<GameMode> {
+  const safe = clampCustomSettings(settings);
+  const wind = windStrengths[safe.windStrength];
+  return Object.freeze({
+    ...classicMode,
+    id: 'custom',
+    name: 'Custom',
+    targetScore: safe.targetScore,
+    cubesPerRound: safe.cubesPerRound,
+    windChargesPerThrow: safe.windChargesPerThrow,
+    windBlastRadius: classicMode.windBlastRadius * wind.radius,
+    windBlastImpulse: classicMode.windBlastImpulse * wind.impulse,
+  });
+}

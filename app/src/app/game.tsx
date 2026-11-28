@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppState, BackHandler, StyleSheet, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 
@@ -9,17 +9,21 @@ import { isAppInForeground } from '../ui/appState';
 import { Board } from '../ui/Board';
 import { useGameEngine } from '../ui/GameEngineContext';
 import { Hud } from '../ui/Hud';
+import { useMatchSetup } from '../ui/matchSetup';
 import { PauseButton } from '../ui/PauseButton';
 
 /** The match itself: the board, the HUD and a way into the Pause menu. */
 export default function GameScreen() {
   const engine = useGameEngine();
+  const { selectedMode } = useMatchSetup();
 
-  // Every visit to this screen is a new match.
+  // Every visit to this screen is a new match, with the mode picked before
+  // it. Changing the mode mid-match (not possible today) must not restart.
+  const [startMode] = useState(selectedMode);
   useEffect(() => {
-    engine.startMatch();
+    engine.startMatch(startMode);
     engine.setPaused(false);
-  }, [engine]);
+  }, [engine, startMode]);
 
   const openPause = useCallback(() => router.push('/pause'), []);
 
