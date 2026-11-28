@@ -48,10 +48,6 @@ Open work is tracked as GitHub issues, one milestone per section below.
 * The engine runs on the JS thread from `requestAnimationFrame` and copies a
   new array into a shared value every frame. Fine for now, but it needs
   measuring on a mid-range Android phone.
-* Input uses the Responder system. `react-native-gesture-handler` is
-  installed but unused.
-* `CUBE_SLOTS` is fixed in `Board.tsx`, so changing `cubesPerRound` at
-  runtime breaks rendering.
 * The physics numbers have never been playtested.
 
 ## Decisions
@@ -121,13 +117,9 @@ Part of 0.2.0, after M3.
 
 * Measure performance on a mid-range Android phone. Below 60 fps, move the
   loop to Reanimated's `useFrameCallback` or cut per-frame allocations.
-* Throw from the shooter's point of view (D-23): the board on top, a throw
-  panel below with an original shuffle stick, and a 3×3 grid of hit points on
-  the cube that sets direction and how the cube grips the ice. Input moves to
-  gesture-handler, with a readable power indicator and a clear "ready to
-  throw" state. Cube material starts from concrete in the original.
 * Debug panel for live tuning: `dampIce`, `launchSpeedMax`, `windTravelSpeed`,
-  `windBlastImpulse`, `aimDragFullPowerPx`, `cubeBounce`, `wallBounce`.
+  `windBlastImpulse`, `throwSwipeRoomShare`, the hit-zone numbers, `cubeBounce`,
+  `wallBounce`.
 * Automatic internal deploys in place (see Deploys), so playtests use real
   builds.
 * At least 5 two-player playtest sessions, with findings logged in
@@ -291,7 +283,6 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: the point-of-view throw with hit zones on the cube.
-3. Then the rest of M2 on top of it: first fps measurement and playtests on a
-   real device.
-4. Investigate the analytics tool and the bundle ID (decisions 6 and 7).
+2. 0.2.0: the rest of M2 on top of the new throw: first fps measurement and
+   playtests on a real device.
+3. Investigate the analytics tool and the bundle ID (decisions 6 and 7).

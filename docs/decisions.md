@@ -512,3 +512,42 @@ rulebook.
   user reviews the final wording.
 * No links for now, so nothing leaves the app. No logos, skins, screenshots
   or textures.
+
+## D-30 — The point-of-view throw
+
+This builds the throw planned in D-23 (the second D-23, on throwing from the
+shooter's point of view).
+
+* **Layout.** Under the score band, the board takes 70% of the height and the
+  throw panel 30%. The panel shows the shooter's cube up close in the team's
+  colour, a 3×3 grid on its face, an original wooden shuffle stick below it,
+  a power bar and a line saying whose turn it is and what to do. It is
+  dimmed while nobody can throw.
+* **Input.** Tap a square on the face to pick the hit, then swipe up anywhere
+  in the panel. The swipe's length sets the power: full power at 75% of the
+  panel's height, never less than 120 px, and nothing below a 12 px dead
+  zone. The stick slides up into the cube as the power builds. Lining up
+  moved to a drag anywhere on the board, and the defender's tap on the board
+  still fires a wind charge. Both use react-native-gesture-handler 3's hook
+  API (`usePanGesture`, `GestureDetector`) on the JS thread, which replaces
+  the Responder-based `useAim` (closes #16). The pull-back throw and its
+  `aimDrag*` settings are gone.
+* **What a hit does** (`src/game/hitZone.ts`, `engine.launch(dx, dy, power,
+  hitZone)`):
+  * Column: a left hit turns the throw 6° right, and a right hit turns it 6°
+    left.
+  * Row: a top hit is a low shot, with 1.3× the ice damping for the whole
+    slide. A bottom hit lifts the cube: it skims the first 5 blocks with
+    almost no damping (0.1), then slides as normal. The game stays 2D, so
+    "height" is friction, not flight.
+  * Wobble: up to ±2.5° and ±6% power at a corner, scaling with distance
+    from the centre. A centre hit is exact. The engine takes its random
+    numbers from `engine.random`, so tests are repeatable.
+  * The effect lasts one slide. A cube that settles and is later barged
+    slides as normal.
+* **Guide.** While lining up, a dashed line on the board shows the hit's
+  direction. It grows with the swipe's power.
+* **Cube material.** `cubeBounce` goes from 0.55 to 0.6, after the concrete
+  in the original. Wind blasts are not scaled down (D-28).
+* The numbers are a first guess for the M2 playtests and the debug panel
+  (#17).

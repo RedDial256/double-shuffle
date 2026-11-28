@@ -58,11 +58,12 @@ the numbers (run it with any TypeScript runner, for example
 
 Two players share one device and take turns.
 
-* **Line up**: drag on the wood platform below the starting line to slide your
-  cube sideways.
-* **Throw**: pull back anywhere on the ice and release. The cube goes the
-  opposite way to your drag, and the further you pull the harder it goes. The
-  dashed line doubles as the power meter.
+* **Line up**: drag anywhere on the board to slide your cube sideways along the
+  starting line.
+* **Throw**: the panel under the board shows your cube up close with a shuffle
+  stick. Tap the cube to pick where the stick hits it (left curves right,
+  right curves left, top grips, bottom skims), then swipe up. The longer the
+  swipe, the harder the throw. Off-centre hits are a little less exact.
 * **Defend**: while the other team's cube is sliding, tap anywhere on the ice.
   The wind-charge dispenser nearest your tap fires a burst straight across.
   Two per throw. Time it so the burst lands *ahead* of the cube and the
@@ -95,7 +96,8 @@ app/                   the Expo app
     app/               Expo Router routes: index (Home), new-match, game, pause, rules, history, settings
     ui/
       Board.tsx        Skia canvas: draws the rink and runs the frame loop
-      useAim.ts        all touch input: line up, pull-back throw, wind charges
+      useBoardGesture.ts  board touch: line up, wind charges
+      ThrowPanel.tsx   the cube close-up, hit zones and the swipe to throw
       Hud.tsx          score lights, turn banner, round summary
 ```
 

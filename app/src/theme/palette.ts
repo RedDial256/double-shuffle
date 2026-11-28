@@ -9,6 +9,8 @@ export const palette = {
   blackAlpha73: '#000000bb',
   /** Black at 80% opacity. */
   blackAlpha80: '#000000cc',
+  /** Black at 25% opacity. */
+  blackAlpha25: '#00000040',
   blue500: '#3a7ad9',
   brown400: '#8a5a2b',
   brown900: '#3b2a20',
