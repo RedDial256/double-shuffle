@@ -37,11 +37,12 @@ This is a handoff document for whoever (human or agent) implements the game next
     docs/              # design docs, keep as-is
     assets/            # sprites/, audio/, fonts/ for game art (empty for now)
     app/
-      App.tsx          # entry point
+      index.ts         # entry: loads Skia on web, then Expo Router
       app.json         # Expo config
       scripts/sim.ts   # headless match simulation
       src/
         game/          # framework-free logic: config.ts, mode.ts, scoring.ts, engine.ts
+        app/           # Expo Router routes: Home, Game, Pause, Rules, Settings
         ui/            # React/Skia layer: Board.tsx, useAim.ts, Hud.tsx
   ```
 - Keep `src/game/` free of React and React Native imports. The UI layer calls the engine's public methods, calls `update(dt)` every frame, and reads its state. That's what lets `sim.ts` and unit tests run the game without a device.

@@ -78,10 +78,8 @@ Two players share one device and take turns.
 README.md
 docs/                  design spec, implementation brief, decisions log
 assets/                audio/, fonts/, sprites/ (empty for now)
-*.png, *.jpg, *.webp   research references (see note below)
 app/                   the Expo app
-  App.tsx              entry point: creates the engine, mounts Board and Hud
-  index.ts             registers App with Expo
+  index.ts             entry: loads Skia on web, then Expo Router
   app.json             Expo config (name, icons, orientation)
   assets/              app icon and splash images
   scripts/
@@ -92,6 +90,7 @@ app/                   the Expo app
       mode.ts          GameMode: per-match rules, and the Classic mode
       scoring.ts       pure scoring functions
       engine.ts        physics world, turns, rounds, wind charges, win condition
+    app/               Expo Router routes: index (Home), game, pause, rules, settings
     ui/
       Board.tsx        Skia canvas: draws the rink and runs the frame loop
       useAim.ts        all touch input: line up, pull-back throw, wind charges

@@ -43,8 +43,6 @@ commitlint, release-please and the rnsec security audit are set up.
 
 Open work is tracked as GitHub issues, one milestone per section below.
 
-**Missing:** Expo Router.
-
 **Technical debt seen in the code:**
 
 * The engine runs on the JS thread from `requestAnimationFrame` and copies a
@@ -144,7 +142,8 @@ throw or wind charge was unfair.
 
 Part of 0.2.0, first.
 
-* Expo Router: Home, Game, Rules, Settings, History, and a Pause modal.
+* History screen on Home (Expo Router already has Home, Game, Rules,
+  Settings and the Pause modal).
 * Game screen layout: the score, lights, cubes left and turn in a band above
   the board, and the board filling the space below it (no empty side strips).
 * History and inspiration page: shuffleboard, Hermitcraft Season 11's
@@ -312,9 +311,9 @@ rotate, both our own and fan-made.
 ## Next steps
 
 1. Finish M0: typecheck and tests in CI.
-2. 0.2.0: fix throw power, size the cube slots from the match, then build M3 (Expo Router,
-   presets and Custom mode, saved settings, game over flow, score band, History
-   page).
+2. 0.2.0: fix throw power, size the cube slots from the match, then build M3
+   (presets and Custom mode, saved settings, game over flow, score band,
+   History page).
 3. The point-of-view throw with hit zones on the cube.
 4. Then the rest of M2 on top of it: first fps measurement and playtests on a
    real device.

@@ -371,3 +371,23 @@ replaces the old aiming.
 The throw comes after the M3 screens and before the fps measurement and the
 playtests, so those measure the final throw. Only the mechanic is borrowed:
 the stick, the cube close-up and the panel are original art.
+
+## D-24 — Expo Router layout
+
+Routes live in `app/src/app/`: `index` (Home), `game`, `pause`, `rules` and
+`settings`.
+
+* **One engine for the app**, held in a React context (`GameEngineProvider`
+  in the root layout), so the Game screen and the Pause modal over it work on
+  the same match. Each visit to the Game screen starts a new match.
+* **Pause is a transparent modal route** over the game. It pauses the engine
+  while it is mounted (the same switch as D-21) and resumes when it closes, so
+  Resume and Android's back button behave the same. On the Game screen,
+  Android's back button opens Pause instead of leaving the match, and the iOS
+  swipe-back gesture is off.
+* **Rules is a route** opened from Home or from Pause. The old full-screen
+  `Modal` and the in-game Rules button are gone; Pause has a Rules button.
+* **The entry stays custom** (`index.ts` → `registerApp`). On web, CanvasKit
+  has to load before any Skia component is imported, so `registerApp.web.ts`
+  loads it and then requires `expo-router/entry`; native requires the entry
+  straight away. The web build is a single-page app (`web.output: single`).
